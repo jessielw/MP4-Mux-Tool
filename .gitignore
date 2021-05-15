@@ -1,0 +1,7 @@
+.idea/
+Encoder/
+build/
+dist/
+Apps/
+__pycache__/
+
