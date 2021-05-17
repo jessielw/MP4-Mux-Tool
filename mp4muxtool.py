@@ -1,6 +1,6 @@
 # Imports--------------------------------------------------------------------
 from tkinter import *
-from tkinter import filedialog, StringVar
+from tkinter import filedialog, StringVar, ttk
 import subprocess
 import tkinter as tk
 import pathlib
@@ -53,7 +53,7 @@ mp4box = '"Apps/mp4box/MP4Box.exe"'
 # Video Frame -------------------------------------------------------------------------------------------
 video_frame = LabelFrame(mp4_root, text=' Video ')
 video_frame.grid(row=0, columnspan=4, sticky=E + W + N + S, padx=20, pady=(10,10))
-video_frame.configure(fg="white", bg="#434547", bd=3)
+video_frame.configure(fg="white", bg="#434547", bd=4)
 
 video_frame.rowconfigure(1, weight=1)
 video_frame.columnconfigure(0, weight=1)
@@ -159,13 +159,28 @@ input_entry.dnd_bind('<<Drop>>', drop_input)
 # -------------------------------------------------------------------------------------------- Video Frame
 
 # Audio Frame -------------------------------------------------------------------------------------------
-audio_frame = LabelFrame(mp4_root, text=' Audio ')
-audio_frame.grid(row=1, columnspan=4, sticky=E + W + N + S, padx=20, pady=(10,10))
-audio_frame.configure(fg="white", bg="#434547", bd=3)
+# audio_frame = LabelFrame(mp4_root, text=' Audio ')
+# audio_frame.grid(row=1, columnspan=4, sticky=E + W + N + S, padx=20, pady=(10,10))
+# audio_frame.configure(fg="white", bg="#434547", bd=3)
+#
+# audio_frame.rowconfigure(1, weight=1)
+# audio_frame.columnconfigure(0, weight=1)
+# audio_frame.columnconfigure(1, weight=1)
 
+# Notebook Frame ------------------------------------------------------------------------------------------------------
+tabs = ttk.Notebook(mp4_root, height=170)
+tabs.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S, padx=20, pady=(0, 0))
+audio_frame = Frame(tabs, background="#434547")
+# video_frame = Frame(tabs, background="#434547")
+# audio_frame = Frame(tabs, background="#434547")
+tabs.add(audio_frame, text='Audio')
+# tabs.add(video_frame, text='  Video Settings  ')
+# tabs.add(audio_frame, text='  Audio Settings  ')
 audio_frame.rowconfigure(1, weight=1)
 audio_frame.columnconfigure(0, weight=1)
 audio_frame.columnconfigure(1, weight=1)
+
+# ------------------------------------------------------------------------------------------------------ Notebook Frame
 
 # Entry Box for Audio Title -----------------------------------------------------------------------------
 def audio_title(*args):
@@ -204,7 +219,7 @@ audio_language_menu["menu"].configure(activebackground="dim grey")
 # Audio Gain Selection ----------------------------------------------------------------------------------------
 audio_delay = StringVar()
 audio_delay_label = Label(audio_frame, text="Delay:", background="#434547", foreground="white")
-audio_delay_label.grid(row=3, column=0, columnspan=1, padx=10, pady=3, sticky=W)
+audio_delay_label.grid(row=3, column=0, columnspan=1, padx=10, pady=1, sticky=W)
 audio_delay_spinbox = Spinbox(audio_frame, from_=-1000, to=1000, increment=1.0, justify=CENTER,
                               wrap=True, textvariable=audio_delay)
 audio_delay_spinbox.configure(background="#23272A", foreground="white", highlightthickness=1,
@@ -277,9 +292,25 @@ input_entry.dnd_bind('<<Drop>>', drop_input)
 
 
 # Subtitle Frame -------------------------------------------------------------------------------------------
-subtitle_frame = LabelFrame(mp4_root, text=' Subtitle ')
-subtitle_frame.grid(row=2, columnspan=4, sticky=E + W + N + S, padx=20, pady=(10,10))
-subtitle_frame.configure(fg="white", bg="#434547", bd=3)
+# subtitle_frame = LabelFrame(mp4_root, text=' Subtitle ')
+# subtitle_frame.grid(row=2, columnspan=4, sticky=E + W + N + S, padx=20, pady=(10,10))
+# subtitle_frame.configure(fg="white", bg="#434547", bd=3)
+
+
+# Notebook Frame ------------------------------------------------------------------------------------------------------
+subtitle_tabs = ttk.Notebook(mp4_root, height=120)
+subtitle_tabs.grid(row=2, column=0, columnspan=4, sticky=E + W + N + S, padx=20, pady=(10, 0))
+subtitle_frame = Frame(subtitle_tabs, background="#434547")
+# video_frame = Frame(subtitle_tabs, background="#434547")
+# audio_frame = Frame(subtitle_tabs, background="#434547")
+subtitle_tabs.add(subtitle_frame, text='Subtitle')
+# subtitle_tabs.add(video_frame, text='  Video Settings  ')
+# subtitle_tabs.add(audio_frame, text='  Audio Settings  ')
+subtitle_frame.rowconfigure(1, weight=1)
+subtitle_frame.columnconfigure(0, weight=1)
+subtitle_frame.columnconfigure(1, weight=1)
+
+# ------------------------------------------------------------------------------------------------------ Notebook Frame
 
 subtitle_frame.rowconfigure(1, weight=1)
 subtitle_frame.columnconfigure(0, weight=1)
