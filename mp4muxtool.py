@@ -276,7 +276,7 @@ input_entry.dnd_bind('<<Drop>>', drop_input)
 
 
 
-# subtitle Frame -------------------------------------------------------------------------------------------
+# Subtitle Frame -------------------------------------------------------------------------------------------
 subtitle_frame = LabelFrame(mp4_root, text=' Subtitle ')
 subtitle_frame.grid(row=2, columnspan=4, sticky=E + W + N + S, padx=20, pady=(10,10))
 subtitle_frame.configure(fg="white", bg="#434547", bd=3)
@@ -304,7 +304,7 @@ subtitle_title_cmd.trace('w', subtitle_title)
 subtitle_title_cmd.set('')
 # ------------------------------------------------------------------------------------- subtitle Title Line
 
-# subtitle Atempo Selection ----------------------------------------------------------------------------------
+# subtitle Language Selection ----------------------------------------------------------------------------------
 subtitle_language = StringVar()
 subtitle_language_choices = {'Automatic': '',}
 subtitle_language_menu_label = Label(subtitle_frame, text='Frame Rate:', background="#434547", foreground="white")
@@ -317,7 +317,7 @@ subtitle_language.set('Automatic')
 subtitle_language_menu["menu"].configure(activebackground="dim grey")
 # subtitle_language_menu.bind("<Enter>", subtitle_language_menu_hover)
 # subtitle_language_menu.bind("<Leave>", subtitle_language_menu_hover_leave)
-# ------------------------------------------------------------------------------------------------ subtitle Atempo
+# ------------------------------------------------------------------------------------------------ Subtitle Langage
 
 def drop_input(event):
     input_dnd.set(event.data)
@@ -355,8 +355,65 @@ input_entry.grid(row=0, column=1, columnspan=3, padx=5, pady=5, sticky=S + E + W
 input_entry.drop_target_register(DND_FILES)
 input_entry.dnd_bind('<<Drop>>', drop_input)
 
-# -------------------------------------------------------------------------------------------- subtitle Frame
+# -------------------------------------------------------------------------------------------- Subtitle Frame
 
+
+
+
+
+# chapter Frame -------------------------------------------------------------------------------------------
+chapter_frame = LabelFrame(mp4_root, text=' Chapter ')
+chapter_frame.grid(row=3, columnspan=4, sticky=E + W + N + S, padx=20, pady=(10,10))
+chapter_frame.configure(fg="white", bg="#434547", bd=3)
+
+chapter_frame.rowconfigure(1, weight=1)
+chapter_frame.columnconfigure(0, weight=1)
+chapter_frame.columnconfigure(1, weight=1)
+chapter_frame.columnconfigure(2, weight=1)
+
+
+clear_button = Button(chapter_frame, text='X', command=input_button_commands, foreground='white',
+                         background='#23272A', borderwidth='3')
+clear_button.grid(row=0, column=3, columnspan=1, padx=5, pady=5, sticky=N + S + E + W)
+
+
+def drop_input(event):
+    input_dnd.set(event.data)
+
+def update_file_input(*args):
+    global chapterInput
+    global track_count
+    global autofilesave_dir_path
+    global chapterInputQuoted
+    input_entry.configure(state=NORMAL)
+    input_entry.delete(0, END)
+    chapterInput = str(input_dnd.get()).replace("{", "").replace("}", "")
+    # file_extension = pathlib.Path(VideoInput).suffix
+
+
+# Buttons -------------------------------------------------------------------------------------------------------------
+def input_button_hover(e):
+    input_button["bg"] = "grey"
+
+def input_button_hover_leave(e):
+    input_button["bg"] = "#23272A"
+
+input_dnd = StringVar()
+input_dnd.trace('w', update_file_input)
+input_button = tk.Button(chapter_frame, text='Open File', command=input_button_commands, foreground='white',
+                         background='#23272A', borderwidth='3')
+input_button.grid(row=0, column=0, columnspan=1, padx=5, pady=5, sticky=N + S + E + W)
+input_button.drop_target_register(DND_FILES)
+input_button.dnd_bind('<<Drop>>', drop_input)
+input_button.bind("<Enter>", input_button_hover)
+input_button.bind("<Leave>", input_button_hover_leave)
+
+input_entry = Entry(chapter_frame, width=40, borderwidth=4, background='#CACACA', state=DISABLED)
+input_entry.grid(row=0, column=1, columnspan=2, padx=5, pady=8, sticky=S + E + W)
+input_entry.drop_target_register(DND_FILES)
+input_entry.dnd_bind('<<Drop>>', drop_input)
+
+# -------------------------------------------------------------------------------------------- chapter Frame
 
 
 
