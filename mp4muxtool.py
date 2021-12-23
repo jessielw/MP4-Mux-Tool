@@ -1,12 +1,11 @@
 # Imports--------------------------------------------------------------------
 from tkinter import *
-from tkinter import filedialog, StringVar, ttk
+from tkinter import filedialog, StringVar, ttk, messagebox
 import subprocess
 import tkinter as tk
 import pathlib
 import tkinter.scrolledtext as scrolledtextwidget
 from TkinterDnD2 import *
-from tkinter import messagebox
 from ISO_639_2 import *
 
 
@@ -121,13 +120,13 @@ video_title_cmd.set('')
 # Video FPS Selection ----------------------------------------------------------------------------------
 video_fps = StringVar()
 video_fps_choices = {'Automatic': '',
-                     '23.976': '-fps 23976',
+                     '23.976': '-fps 23.976',
                      '24': '-fps 24',
                      '25': '-fps 25',
-                     '29.97': '-fps 2997',
+                     '29.97': '-fps 29.97',
                      '30': '-fps 30',
                      '50': '-fps 50',
-                     '59.94': '-fps 5994',
+                     '59.94': '-fps 59.94',
                      '60': '-fps 60'}
 video_fps_menu_label = Label(video_frame, text='Framerate (FPS):', background="#434547", foreground="white")
 video_fps_menu_label.grid(row=1, column=3, columnspan=1, padx=10, pady=(0, 0), sticky=W)
@@ -159,23 +158,88 @@ combo_language.current(0)
 # video_language_menu["menu"].configure(activebackground="dim grey")
 # ------------------------------------------------------------------------------------------------ Video Language
 
+def input_button_commands():
+    global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, VideoOutput
+    video_extensions = ('.avi', '.mp4', '.m1v', '.m2v', '.m4v', '.264', '.h264', '.hevc', '.h265')
+    VideoInput = filedialog.askopenfilename(initialdir="/", title="Select A File",
+                                            filetypes=[("Supported Formats", video_extensions)])
+    if VideoInput:
+        input_entry.configure(state=NORMAL)
+        input_entry.delete(0, END)
+        if VideoInput.endswith(video_extensions):
+            autofilesave_file_path = pathlib.Path(VideoInput)  # Command to get file input location
+            autofilesave_dir_path = autofilesave_file_path.parents[0]  # Final command to get only the directory
+            VideoInputQuoted = '"' + str(pathlib.Path(VideoInput)) + '"'
+            input_entry.insert(0, str(pathlib.Path(VideoInput)))
+            filename = pathlib.Path(VideoInput)
+            VideoOut = filename.with_suffix('')
+            autosavefilename = VideoOut.name
+            VideoOutput = str(pathlib.Path(r'' + str(VideoOut)))
+            input_entry.configure(state=DISABLED)
+
+            # output_entry.configure(state=NORMAL)
+            # output_entry.delete(0, END)
+            # output_entry.configure(state=DISABLED)
+            # output_entry.configure(state=NORMAL)
+            # output_entry.insert(0, str(VideoOut))
+            # output_entry.configure(state=DISABLED)
+            # output_button.configure(state=NORMAL)
+            # check_for_hdr()
+        else:
+            messagebox.showinfo(title='Input Not Supported',
+                                message="Try Again With a Supported File Type!\n\nIf this is a "
+                                        "file that should be supported, please let me know.\n\n"
+                                        + 'Unsupported file extension "' + str(pathlib.Path(VideoInput).suffix) + '"')
+    # if not VideoInput:
+    #     input_entry.configure(state=NORMAL)
+    #     input_entry.delete(0, END)
+    #     input_entry.configure(state=DISABLED)
+    #     output_entry.configure(state=NORMAL)
+    #     output_entry.delete(0, END)
+    #     output_entry.configure(state=DISABLED)
+    #     output_button.config(state=DISABLED)
+    #     start_button.configure(state=DISABLED)
+
+
+# ---------------------------------------------------------------------------------------------- Input Functions Button
+
+# Drag and Drop Functions ---------------------------------------------------------------------------------------------
 def drop_input(event):
     input_dnd.set(event.data)
 
 
 def update_file_input(*args):
-    global VideoInput
-    global track_count
-    global autofilesave_dir_path
-    global VideoInputQuoted
+    global VideoInput, autofilesave_dir_path, VideoInputQuoted, VideoOutput, autosavefilename
     input_entry.configure(state=NORMAL)
     input_entry.delete(0, END)
     VideoInput = str(input_dnd.get()).replace("{", "").replace("}", "")
-    # file_extension = pathlib.Path(VideoInput).suffix
+    video_extensions = ('.avi', '.mp4', '.m1v', '.m2v', '.m4v', '.264', '.h264', '.hevc', '.h265')
+    if VideoInput.endswith(video_extensions):
+        autofilesave_file_path = pathlib.Path(VideoInput)  # Command to get file input location
+        autofilesave_dir_path = autofilesave_file_path.parents[0]  # Final command to get only the directory
+        VideoInputQuoted = '"' + str(pathlib.Path(VideoInput)) + '"'
+        input_entry.insert(0, str(input_dnd.get()).replace("{", "").replace("}", ""))
+        filename = pathlib.Path(VideoInput)
+        VideoOut = filename.with_suffix('')
+        autosavefilename = VideoOut.name
+        VideoOutput = str(pathlib.Path(r'' + str(VideoOut)))
+        input_entry.configure(state=DISABLED)
+        # output_entry.configure(state=NORMAL)
+        # output_entry.delete(0, END)
+        # output_entry.configure(state=DISABLED)
+        # output_entry.configure(state=NORMAL)
+        # output_entry.insert(0, str(VideoOut))
+        # output_entry.configure(state=DISABLED)
+        # output_button.configure(state=NORMAL)
+        # check_for_hdr()
+    else:
+        messagebox.showinfo(title='Input Not Supported',
+                            message="Try Again With a Supported File Type!\n\nIf this is a "
+                                    "file that should be supported, please let me know.\n\n"
+                                    + 'Unsupported file extension "' + str(pathlib.Path(VideoInput).suffix) + '"')
 
 
-def input_button_commands():
-    pass
+# --------------------------------------------------------------------------------------------- Drag and Drop Functions
 
 
 # Buttons ------------------------------------------------------------------------------------
