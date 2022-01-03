@@ -1,10 +1,12 @@
 # Imports--------------------------------------------------------------------
 from tkinter import *
 from tkinter import filedialog, StringVar, ttk, messagebox
-import subprocess, pathlib
+import subprocess, pathlib, webbrowser, threading
 import tkinter as tk
 from TkinterDnD2 import *
 from ISO_639_2 import *
+from configparser import ConfigParser
+from Packages.about import openaboutwindow
 
 
 # Main Gui & Windows --------------------------------------------------------
@@ -33,6 +35,13 @@ y_coordinate = int((screen_height / 2) - (window_height / 2))
 mp4_root.geometry(f'{window_width}x{window_height}+{x_coordinate}+{y_coordinate}')
 mp4_root.protocol('WM_DELETE_WINDOW', mp4_root_exit_function)
 
+# Config Parser -------------------------------------------------------------------------------------------------------
+config_file = 'Runtime/config.ini'  # Creates (if it doesn't exist) and defines location of config.ini
+config = ConfigParser()
+config.read(config_file)
+# ------------------------------------------------------------------------------------------------------- Config Parser
+
+
 # Menu Items and Sub-Bars ---------------------------------------------------------------------------------------------
 my_menu_bar = Menu(mp4_root, tearoff=0)
 mp4_root.config(menu=my_menu_bar)
@@ -41,118 +50,69 @@ file_menu = Menu(my_menu_bar, tearoff=0, activebackground='dim grey')
 my_menu_bar.add_cascade(label='File', menu=file_menu)
 file_menu.add_command(label='Exit', command=mp4_root_exit_function)
 
-# options_menu = Menu(my_menu_bar, tearoff=0, activebackground='dim grey')
-# my_menu_bar.add_cascade(label='Options', menu=options_menu)
+options_menu = Menu(my_menu_bar, tearoff=0, activebackground='dim grey')
+my_menu_bar.add_cascade(label='Options', menu=options_menu)
 
-# options_submenu = Menu(root, tearoff=0, activebackground='dim grey')
-# options_menu.add_cascade(label='Shell Options', menu=options_submenu)
-# shell_options = StringVar()
-# shell_options.set(config['debug_option']['option'])
-# if shell_options.get() == '':
-#     shell_options.set('Default')
-# elif shell_options.get() != '':
-#     shell_options.set(config['debug_option']['option'])
-# def update_shell_option():
-#     try:
-#         config.set('debug_option', 'option', shell_options.get())
-#         with open(config_file, 'w') as configfile:
-#             config.write(configfile)
-#     except:
-#         pass
-# update_shell_option()
-# options_submenu.add_radiobutton(label='Progress Bars', variable=shell_options,
-#                                 value="Default", command=update_shell_option)
-# options_submenu.add_radiobutton(label='CMD Shell (Debug)', variable=shell_options,
-#                                 value="Debug", command=update_shell_option)
-#
-# options_menu.add_separator()
-#
-# def set_ffmpeg_path():
-#     global ffmpeg
-#     path = filedialog.askopenfilename(title='Select Location to "ffmpeg.exe"', initialdir='/',
-#                                       filetypes=[('ffmpeg', 'ffmpeg.exe')])
-#     if path == '':
-#         pass
-#     elif path != '':
-#         ffmpeg = '"' + str(pathlib.Path(path)) + '"'
-#         config.set('ffmpeg_path', 'path', ffmpeg)
-#         with open(config_file, 'w') as configfile:
-#             config.write(configfile)
-#
-# options_menu.add_command(label='Set path to FFMPEG', command=set_ffmpeg_path)
-#
-# def set_mpv_player_path():
-#     global mpv_player
-#     path = filedialog.askopenfilename(title='Select Location to "mpv.exe"', initialdir='/',
-#                                       filetypes=[('mpv', 'mpv.exe')])
-#     if path == '':
-#         pass
-#     elif path != '':
-#         mpv_player = '"' + str(pathlib.Path(path)) + '"'
-#         config.set('mpv_player_path', 'path', mpv_player)
-#         with open(config_file, 'w') as configfile:
-#             config.write(configfile)
-#
-# options_menu.add_command(label='Set path to MPV player', command=set_mpv_player_path)
-#
-# def set_mediainfogui_path():
-#     global mediainfo
-#     path = filedialog.askopenfilename(title='Select Location to "MediaInfo.exe"', initialdir='/',
-#                                       filetypes=[('MediaInfoGUI', 'MediaInfo.exe')])
-#     if path == '':
-#         pass
-#     elif path != '':
-#         mediainfo = '"' + str(pathlib.Path(path)) + '"'
-#         config.set('mediainfogui_path', 'path', mediainfo)
-#         with open(config_file, 'w') as configfile:
-#             config.write(configfile)
-#
-# options_menu.add_command(label='Set path to MediaInfo - GUI', command=set_mediainfogui_path)
-#
-# def set_mediainfocli_path():
-#     global mediainfocli
-#     path = filedialog.askopenfilename(title='Select Location to "MediaInfo.exe"', initialdir='/',
-#                                       filetypes=[('MediaInfo', 'MediaInfo.exe')])
-#     if path == '':
-#         pass
-#     elif path != '':
-#         mediainfocli = '"' + str(pathlib.Path(path)) + '"'
-#         config.set('mediainfocli_path', 'path', mediainfocli)
-#         with open(config_file, 'w') as configfile:
-#             config.write(configfile)
-#
-# options_menu.add_command(label='Set path to MediaInfo - CLI', command=set_mediainfocli_path)
-#
-# options_menu.add_separator()
-# def reset_config():
-#     msg = messagebox.askyesno(title='Warning', message='Are you sure you want to reset the config.ini file settings?')
-#     if msg == False:
-#        pass
-#     if msg == True:
-#         try:
-#             config.set('ffmpeg_path', 'path', '')
-#             config.set('mpv_player_path', 'path', '')
-#             config.set('mediainfocli_path', 'path', '')
-#             config.set('mediainfogui_path', 'path', '')
-#             with open(config_file, 'w') as configfile:
-#                 config.write(configfile)
-#             messagebox.showinfo(title='Prompt', message='Please restart the program')
-#         except:
-#             pass
-#         root.destroy()
-#
-# options_menu.add_command(label='Reset Configuration File', command=reset_config)
-#
-# tools_submenu = Menu(my_menu_bar, tearoff=0, activebackground='dim grey')
-# my_menu_bar.add_cascade(label='Tools', menu=tools_submenu)
-# tools_submenu.add_command(label="MediaInfo", command=mediainfogui)
-# tools_submenu.add_command(label="MPV (Media Player)", command=mpv_gui_main_gui)
-# tools_submenu.add_command(label="Simple-Youtube-DL-Gui", command=youtube_dl_launcher_for_ffmpegaudioencoder)
-# tools_submenu.add_separator()
-#
-# help_menu = Menu(my_menu_bar, tearoff=0, activebackground="dim grey")
-# my_menu_bar.add_cascade(label="Help", menu=help_menu)
-# help_menu.add_command(label="About", command=openaboutwindow)
+options_submenu = Menu(mp4_root, tearoff=0, activebackground='dim grey')
+options_menu.add_cascade(label='Shell Options', menu=options_submenu)
+shell_options = StringVar()
+shell_options.set(config['debug_option']['option'])
+if shell_options.get() == '':
+    shell_options.set('Default')
+elif shell_options.get() != '':
+    shell_options.set(config['debug_option']['option'])
+
+
+def update_shell_option():
+    try:
+        config.set('debug_option', 'option', shell_options.get())
+        with open(config_file, 'w') as configfile:
+            config.write(configfile)
+    except (Exception,):
+        pass
+
+
+update_shell_option()
+options_submenu.add_radiobutton(label='Progress Bars', variable=shell_options,
+                                value="Default", command=update_shell_option)
+options_submenu.add_radiobutton(label='CMD Shell (Debug)', variable=shell_options,
+                                value="Debug", command=update_shell_option)
+options_menu.add_separator()
+
+
+def set_mp4box_path():
+    global mp4box
+    path = filedialog.askopenfilename(title='Select Location to "mp4box.exe"', initialdir='/',
+                                      filetypes=[('MP4Box', 'mp4box.exe')])
+    if path != '':
+        mp4box = '"' + str(pathlib.Path(path)) + '"'
+        config.set('mp4box_path', 'path', mp4box)
+        with open(config_file, 'w') as configfile:
+            config.write(configfile)
+
+
+options_menu.add_command(label='Set path to MP4Box', command=set_mp4box_path)
+options_menu.add_separator()
+
+
+def reset_config():
+    msg = messagebox.askyesno(title='Warning', message='Are you sure you want to reset the config.ini file settings?')
+    if msg:
+        try:
+            config.set('mp4box_path', 'path', '')
+            with open(config_file, 'w') as configfile:
+                config.write(configfile)
+            messagebox.showinfo(title='Prompt', message='Please restart the program')
+        except (Exception,):
+            pass
+        mp4_root.destroy()
+
+
+options_menu.add_command(label='Reset Configuration File', command=reset_config)
+
+help_menu = Menu(my_menu_bar, tearoff=0, activebackground="dim grey")
+my_menu_bar.add_cascade(label="Help", menu=help_menu)
+help_menu.add_command(label="About", command=openaboutwindow)
 
 
 # --------------------------------------------------------------------------------------------- Menu Items and Sub-Bars
@@ -211,8 +171,41 @@ for n in range(0):
 # --------------------------------------------------------------------------------------- mp4_root Row/Column Configure
 
 # Bundled Apps --------------------------------------------------------------------------------------------------------
-mp4box = '"Apps/mp4box/MP4Box.exe"'
+if not config.has_section('mp4box_path'):
+    config.add_section('mp4box_path')
+if not config.has_option('mp4box_path', 'path'):
+    config.set('mp4box_path', 'path', '')
 
+if not config.has_section('debug_option'):
+    config.add_section('debug_option')
+if not config.has_option('debug_option', 'option'):
+    config.set('debug_option', 'option', '')
+
+try:
+    with open(config_file, 'w') as configfile:
+        config.write(configfile)
+except (Exception,):
+    messagebox.showinfo(title='Error', message='Could Not Write to config.ini file, delete and try again')
+
+mp4box = config['mp4box_path']['path']
+
+if not pathlib.Path(mp4box.replace('"', '')).is_file():  # Checks config for bundled app paths path
+    # mp4box -----------------------------------------------------------------------
+    if pathlib.Path('Apps/mp4box/MP4Box.exe').is_file():
+        messagebox.showinfo(title='Info', message='Program will use the included '
+                                                  '"mp4box.exe" located in the "Apps" folder')
+        mp4box = '"' + str(pathlib.Path('Apps/mp4box/MP4Box.exe')) + '"'
+        try:
+            config.set('mp4box_path', 'path', mp4box)
+            with open(config_file, 'w') as configfile:
+                config.write(configfile)
+        except (Exception,):
+            pass
+    elif not pathlib.Path('Apps/mp4box/MP4Box.exe').is_file():
+        messagebox.showerror(title='Error!', message='Please download mp4box.exe and set path to '
+                                                     'mp4box.exe in the Options menu')
+        webbrowser.open('https://github.com/gpac/gpac/wiki/MP4Box')
+    # mp4box ------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------------- Bundled Apps
 # Video Frame ---------------------------------------------------------------------------------------------------------
 video_frame = LabelFrame(mp4_root, text=' Video ')
@@ -231,7 +224,7 @@ def video_title(*args):
     if video_title_cmd.get().strip() == '':
         video_title_cmd_input = ''
     else:
-        video_title_cmd_input = ':name=' + video_title_cmd.get().strip() + ' '
+        video_title_cmd_input = ':name=' + video_title_cmd.get().strip()
 
 
 video_title_cmd = StringVar()
@@ -279,7 +272,7 @@ video_combo_language.current(0)
 # ------------------------------------------------------------------------------------------------------ Video Language
 
 def input_button_commands():
-    global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, VideoOutput
+    global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output
     video_extensions = ('.avi', '.mp4', '.m1v', '.m2v', '.m4v', '.264', '.h264', '.hevc', '.h265')
     VideoInput = filedialog.askopenfilename(initialdir="/", title="Select A File",
                                             filetypes=[("Supported Formats", video_extensions)])
@@ -295,7 +288,7 @@ def input_button_commands():
             VideoOut = filename.with_suffix('')
             autosavefilename = str(VideoOut.name) + '.muxed_output'
             autosave_file_dir = pathlib.Path(str(f'{autofilesave_dir_path}\\') + str(autosavefilename + '.mp4'))
-            VideoOutput = str(pathlib.Path(r'' + str(VideoOut)))
+            output = str(autosave_file_dir)
             input_entry.configure(state=DISABLED)
             video_title_entrybox.configure(state=NORMAL)
             output_entry.configure(state=NORMAL)
@@ -309,6 +302,7 @@ def input_button_commands():
             subtitle_input_button.configure(state=NORMAL)
             chapter_input_button.configure(state=NORMAL)
             output_button.configure(state=NORMAL)
+            start_button.configure(state=NORMAL)
         else:
             messagebox.showinfo(title='Input Not Supported',
                                 message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -324,7 +318,7 @@ def video_drop_input(event):
 
 
 def update_file_input(*args):
-    global VideoInput, autofilesave_dir_path, VideoInputQuoted, VideoOutput, autosavefilename
+    global VideoInput, autofilesave_dir_path, VideoInputQuoted, output, autosavefilename
     input_entry.configure(state=NORMAL)
     input_entry.delete(0, END)
     VideoInput = str(input_dnd.get()).replace("{", "").replace("}", "")
@@ -338,7 +332,7 @@ def update_file_input(*args):
         VideoOut = filename.with_suffix('')
         autosavefilename = str(VideoOut.name) + '.muxed_output'
         autosave_file_dir = pathlib.Path(str(f'{autofilesave_dir_path}\\') + str(autosavefilename + '.mp4'))
-        VideoOutput = str(pathlib.Path(r'' + str(VideoOut)))
+        output = str(autosave_file_dir)
         input_entry.configure(state=DISABLED)
         video_title_entrybox.configure(state=NORMAL)
         output_entry.configure(state=NORMAL)
@@ -352,6 +346,7 @@ def update_file_input(*args):
         subtitle_input_button.configure(state=NORMAL)
         chapter_input_button.configure(state=NORMAL)
         output_button.configure(state=NORMAL)
+        start_button.configure(state=NORMAL)
     else:
         messagebox.showinfo(title='Input Not Supported',
                             message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -429,7 +424,7 @@ def audio_title(*args):
     if audio_title_cmd.get().strip() == '':
         audio_title_cmd_input = ''
     else:
-        audio_title_cmd_input = ':name=' + audio_title_cmd.get().strip() + ' '
+        audio_title_cmd_input = ':name=' + audio_title_cmd.get().strip()
 
 
 audio_title_cmd = StringVar()
@@ -577,7 +572,7 @@ def subtitle_title(*args):
     if subtitle_title_cmd.get().strip() == '':
         subtitle_title_cmd_input = ''
     else:
-        subtitle_title_cmd_input = ':name=' + subtitle_title_cmd.get().strip() + ' '
+        subtitle_title_cmd_input = ':name=' + subtitle_title_cmd.get().strip()
 
 
 subtitle_title_cmd = StringVar()
@@ -826,11 +821,113 @@ show_command = HoverButton(mp4_root, text='View Command', command=NONE, foregrou
 show_command.grid(row=5, column=0, columnspan=1, padx=(20, 10), pady=(10, 5), sticky=W)
 # -------------------------------------------------------------------------------------------------------- Show Command
 
-
 # Start Job -----------------------------------------------------------------------------------------------------------
-start_job = HoverButton(mp4_root, text='Start Job', command=NONE, foreground='white',
-                        background='#23272A', borderwidth='3', activebackground='grey', state=DISABLED)
-start_job.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(10, 5), sticky=E)
+# Command -------------------------------------------------------------------------------------------------------------
+def start_job():
+    output_quoted = '"' + output + '"'
+
+    video_options = ' -add "' + VideoInput + '#video' + video_title_cmd_input + \
+                    ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + '"'
+
+    if audio_input:
+        audio_options = ' -add "' + audio_input + '#audio' + audio_title_cmd_input + ':delay=' + \
+                        audio_delay.get() + ':lang=' + iso_639_2_codes_dictionary[audio_language.get()] + '" '
+    if not audio_input:
+        audio_options = ''
+
+    if subtitle_input:
+        subtitle_options = ' -add "' + subtitle_input + subtitle_title_cmd_input + ':lang=' + \
+                           iso_639_2_codes_dictionary[subtitle_language.get()] + '" '
+    if not subtitle_input:
+        subtitle_options = ''
+
+    if chapter_input:
+        chapter_options = ' -add "' + chapter_input + '" '
+    if not chapter_input:
+        chapter_options = ''
+
+    if shell_options.get() == "Default":
+        # try:
+        #     mediainfo_file_size = MediaInfo.parse(VideoInputQuoted.replace('"', ''))
+        #     for track in mediainfo_file_size.tracks:
+        #         if track.track_type == "General":
+        #             total_file_size = track.file_size
+        #     total_duration = str(int(total_file_size) / 1000).rsplit('.', 1)[0]  # Compressed code for progress bars
+        # except (Exception,):
+        #     pass
+
+        def close_encode():
+            confirm_exit = messagebox.askyesno(title='Prompt',
+                                               message="Are you sure you want to stop the parser?", parent=window)
+            if confirm_exit:
+                try:
+                    subprocess.Popen(f"TASKKILL /F /PID {job.pid} /T", creationflags=subprocess.CREATE_NO_WINDOW)
+                    window.destroy()
+                except (Exception,):
+                    window.destroy()
+
+        def close_window():
+            threading.Thread(target=close_encode).start()
+
+        window = tk.Toplevel(mp4_root)
+        window.title(str(pathlib.Path(VideoInput).stem))
+        window.configure(background="#434547")
+        encode_label = Label(window, text='- ' * 20 + 'Progress' + ' -' * 20,
+                             font=("Times New Roman", 14), background='#434547', foreground="white")
+        encode_label.grid(column=0, row=0)
+        window.grid_columnconfigure(0, weight=1)
+        window.grid_rowconfigure(0, weight=1)
+        window.grid_rowconfigure(1, weight=1)
+        window.protocol('WM_DELETE_WINDOW', close_window)
+        window.geometry("600x140")
+        encode_window_progress = Text(window, height=2, relief=SUNKEN, bd=3)
+        encode_window_progress.grid(row=1, column=0, pady=(10, 6), padx=10, sticky=E + W)
+        encode_window_progress.insert(END, '')
+        app_progress_bar = ttk.Progressbar(window, orient=HORIZONTAL, mode='determinate')
+        app_progress_bar.grid(row=2, pady=(10, 10), padx=15, sticky=E + W)
+    # if shell_options.get() == "Default":
+    #     finalcommand = '"' + ffmpeg + ' -analyzeduration 100M -probesize 50M -i ' + VideoInputQuoted \
+    #                    + ' -map 0:v:0 -c:v:0 copy -vbsf hevc_mp4toannexb ' \
+    #                      '-f hevc - -hide_banner -loglevel warning -stats|' \
+    #                    + dolbyvision_tool + ' ' + dobly_vision_mode_choices[dobly_vision_mode.get()] \
+    #                    + dolbyvision_crop.get() + ' extract-rpu - -o ' + str(VideoOutputQuoted) + '"'
+    elif shell_options.get() == "Debug":
+        finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + '-new ' \
+                       + output_quoted + '"'
+        print(finalcommand)
+    # if shell_options.get() == "Default":
+    #     job = subprocess.Popen('cmd /c ' + finalcommand, universal_newlines=True,
+    #                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
+    #                            creationflags=subprocess.CREATE_NO_WINDOW)
+        # for line in job.stdout:
+        #     try:
+        #         encode_window_progress.delete('1.0', END)
+        #         encode_window_progress.insert(END, 'Starting Job...')
+        #         if line.split('=', 1)[0] == 'frame':
+        #             encode_window_progress.delete('1.0', END)
+        #             encode_window_progress.insert(END, line)
+        #             size = line.split('size=', 1)[1].split()[0].rsplit('k', 1)[0]
+        #             percent = '{:.1%}'.format(int(size) / int(total_duration)).split('.', 1)[0]
+        #             app_progress_bar['value'] = percent
+        #     except (Exception,):
+        #         encode_window_progress.delete('1.0', END)
+        #         encode_window_progress.insert(END, line)
+    #     window.destroy()
+    if shell_options.get() == "Debug":
+        subprocess.Popen('cmd /k ' + finalcommand)
+
+
+# ------------------------------------------------------------------------------------------------------------- Command
+
+
+
+
+
+
+start_button = HoverButton(mp4_root, text='Start Job', command=lambda: threading.Thread(target=start_job).start(),
+                           foreground='white', background='#23272A', borderwidth='3', activebackground='grey',
+                           state=DISABLED)
+start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(10, 5), sticky=E)
 # ----------------------------------------------------------------------------------------------------------- Start Job
 
 
@@ -838,7 +935,6 @@ start_job.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(10, 5), stick
 status_label = Label(mp4_root, text='', bd=4, relief=SUNKEN, anchor=E, background='#717171', foreground="white")
 status_label.grid(column=0, row=6, columnspan=4, sticky=W + E, pady=(0, 2), padx=3)
 # ----------------------------------------------------------------- Status Label at bottom of main GUI
-
 
 # End Loop ------------------------------------------------------------------------------------------------------------
 mp4_root.mainloop()
