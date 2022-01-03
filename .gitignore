@@ -4,4 +4,4 @@ build/
 dist/
 Apps/
 __pycache__/
-
+config.ini
