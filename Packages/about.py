@@ -4,7 +4,7 @@ def openaboutwindow():  # About Window Information
     about_window = Toplevel()
     about_window.title('About')
     about_window.configure(background="#434547")
-    window_height = 140
+    window_height = 100
     window_width = 470
     screen_width = about_window.winfo_screenwidth()
     screen_height = about_window.winfo_screenheight()
