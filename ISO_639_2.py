@@ -1,4 +1,4 @@
-iso_639_2_codes_dictionary = {'': '',
+iso_639_2_codes_dictionary = {'': 'und',
                               'English': 'eng',
                               'Chinese': 'chi',
                               'French': 'fre',
