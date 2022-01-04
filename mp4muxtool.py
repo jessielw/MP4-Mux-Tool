@@ -3,10 +3,13 @@ from tkinter import *
 from tkinter import filedialog, StringVar, ttk, messagebox
 import subprocess, pathlib, webbrowser, threading
 import tkinter as tk
+import tkinter.scrolledtext as scrolledtextwidget
 from TkinterDnD2 import *
 from ISO_639_2 import *
 from configparser import ConfigParser
 from Packages.about import openaboutwindow
+from pymediainfo import MediaInfo
+from ctypes import windll
 
 
 # Main Gui & Windows --------------------------------------------------------
@@ -24,9 +27,15 @@ def mp4_root_exit_function():
 
 mp4_root = TkinterDnD.Tk()
 mp4_root.title("MP4-Mux-Tool Beta v1.0")
-# mp4_root.iconphoto(True, PhotoImage(file="Runtime/Images/topbar.png"))
+mp4_root.iconphoto(True, PhotoImage(file='Runtime/Images/mp4mux.png'))
 mp4_root.configure(background="#434547")
-window_height = 764
+
+try:
+    windll.shcore.SetProcessDpiAwareness(1)  # if your Windows version >= 8.1
+except(Exception,):
+    windll.user32.SetProcessDPIAware()  # Windows 8.0 or less
+
+window_height = 760
 window_width = 605
 screen_width = mp4_root.winfo_screenwidth()
 screen_height = mp4_root.winfo_screenheight()
@@ -39,6 +48,27 @@ mp4_root.protocol('WM_DELETE_WINDOW', mp4_root_exit_function)
 config_file = 'Runtime/config.ini'  # Creates (if it doesn't exist) and defines location of config.ini
 config = ConfigParser()
 config.read(config_file)
+
+if not config.has_section('mp4box_path'):
+    config.add_section('mp4box_path')
+if not config.has_option('mp4box_path', 'path'):
+    config.set('mp4box_path', 'path', '')
+
+if not config.has_section('debug_option'):
+    config.add_section('debug_option')
+if not config.has_option('debug_option', 'option'):
+    config.set('debug_option', 'option', '')
+
+if not config.has_section('auto_close_progress_window'):
+    config.add_section('auto_close_progress_window')
+if not config.has_option('auto_close_progress_window', 'option'):
+    config.set('auto_close_progress_window', 'option', '')
+
+try:
+    with open(config_file, 'w') as configfile:
+        config.write(configfile)
+except (Exception,):
+    messagebox.showinfo(title='Error', message='Could Not Write to config.ini file, delete and try again')
 # ------------------------------------------------------------------------------------------------------- Config Parser
 
 
@@ -73,10 +103,35 @@ def update_shell_option():
 
 
 update_shell_option()
-options_submenu.add_radiobutton(label='Progress Bars', variable=shell_options,
-                                value="Default", command=update_shell_option)
-options_submenu.add_radiobutton(label='CMD Shell (Debug)', variable=shell_options,
-                                value="Debug", command=update_shell_option)
+options_submenu.add_radiobutton(label='Progress Bars', variable=shell_options, value="Default",
+                                command=update_shell_option)
+options_submenu.add_radiobutton(label='CMD Shell (Debug)', variable=shell_options, value="Debug",
+                                command=update_shell_option)
+
+auto_close_window = StringVar()
+auto_close_window.set(config['auto_close_progress_window']['option'])
+if auto_close_window.get() == '':
+    auto_close_window.set('off')
+elif auto_close_window.get() != '':
+    auto_close_window.set(config['auto_close_progress_window']['option'])
+print(config['auto_close_progress_window']['option'])
+
+
+def update_auto_close():
+    try:
+        config.set('auto_close_progress_window', 'option', auto_close_window.get())
+        with open(config_file, 'w') as configfile:
+            config.write(configfile)
+    except (Exception,):
+        pass
+
+
+update_auto_close()
+options_submenu2 = Menu(mp4_root, tearoff=0, activebackground='dim grey')
+options_menu.add_cascade(label='Auto-Close Progress Window', menu=options_submenu2)
+options_submenu2.add_radiobutton(label='On', variable=auto_close_window, value='on', command=update_auto_close)
+options_submenu2.add_radiobutton(label='Off', variable=auto_close_window, value='off', command=update_auto_close)
+
 options_menu.add_separator()
 
 
@@ -103,8 +158,9 @@ def reset_config():
             with open(config_file, 'w') as configfile:
                 config.write(configfile)
             messagebox.showinfo(title='Prompt', message='Please restart the program')
+            subprocess.Popen(f"TASKKILL /F /im MP4-Mux-Tool.exe /T", creationflags=subprocess.CREATE_NO_WINDOW)
         except (Exception,):
-            pass
+            mp4_root.destroy()
         mp4_root.destroy()
 
 
@@ -113,7 +169,6 @@ options_menu.add_command(label='Reset Configuration File', command=reset_config)
 help_menu = Menu(my_menu_bar, tearoff=0, activebackground="dim grey")
 my_menu_bar.add_cascade(label="Help", menu=help_menu)
 help_menu.add_command(label="About", command=openaboutwindow)
-
 
 # --------------------------------------------------------------------------------------------- Menu Items and Sub-Bars
 
@@ -139,6 +194,7 @@ mp4_root.option_add('*TCombobox*Listbox*Foreground', '#FFFFFF')
 mp4_root.option_add('*TCombobox*Listbox*selectBackground', '#FFFFFF')
 mp4_root.option_add('*TCombobox*Listbox*selectForeground', '#404040')
 custom_style.map('TCombobox', foreground=[('hover', 'white')], background=[('hover', 'grey')])
+custom_style.configure("purple.Horizontal.TProgressbar", background='purple')
 
 
 # ----------------------------------- ComboBox Mouse Hover Code
@@ -165,28 +221,14 @@ class HoverButton(tk.Button):
 # mp4_root Row/Column Configure ---------------------------------------------------------------------------------------
 for n in range(3):
     mp4_root.grid_columnconfigure(n, weight=1)
-for n in range(0):
+for n in range(6):
     mp4_root.grid_rowconfigure(n, weight=1)
+# mp4_root.grid_rowconfigure(5, weight=1)
+# mp4_root.grid_rowconfigure(6, weight=1)
 
 # --------------------------------------------------------------------------------------- mp4_root Row/Column Configure
 
 # Bundled Apps --------------------------------------------------------------------------------------------------------
-if not config.has_section('mp4box_path'):
-    config.add_section('mp4box_path')
-if not config.has_option('mp4box_path', 'path'):
-    config.set('mp4box_path', 'path', '')
-
-if not config.has_section('debug_option'):
-    config.add_section('debug_option')
-if not config.has_option('debug_option', 'option'):
-    config.set('debug_option', 'option', '')
-
-try:
-    with open(config_file, 'w') as configfile:
-        config.write(configfile)
-except (Exception,):
-    messagebox.showinfo(title='Error', message='Could Not Write to config.ini file, delete and try again')
-
 mp4box = config['mp4box_path']['path']
 
 if not pathlib.Path(mp4box.replace('"', '')).is_file():  # Checks config for bundled app paths path
@@ -232,7 +274,7 @@ video_title_entrybox_label = Label(video_frame, text='Video Title:', anchor=W, b
 video_title_entrybox_label.grid(row=1, column=1, columnspan=1, padx=10, pady=(0, 0), sticky=W)
 video_title_entrybox = Entry(video_frame, textvariable=video_title_cmd, borderwidth=4, background='#CACACA',
                              state=DISABLED)
-video_title_entrybox.grid(row=2, column=1, columnspan=3, padx=(5, 20), pady=(0, 15), sticky=W + E)
+video_title_entrybox.grid(row=2, column=1, columnspan=1, padx=(5, 15), pady=(0, 15), sticky=W + E)
 video_title_cmd.trace('w', video_title)
 video_title_cmd.set('')
 # ---------------------------------------------------------------------------------------------------- Video Title Line
@@ -255,6 +297,12 @@ video_title_cmd.set('')
 # combo_fps.grid(row=2, column=3, columnspan=1, padx=10, pady=(0, 10), sticky=N + S + W + E)
 # combo_fps['state'] = 'readonly'
 # combo_fps.current(0)
+
+video_fps_menu_label = Label(video_frame, text='Framerate (FPS):', background="#434547", foreground="white")
+video_fps_menu_label.grid(row=1, column=2, columnspan=1, padx=(3, 0), pady=(0, 0), sticky=W)
+fps_entry = Entry(video_frame, borderwidth=4, background='#CACACA', state=DISABLED, width=10)
+fps_entry.grid(row=2, column=2, columnspan=2, padx=(5, 10), pady=(0, 15), sticky=W + E)
+
 #
 # # --------------------------------------------------------------------------------------------------------- Video FPS
 
@@ -272,7 +320,7 @@ video_combo_language.current(0)
 # ------------------------------------------------------------------------------------------------------ Video Language
 
 def input_button_commands():
-    global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output
+    global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, detect_video_fps, fps_entry
     video_extensions = ('.avi', '.mp4', '.m1v', '.m2v', '.m4v', '.264', '.h264', '.hevc', '.h265')
     VideoInput = filedialog.askopenfilename(initialdir="/", title="Select A File",
                                             filetypes=[("Supported Formats", video_extensions)])
@@ -303,6 +351,15 @@ def input_button_commands():
             chapter_input_button.configure(state=NORMAL)
             output_button.configure(state=NORMAL)
             start_button.configure(state=NORMAL)
+            media_info = MediaInfo.parse(filename)
+            for track in media_info.tracks:
+                if track.track_type == "Video":
+                    detect_video_fps = track.frame_rate
+                    fps_entry.configure(state=NORMAL)
+                    fps_entry.delete(0, END)
+                    fps_entry.insert(0, detect_video_fps)
+                    fps_entry.configure(state=DISABLED)
+
         else:
             messagebox.showinfo(title='Input Not Supported',
                                 message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -318,7 +375,7 @@ def video_drop_input(event):
 
 
 def update_file_input(*args):
-    global VideoInput, autofilesave_dir_path, VideoInputQuoted, output, autosavefilename
+    global VideoInput, autofilesave_dir_path, VideoInputQuoted, output, autosavefilename, detect_video_fps, fps_entry
     input_entry.configure(state=NORMAL)
     input_entry.delete(0, END)
     VideoInput = str(input_dnd.get()).replace("{", "").replace("}", "")
@@ -347,6 +404,14 @@ def update_file_input(*args):
         chapter_input_button.configure(state=NORMAL)
         output_button.configure(state=NORMAL)
         start_button.configure(state=NORMAL)
+        media_info = MediaInfo.parse(filename)
+        for track in media_info.tracks:
+            if track.track_type == "Video":
+                detect_video_fps = track.frame_rate
+                fps_entry.configure(state=NORMAL)
+                fps_entry.delete(0, END)
+                fps_entry.insert(0, detect_video_fps)
+                fps_entry.configure(state=DISABLED)
     else:
         messagebox.showinfo(title='Input Not Supported',
                             message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -367,7 +432,7 @@ input_button.drop_target_register(DND_FILES)
 input_button.dnd_bind('<<Drop>>', video_drop_input)
 
 input_entry = Entry(video_frame, borderwidth=4, background='#CACACA', state=DISABLED, width=40)
-input_entry.grid(row=0, column=1, columnspan=3, padx=(5, 50), pady=5, sticky=W + E)
+input_entry.grid(row=0, column=1, columnspan=2, padx=(5, 0), pady=5, sticky=W + E)
 input_entry.drop_target_register(DND_FILES)
 input_entry.dnd_bind('<<Drop>>', video_drop_input)
 
@@ -818,53 +883,56 @@ delete_output_button.grid(row=0, column=3, columnspan=1, padx=10, pady=(10, 5), 
 # Show Command --------------------------------------------------------------------------------------------------------
 show_command = HoverButton(mp4_root, text='View Command', command=NONE, foreground='white',
                            background='#23272A', borderwidth='3', activebackground='grey', state=DISABLED)
-show_command.grid(row=5, column=0, columnspan=1, padx=(20, 10), pady=(10, 5), sticky=W)
+show_command.grid(row=5, column=0, columnspan=1, padx=(20, 10), pady=(15, 2), sticky=W)
+
+
 # -------------------------------------------------------------------------------------------------------- Show Command
 
 # Start Job -----------------------------------------------------------------------------------------------------------
 # Command -------------------------------------------------------------------------------------------------------------
 def start_job():
     output_quoted = '"' + output + '"'
+    total_progress_segments = 2
+
+    if detect_video_fps != '':
+        fps_input = ':fps=' + detect_video_fps
 
     video_options = ' -add "' + VideoInput + '#video' + video_title_cmd_input + \
-                    ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + '"'
+                    ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + fps_input + '"'
 
-    if audio_input:
+    if 'audio_input' in globals():
+        total_progress_segments += 1
         audio_options = ' -add "' + audio_input + '#audio' + audio_title_cmd_input + ':delay=' + \
                         audio_delay.get() + ':lang=' + iso_639_2_codes_dictionary[audio_language.get()] + '" '
-    if not audio_input:
+    elif 'audio_input' not in globals():
         audio_options = ''
 
-    if subtitle_input:
+    if 'subtitle_input' in globals():
+        total_progress_segments += 1
         subtitle_options = ' -add "' + subtitle_input + subtitle_title_cmd_input + ':lang=' + \
                            iso_639_2_codes_dictionary[subtitle_language.get()] + '" '
-    if not subtitle_input:
+    elif 'subtitle_input' not in globals():
         subtitle_options = ''
 
-    if chapter_input:
-        chapter_options = ' -add "' + chapter_input + '" '
-    if not chapter_input:
+    if 'chapter_input' in globals():
+        total_progress_segments += 1
+        chapter_options = ' -add "' + chapter_input + fps_input + '" '
+    elif 'chapter_input' not in globals():
         chapter_options = ''
 
     if shell_options.get() == "Default":
-        # try:
-        #     mediainfo_file_size = MediaInfo.parse(VideoInputQuoted.replace('"', ''))
-        #     for track in mediainfo_file_size.tracks:
-        #         if track.track_type == "General":
-        #             total_file_size = track.file_size
-        #     total_duration = str(int(total_file_size) / 1000).rsplit('.', 1)[0]  # Compressed code for progress bars
-        # except (Exception,):
-        #     pass
-
         def close_encode():
-            confirm_exit = messagebox.askyesno(title='Prompt',
-                                               message="Are you sure you want to stop the parser?", parent=window)
-            if confirm_exit:
-                try:
-                    subprocess.Popen(f"TASKKILL /F /PID {job.pid} /T", creationflags=subprocess.CREATE_NO_WINDOW)
-                    window.destroy()
-                except (Exception,):
-                    window.destroy()
+            if step_label.cget('text') == 'Job Completed':
+                window.destroy()
+            else:
+                confirm_exit = messagebox.askyesno(title='Prompt',
+                                                   message="Are you sure you want to stop the mux?", parent=window)
+                if confirm_exit:
+                    try:
+                        subprocess.Popen(f"TASKKILL /F /PID {job.pid} /T", creationflags=subprocess.CREATE_NO_WINDOW)
+                        window.destroy()
+                    except (Exception,):
+                        window.destroy()
 
         def close_window():
             threading.Thread(target=close_encode).start()
@@ -879,40 +947,65 @@ def start_job():
         window.grid_rowconfigure(0, weight=1)
         window.grid_rowconfigure(1, weight=1)
         window.protocol('WM_DELETE_WINDOW', close_window)
-        window.geometry("600x140")
-        encode_window_progress = Text(window, height=2, relief=SUNKEN, bd=3)
+        window.geometry("600x450")
+        encode_window_progress = scrolledtextwidget.ScrolledText(window, width=60, height=15, tabs=10, spacing2=3,
+                                                                 spacing1=2, spacing3=3)
         encode_window_progress.grid(row=1, column=0, pady=(10, 6), padx=10, sticky=E + W)
-        encode_window_progress.insert(END, '')
-        app_progress_bar = ttk.Progressbar(window, orient=HORIZONTAL, mode='determinate')
-        app_progress_bar.grid(row=2, pady=(10, 10), padx=15, sticky=E + W)
-    # if shell_options.get() == "Default":
-    #     finalcommand = '"' + ffmpeg + ' -analyzeduration 100M -probesize 50M -i ' + VideoInputQuoted \
-    #                    + ' -map 0:v:0 -c:v:0 copy -vbsf hevc_mp4toannexb ' \
-    #                      '-f hevc - -hide_banner -loglevel warning -stats|' \
-    #                    + dolbyvision_tool + ' ' + dobly_vision_mode_choices[dobly_vision_mode.get()] \
-    #                    + dolbyvision_crop.get() + ' extract-rpu - -o ' + str(VideoOutputQuoted) + '"'
+        final_steps = total_progress_segments
+        step_label = Label(window, text='Step ' + str(final_steps) + ' out of ' + str(total_progress_segments),
+                           font=("Times New Roman", 12), background='#434547', foreground="white")
+        step_label.grid(column=0, row=2, sticky=E, padx=(0, 10))
+
+        def auto_close_window_toggle():
+            try:
+                config.set('auto_close_progress_window', 'option', auto_close_window.get())
+                with open(config_file, 'w') as configfile:
+                    config.write(configfile)
+            except (Exception,):
+                pass
+
+        auto_close_window_checkbox = Checkbutton(window, text='Automatically Close', variable=auto_close_window,
+                                                 onvalue='on', offvalue='off', command=auto_close_window_toggle,
+                                                 takefocus=False)
+        auto_close_window_checkbox.grid(row=2, column=0, columnspan=1, rowspan=1, padx=10, pady=(10, 0), sticky=W)
+        auto_close_window_checkbox.configure(background="#434547", foreground="white", activebackground="#434547",
+                                             activeforeground="white", selectcolor="#434547", font=("Helvetica", 12))
+        auto_close_window.set(config['auto_close_progress_window']['option'])
+        app_progress_bar = ttk.Progressbar(window, style="purple.Horizontal.TProgressbar", orient=HORIZONTAL,
+                                           mode='determinate')
+        app_progress_bar.grid(row=3, pady=(10, 10), padx=15, sticky=E + W)
+    if shell_options.get() == "Default":
+        finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + '-new ' \
+                       + output_quoted + '"'
     elif shell_options.get() == "Debug":
         finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + '-new ' \
                        + output_quoted + '"'
         print(finalcommand)
-    # if shell_options.get() == "Default":
-    #     job = subprocess.Popen('cmd /c ' + finalcommand, universal_newlines=True,
-    #                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
-    #                            creationflags=subprocess.CREATE_NO_WINDOW)
-        # for line in job.stdout:
-        #     try:
-        #         encode_window_progress.delete('1.0', END)
-        #         encode_window_progress.insert(END, 'Starting Job...')
-        #         if line.split('=', 1)[0] == 'frame':
-        #             encode_window_progress.delete('1.0', END)
-        #             encode_window_progress.insert(END, line)
-        #             size = line.split('size=', 1)[1].split()[0].rsplit('k', 1)[0]
-        #             percent = '{:.1%}'.format(int(size) / int(total_duration)).split('.', 1)[0]
-        #             app_progress_bar['value'] = percent
-        #     except (Exception,):
-        #         encode_window_progress.delete('1.0', END)
-        #         encode_window_progress.insert(END, line)
-    #     window.destroy()
+    if shell_options.get() == "Default":
+        job = subprocess.Popen('cmd /c ' + finalcommand, universal_newlines=True,
+                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
+                               creationflags=subprocess.CREATE_NO_WINDOW)
+        for line in job.stdout:
+            encode_window_progress.configure(state=NORMAL)
+            encode_window_progress.insert(END, line)
+            encode_window_progress.see(END)
+            encode_window_progress.configure(state=DISABLED)
+            try:
+                strip = line.split()[-1].replace('(', '').replace(')', '').split('/')[0]
+                if strip == '00':
+                    total_progress_segments -= 1
+                    step_label.configure(text='Step ' + str(total_progress_segments)
+                                              + ' out of ' + str(final_steps - 1))
+                app_progress_bar['value'] = int(strip)
+            except (Exception,):
+                pass
+        encode_window_progress.configure(state=NORMAL)
+        encode_window_progress.insert(END, 'Job Completed!!')
+        encode_window_progress.see(END)
+        encode_window_progress.configure(state=DISABLED)
+        step_label.configure(text='Job Completed')
+        if config['auto_close_progress_window']['option'] == 'on':
+            window.destroy()
     if shell_options.get() == "Debug":
         subprocess.Popen('cmd /k ' + finalcommand)
 
@@ -920,14 +1013,10 @@ def start_job():
 # ------------------------------------------------------------------------------------------------------------- Command
 
 
-
-
-
-
 start_button = HoverButton(mp4_root, text='Start Job', command=lambda: threading.Thread(target=start_job).start(),
                            foreground='white', background='#23272A', borderwidth='3', activebackground='grey',
                            state=DISABLED)
-start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(10, 5), sticky=E)
+start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(15, 2), sticky=E)
 # ----------------------------------------------------------------------------------------------------------- Start Job
 
 
