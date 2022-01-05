@@ -29,12 +29,6 @@ mp4_root = TkinterDnD.Tk()
 mp4_root.title("MP4-Mux-Tool Beta v1.0")
 mp4_root.iconphoto(True, PhotoImage(file='Runtime/Images/mp4mux.png'))
 mp4_root.configure(background="#434547")
-
-try:
-    windll.shcore.SetProcessDpiAwareness(1)  # if your Windows version >= 8.1
-except(Exception,):
-    windll.user32.SetProcessDPIAware()  # Windows 8.0 or less
-
 window_height = 760
 window_width = 605
 screen_width = mp4_root.winfo_screenwidth()
@@ -43,6 +37,11 @@ x_coordinate = int((screen_width / 2) - (window_width / 2))
 y_coordinate = int((screen_height / 2) - (window_height / 2))
 mp4_root.geometry(f'{window_width}x{window_height}+{x_coordinate}+{y_coordinate}')
 mp4_root.protocol('WM_DELETE_WINDOW', mp4_root_exit_function)
+
+try:
+    windll.shcore.SetProcessDpiAwareness(1)  # if your Windows version >= 8.1
+except(Exception,):
+    windll.user32.SetProcessDPIAware()  # Windows 8.0 or less
 
 # Config Parser -------------------------------------------------------------------------------------------------------
 config_file = 'Runtime/config.ini'  # Creates (if it doesn't exist) and defines location of config.ini
@@ -70,7 +69,6 @@ try:
 except (Exception,):
     messagebox.showinfo(title='Error', message='Could Not Write to config.ini file, delete and try again')
 # ------------------------------------------------------------------------------------------------------- Config Parser
-
 
 # Menu Items and Sub-Bars ---------------------------------------------------------------------------------------------
 my_menu_bar = Menu(mp4_root, tearoff=0)
@@ -114,7 +112,6 @@ if auto_close_window.get() == '':
     auto_close_window.set('off')
 elif auto_close_window.get() != '':
     auto_close_window.set(config['auto_close_progress_window']['option'])
-print(config['auto_close_progress_window']['option'])
 
 
 def update_auto_close():
@@ -980,7 +977,6 @@ def start_job():
     elif shell_options.get() == "Debug":
         finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + '-new ' \
                        + output_quoted + '"'
-        print(finalcommand)
     if shell_options.get() == "Default":
         job = subprocess.Popen('cmd /c ' + finalcommand, universal_newlines=True,
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
@@ -1021,8 +1017,92 @@ start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(15, 2), st
 
 
 # Status Label at bottom of main GUI -----------------------------------------------------------------
-status_label = Label(mp4_root, text='', bd=4, relief=SUNKEN, anchor=E, background='#717171', foreground="white")
+status_label = Label(mp4_root, text='Select "Open File" or drag and drop a video file to begin',
+                     bd=4, relief=SUNKEN, anchor=E, background='#717171', foreground="white")
 status_label.grid(column=0, row=6, columnspan=4, sticky=W + E, pady=(0, 2), padx=3)
+
+
+def input_button_on_enter(e):
+    status_label.configure(text='Video inputs supported (.avi, .mp4, .m1v/.m2v, .m4v, .264, .h264, .hevc, or .h265)')
+
+
+def input_button_on_leave(e):
+    status_label.configure(text='')
+
+
+input_button.bind("<Enter>", input_button_on_enter)
+input_button.bind("<Leave>", input_button_on_leave)
+
+
+def audio_input_on_enter(e):
+    status_label.configure(text='Audio inputs supported (.ac3, .aac, .mp4, .m4a, .mp2, .mp3, .opus, or .ogg)')
+
+
+def audio_input_on_leave(e):
+    status_label.configure(text='')
+
+
+audio_input_button.bind("<Enter>", audio_input_on_enter)
+audio_input_button.bind("<Leave>", audio_input_on_leave)
+
+
+def subtitle_input_on_enter(e):
+    status_label.configure(text='Subtitle inputs supported (.srt, .idx, .ttxt)')
+
+
+def subtitle_input_on_leave(e):
+    status_label.configure(text='')
+
+
+subtitle_input_button.bind("<Enter>", subtitle_input_on_enter)
+subtitle_input_button.bind("<Leave>", subtitle_input_on_leave)
+
+
+def chapter_input_on_enter(e):
+    status_label.configure(text='Chapter input supported OGG (.txt)')
+
+
+def chapter_input_on_leave(e):
+    status_label.configure(text='')
+
+
+chapter_input_button.bind("<Enter>", chapter_input_on_enter)
+chapter_input_button.bind("<Leave>", chapter_input_on_leave)
+
+
+def file_output_on_enter(e):
+    status_label.configure(text='Select File Save Location (*.mp4)')
+
+
+def file_output_on_leave(e):
+    status_label.configure(text='')
+
+
+output_button.bind("<Enter>", file_output_on_enter)
+output_button.bind("<Leave>", file_output_on_leave)
+
+
+def reset_on_enter(e):
+    status_label.configure(text='Remove input and settings')
+
+
+def reset_on_leave(e):
+    status_label.configure(text='')
+
+
+output_button.bind("<Enter>", file_output_on_enter)
+output_button.bind("<Leave>", file_output_on_leave)
+delete_chapter_input_button.bind("<Enter>", reset_on_enter)
+delete_chapter_input_button.bind("<Leave>", reset_on_leave)
+delete_output_button.bind("<Enter>", reset_on_enter)
+delete_output_button.bind("<Leave>", reset_on_leave)
+delete_audio_input_button.bind("<Enter>", reset_on_enter)
+delete_audio_input_button.bind("<Leave>", reset_on_leave)
+delete_input_button.bind("<Enter>", reset_on_enter)
+delete_input_button.bind("<Leave>", reset_on_leave)
+delete_subtitle_input_button.bind("<Enter>", reset_on_enter)
+delete_subtitle_input_button.bind("<Leave>", reset_on_leave)
+
 # ----------------------------------------------------------------- Status Label at bottom of main GUI
 
 # End Loop ------------------------------------------------------------------------------------------------------------
