@@ -947,14 +947,14 @@ def start_job():
     if 'audio_input' in globals():
         total_progress_segments += 1
         audio_options = ' -add "' + audio_input + '#audio' + audio_title_cmd_input + ':delay=' + \
-                        audio_delay.get() + ':lang=' + iso_639_2_codes_dictionary[audio_language.get()] + '" '
+                        audio_delay.get() + ':lang=' + iso_639_2_codes_dictionary[audio_language.get()] + '"'
     elif 'audio_input' not in globals():
         audio_options = ''
 
     if 'subtitle_input' in globals():
         total_progress_segments += 1
         subtitle_options = ' -add "' + subtitle_input + subtitle_title_cmd_input + ':lang=' + \
-                           iso_639_2_codes_dictionary[subtitle_language.get()] + '" '
+                           iso_639_2_codes_dictionary[subtitle_language.get()] + '"'
     elif 'subtitle_input' not in globals():
         subtitle_options = ''
 
@@ -1020,6 +1020,7 @@ def start_job():
     if shell_options.get() == "Default":
         finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + '-new ' \
                        + output_quoted + '"'
+        print(finalcommand)
     elif shell_options.get() == "Debug":
         finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + '-new ' \
                        + output_quoted + '"'
@@ -1079,13 +1080,13 @@ def view_command():
 
     if 'audio_input' in globals():
         audio_options = ' -add "' + audio_input + '#audio' + audio_title_cmd_input + ':delay=' + \
-                        audio_delay.get() + ':lang=' + iso_639_2_codes_dictionary[audio_language.get()] + '" '
+                        audio_delay.get() + ':lang=' + iso_639_2_codes_dictionary[audio_language.get()] + '"'
     elif 'audio_input' not in globals():
         audio_options = ''
 
     if 'subtitle_input' in globals():
         subtitle_options = ' -add "' + subtitle_input + subtitle_title_cmd_input + ':lang=' + \
-                           iso_639_2_codes_dictionary[subtitle_language.get()] + '" '
+                           iso_639_2_codes_dictionary[subtitle_language.get()] + '"'
     elif 'subtitle_input' not in globals():
         subtitle_options = ''
 
