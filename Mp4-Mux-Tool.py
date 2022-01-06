@@ -1103,6 +1103,30 @@ delete_input_button.bind("<Leave>", reset_on_leave)
 delete_subtitle_input_button.bind("<Enter>", reset_on_enter)
 delete_subtitle_input_button.bind("<Leave>", reset_on_leave)
 
+
+def view_command_button_on_enter(e):
+    status_label.configure(text='Select to show complete command line')
+
+
+def view_command_button_on_leave(e):
+    status_label.configure(text='')
+
+
+show_command.bind("<Enter>", view_command_button_on_enter)
+show_command.bind("<Leave>", view_command_button_on_leave)
+
+
+def start_job_button_on_enter(e):
+    status_label.configure(text='Select to begin muxing')
+
+
+def start_job_button_on_leave(e):
+    status_label.configure(text='')
+
+
+start_button.bind("<Enter>", start_job_button_on_enter)
+start_button.bind("<Leave>", start_job_button_on_leave)
+
 # ----------------------------------------------------------------- Status Label at bottom of main GUI
 
 # End Loop ------------------------------------------------------------------------------------------------------------
