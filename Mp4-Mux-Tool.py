@@ -1,15 +1,21 @@
 # Imports--------------------------------------------------------------------
-from tkinter import *
-from tkinter import filedialog, StringVar, ttk, messagebox
-import subprocess, pathlib, webbrowser, threading
+import pathlib
+import pyperclip
+import subprocess
+import threading
 import tkinter as tk
 import tkinter.scrolledtext as scrolledtextwidget
-from TkinterDnD2 import *
-from ISO_639_2 import *
+import webbrowser
 from configparser import ConfigParser
-from Packages.about import openaboutwindow
-from pymediainfo import MediaInfo
 from ctypes import windll
+from tkinter import filedialog, StringVar, ttk, messagebox, PhotoImage, Menu, LabelFrame, E, N, S, W, Label, \
+    Entry, DISABLED, NORMAL, END, Frame, Spinbox, CENTER, Checkbutton, HORIZONTAL, Toplevel, SUNKEN
+
+from TkinterDnD2 import *
+from pymediainfo import MediaInfo
+
+from ISO_639_2 import *
+from Packages.about import openaboutwindow
 
 
 # Main Gui & Windows --------------------------------------------------------
@@ -317,7 +323,8 @@ video_combo_language.current(0)
 # ------------------------------------------------------------------------------------------------------ Video Language
 
 def input_button_commands():
-    global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, detect_video_fps, fps_entry
+    global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, detect_video_fps, \
+        fps_entry, output_quoted
     video_extensions = ('.avi', '.mp4', '.m1v', '.m2v', '.m4v', '.264', '.h264', '.hevc', '.h265')
     VideoInput = filedialog.askopenfilename(initialdir="/", title="Select A File",
                                             filetypes=[("Supported Formats", video_extensions)])
@@ -334,6 +341,7 @@ def input_button_commands():
             autosavefilename = str(VideoOut.name) + '.muxed_output'
             autosave_file_dir = pathlib.Path(str(f'{autofilesave_dir_path}\\') + str(autosavefilename + '.mp4'))
             output = str(autosave_file_dir)
+            output_quoted = '"' + output + '"'
             input_entry.configure(state=DISABLED)
             video_title_entrybox.configure(state=NORMAL)
             output_entry.configure(state=NORMAL)
@@ -348,6 +356,7 @@ def input_button_commands():
             chapter_input_button.configure(state=NORMAL)
             output_button.configure(state=NORMAL)
             start_button.configure(state=NORMAL)
+            show_command.configure(state=NORMAL)
             media_info = MediaInfo.parse(filename)
             for track in media_info.tracks:
                 if track.track_type == "Video":
@@ -356,7 +365,16 @@ def input_button_commands():
                     fps_entry.delete(0, END)
                     fps_entry.insert(0, detect_video_fps)
                     fps_entry.configure(state=DISABLED)
-
+                    try:
+                        detect_index = [len(i) for i in track.other_language].index(3)
+                        language_index = list(iso_639_2_codes_dictionary.values()).index(
+                            track.other_language[detect_index])
+                        video_combo_language.current(language_index)
+                        video_title_entrybox.delete(0, END)
+                        video_title_entrybox.insert(0, track.title)
+                    except(Exception,):
+                        video_combo_language.current(0)
+                        video_title_entrybox.delete(0, END)
         else:
             messagebox.showinfo(title='Input Not Supported',
                                 message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -372,7 +390,8 @@ def video_drop_input(event):
 
 
 def update_file_input(*args):
-    global VideoInput, autofilesave_dir_path, VideoInputQuoted, output, autosavefilename, detect_video_fps, fps_entry
+    global VideoInput, autofilesave_dir_path, VideoInputQuoted, output, autosavefilename, detect_video_fps, \
+        fps_entry, output_quoted
     input_entry.configure(state=NORMAL)
     input_entry.delete(0, END)
     VideoInput = str(input_dnd.get()).replace("{", "").replace("}", "")
@@ -387,6 +406,7 @@ def update_file_input(*args):
         autosavefilename = str(VideoOut.name) + '.muxed_output'
         autosave_file_dir = pathlib.Path(str(f'{autofilesave_dir_path}\\') + str(autosavefilename + '.mp4'))
         output = str(autosave_file_dir)
+        output_quoted = '"' + output + '"'
         input_entry.configure(state=DISABLED)
         video_title_entrybox.configure(state=NORMAL)
         output_entry.configure(state=NORMAL)
@@ -401,6 +421,7 @@ def update_file_input(*args):
         chapter_input_button.configure(state=NORMAL)
         output_button.configure(state=NORMAL)
         start_button.configure(state=NORMAL)
+        show_command.configure(state=NORMAL)
         media_info = MediaInfo.parse(filename)
         for track in media_info.tracks:
             if track.track_type == "Video":
@@ -409,6 +430,16 @@ def update_file_input(*args):
                 fps_entry.delete(0, END)
                 fps_entry.insert(0, detect_video_fps)
                 fps_entry.configure(state=DISABLED)
+                try:
+                    detect_index = [len(i) for i in track.other_language].index(3)
+                    language_index = list(iso_639_2_codes_dictionary.values()).index(
+                        track.other_language[detect_index])
+                    video_combo_language.current(language_index)
+                    video_title_entrybox.delete(0, END)
+                    video_title_entrybox.insert(0, track.title)
+                except(Exception,):
+                    video_combo_language.current(0)
+                    video_title_entrybox.delete(0, END)
     else:
         messagebox.showinfo(title='Input Not Supported',
                             message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -524,8 +555,6 @@ audio_language.current(0)
 
 
 # ------------------------------------------------------------------------------------------------------ Audio Language
-
-
 def audio_input_button_commands():
     global audio_input, audio_input_quoted
     audio_extensions = ('.ac3', '.aac', '.mp4', '.m4a', '.mp2', '.mp3', '.opus', '.ogg')
@@ -539,6 +568,19 @@ def audio_input_button_commands():
             audio_input_entry.insert(0, audio_input)
             audio_input_entry.configure(state=DISABLED)
             audio_title_entrybox.configure(state=NORMAL)
+            media_info = MediaInfo.parse(audio_input)
+            for track in media_info.tracks:
+                if track.track_type == 'Audio':
+                    try:
+                        detect_index = [len(i) for i in track.other_language].index(3)
+                        language_index = list(iso_639_2_codes_dictionary.values()).index(
+                            track.other_language[detect_index])
+                        audio_language.current(language_index)
+                        audio_title_entrybox.delete(0, END)
+                        audio_title_entrybox.insert(0, track.title)
+                    except(Exception,):
+                        audio_language.current(0)
+                        audio_title_entrybox.delete(0, END)
         else:
             messagebox.showinfo(title='Input Not Supported',
                                 message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -557,6 +599,18 @@ def update_audio_input(*args):
         audio_input_entry.insert(0, audio_input)
         audio_input_entry.configure(state=DISABLED)
         audio_title_entrybox.configure(state=NORMAL)
+        media_info = MediaInfo.parse(audio_input)
+        for track in media_info.tracks:
+            if track.track_type == 'Audio':
+                try:
+                    detect_index = [len(i) for i in track.other_language].index(3)
+                    language_index = list(iso_639_2_codes_dictionary.values()).index(track.other_language[detect_index])
+                    audio_language.current(language_index)
+                    audio_title_entrybox.delete(0, END)
+                    audio_title_entrybox.insert(0, track.title)
+                except(Exception,):
+                    audio_language.current(0)
+                    audio_title_entrybox.delete(0, END)
     else:
         messagebox.showinfo(title='Input Not Supported',
                             message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -840,16 +894,17 @@ output_frame.grid_rowconfigure(0, weight=1)
 
 def output_button_commands():
     global output, output_quoted
-    output = filedialog.asksaveasfilename(defaultextension=".mp4", initialdir=autofilesave_dir_path,
-                                          title="Select a Save Location", initialfile=autosavefilename,
-                                          filetypes=[("MP4", "*.mp4")])
-    if output:
+    output_window = filedialog.asksaveasfilename(defaultextension=".mp4", initialdir=autofilesave_dir_path,
+                                                 title="Select a Save Location", initialfile=autosavefilename,
+                                                 filetypes=[("MP4", "*.mp4")])
+
+    if output_window:
         output_entry.configure(state=NORMAL)
         output_entry.delete(0, END)
-        if output:
-            output_quoted = '"' + str(pathlib.Path(output)) + '"'
-            output_entry.insert(0, output)
-            output_entry.configure(state=DISABLED)
+        output_quoted = '"' + str(pathlib.Path(output_window)) + '"'
+        output = output_window
+        output_entry.insert(0, output)
+        output_entry.configure(state=DISABLED)
 
 
 output_button = HoverButton(output_frame, text='Output', command=output_button_commands, foreground='white',
@@ -874,21 +929,13 @@ delete_output_button = HoverButton(output_frame, text='X', command=clear_output,
                                    background='#23272A', borderwidth='3', activebackground='grey', width=2)
 delete_output_button.grid(row=0, column=3, columnspan=1, padx=10, pady=(10, 5), sticky=E)
 
+
 # -------------------------------------------------------------------------------------------------------------- Output
-
-
-# Show Command --------------------------------------------------------------------------------------------------------
-show_command = HoverButton(mp4_root, text='View Command', command=NONE, foreground='white',
-                           background='#23272A', borderwidth='3', activebackground='grey', state=DISABLED)
-show_command.grid(row=5, column=0, columnspan=1, padx=(20, 10), pady=(15, 2), sticky=W)
-
-
-# -------------------------------------------------------------------------------------------------------- Show Command
 
 # Start Job -----------------------------------------------------------------------------------------------------------
 # Command -------------------------------------------------------------------------------------------------------------
 def start_job():
-    output_quoted = '"' + output + '"'
+    global output_quoted
     total_progress_segments = 2
 
     if detect_video_fps != '':
@@ -912,7 +959,6 @@ def start_job():
         subtitle_options = ''
 
     if 'chapter_input' in globals():
-        total_progress_segments += 1
         chapter_options = ' -add "' + chapter_input + fps_input + '" '
     elif 'chapter_input' not in globals():
         chapter_options = ''
@@ -948,10 +994,10 @@ def start_job():
         encode_window_progress = scrolledtextwidget.ScrolledText(window, width=60, height=15, tabs=10, spacing2=3,
                                                                  spacing1=2, spacing3=3)
         encode_window_progress.grid(row=1, column=0, pady=(10, 6), padx=10, sticky=E + W)
-        final_steps = total_progress_segments
-        step_label = Label(window, text='Step ' + str(final_steps) + ' out of ' + str(total_progress_segments),
+        step_label = Label(window, text='Step ' + str(0) + ' out of ' + str(total_progress_segments),
                            font=("Times New Roman", 12), background='#434547', foreground="white")
         step_label.grid(column=0, row=2, sticky=E, padx=(0, 10))
+        updated_number = 0
 
         def auto_close_window_toggle():
             try:
@@ -989,9 +1035,12 @@ def start_job():
             try:
                 strip = line.split()[-1].replace('(', '').replace(')', '').split('/')[0]
                 if strip == '00':
-                    total_progress_segments -= 1
-                    step_label.configure(text='Step ' + str(total_progress_segments)
-                                              + ' out of ' + str(final_steps - 1))
+                    updated_number = updated_number + 1
+                    if updated_number == total_progress_segments:
+                        step_label.configure(text='Muxing imports to .Mp4')
+                    else:
+                        step_label.configure(text='Step ' + str(updated_number) + ' out of '
+                                                  + str(total_progress_segments))
                 app_progress_bar['value'] = int(strip)
             except (Exception,):
                 pass
@@ -1013,7 +1062,73 @@ start_button = HoverButton(mp4_root, text='Start Job', command=lambda: threading
                            foreground='white', background='#23272A', borderwidth='3', activebackground='grey',
                            state=DISABLED)
 start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(15, 2), sticky=E)
+
+
 # ----------------------------------------------------------------------------------------------------------- Start Job
+
+
+# Show Command --------------------------------------------------------------------------------------------------------
+
+def view_command():
+    global cmd_line_window, encode_window_progress, output, output_quoted
+    if detect_video_fps != '':
+        fps_input = ':fps=' + detect_video_fps
+
+    video_options = ' -add "' + VideoInput + '#video' + video_title_cmd_input + \
+                    ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + fps_input + '"'
+
+    if 'audio_input' in globals():
+        audio_options = ' -add "' + audio_input + '#audio' + audio_title_cmd_input + ':delay=' + \
+                        audio_delay.get() + ':lang=' + iso_639_2_codes_dictionary[audio_language.get()] + '" '
+    elif 'audio_input' not in globals():
+        audio_options = ''
+
+    if 'subtitle_input' in globals():
+        subtitle_options = ' -add "' + subtitle_input + subtitle_title_cmd_input + ':lang=' + \
+                           iso_639_2_codes_dictionary[subtitle_language.get()] + '" '
+    elif 'subtitle_input' not in globals():
+        subtitle_options = ''
+
+    if 'chapter_input' in globals():
+        chapter_options = ' -add "' + chapter_input + fps_input + '" '
+    elif 'chapter_input' not in globals():
+        chapter_options = ''
+
+    finalcommand = mp4box + video_options + audio_options + subtitle_options + chapter_options + '-new ' + output_quoted
+    try:
+        encode_window_progress.configure(state=NORMAL)
+        encode_window_progress.delete(1.0, END)
+        encode_window_progress.insert(END, finalcommand)
+        encode_window_progress.configure(state=DISABLED)
+        cmd_line_window.deiconify()
+    except (AttributeError, NameError):
+        cmd_line_window = Toplevel()
+        cmd_line_window.title('Command Line')
+        cmd_line_window.configure(background="#434547")
+        encode_window_progress = scrolledtextwidget.ScrolledText(cmd_line_window, width=60, height=15, tabs=10,
+                                                                 spacing2=3, spacing1=2, spacing3=3)
+        encode_window_progress.grid(row=0, column=0, pady=(10, 6), padx=10, sticky=E + W)
+        encode_window_progress.insert(END, finalcommand)
+        encode_window_progress.configure(state=DISABLED)
+
+        def copy_to_clipboard():
+            pyperclip.copy(encode_window_progress.get(1.0, END))
+
+        copy_text = HoverButton(cmd_line_window, text='Copy to clipboard', command=copy_to_clipboard,
+                                foreground='white', background='#23272A', borderwidth='3', activebackground='grey')
+        copy_text.grid(row=1, column=0, columnspan=1, padx=(20, 10), pady=(15, 2), sticky=W + E)
+
+        def hide_instead():
+            cmd_line_window.withdraw()
+
+        cmd_line_window.protocol('WM_DELETE_WINDOW', hide_instead)
+
+
+show_command = HoverButton(mp4_root, text='View Command', command=view_command, foreground='white',
+                           background='#23272A', borderwidth='3', activebackground='grey', state=DISABLED)
+show_command.grid(row=5, column=0, columnspan=1, padx=(20, 10), pady=(15, 2), sticky=W)
+
+# -------------------------------------------------------------------------------------------------------- Show Command
 
 
 # Status Label at bottom of main GUI -----------------------------------------------------------------
@@ -1128,6 +1243,5 @@ start_button.bind("<Enter>", start_job_button_on_enter)
 start_button.bind("<Leave>", start_job_button_on_leave)
 
 # ----------------------------------------------------------------- Status Label at bottom of main GUI
-
 # End Loop ------------------------------------------------------------------------------------------------------------
 mp4_root.mainloop()
