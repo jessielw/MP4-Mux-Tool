@@ -373,13 +373,19 @@ def input_button_commands():
                         video_title_entrybox.delete(0, END)
                         video_title_entrybox.insert(0, track.title)
                     except(Exception,):
-                        video_combo_language.current(0)
-                        video_title_entrybox.delete(0, END)
+                        pass
         else:
             messagebox.showinfo(title='Input Not Supported',
                                 message="Try Again With a Supported File Type!\n\nIf this is a "
                                         "file that should be supported, please let me know.\n\n"
                                         + 'Unsupported file extension "' + str(pathlib.Path(VideoInput).suffix) + '"')
+            video_combo_language.current(0)
+            video_title_entrybox.delete(0, END)
+            fps_entry.configure(state=NORMAL)
+            fps_entry.delete(0, END)
+            fps_entry.configure(state=DISABLED)
+            del detect_video_fps
+            del VideoInput
 
 
 # ---------------------------------------------------------------------------------------------- Input Functions Button
@@ -438,13 +444,19 @@ def update_file_input(*args):
                     video_title_entrybox.delete(0, END)
                     video_title_entrybox.insert(0, track.title)
                 except(Exception,):
-                    video_combo_language.current(0)
-                    video_title_entrybox.delete(0, END)
+                    pass
     else:
         messagebox.showinfo(title='Input Not Supported',
                             message="Try Again With a Supported File Type!\n\nIf this is a "
                                     "file that should be supported, please let me know.\n\n"
                                     + 'Unsupported file extension "' + str(pathlib.Path(VideoInput).suffix) + '"')
+        video_combo_language.current(0)
+        video_title_entrybox.delete(0, END)
+        fps_entry.configure(state=NORMAL)
+        fps_entry.delete(0, END)
+        fps_entry.configure(state=DISABLED)
+        del detect_video_fps
+        del VideoInput
 
 
 # --------------------------------------------------------------------------------------------- Drag and Drop Functions
@@ -476,7 +488,7 @@ def clear_video_input():
         input_entry.configure(state=NORMAL)
         input_entry.delete(0, END)
         input_entry.configure(state=DISABLED)
-        VideoInput = ''
+        del VideoInput
     except (Exception,):
         pass
 
@@ -579,13 +591,15 @@ def audio_input_button_commands():
                         audio_title_entrybox.delete(0, END)
                         audio_title_entrybox.insert(0, track.title)
                     except(Exception,):
-                        audio_language.current(0)
-                        audio_title_entrybox.delete(0, END)
+                        pass
         else:
             messagebox.showinfo(title='Input Not Supported',
                                 message="Try Again With a Supported File Type!\n\nIf this is a "
                                         "file that should be supported, please let me know.\n\n"
                                         + 'Unsupported file extension "' + str(pathlib.Path(audio_input).suffix) + '"')
+            audio_language.current(0)
+            audio_title_entrybox.delete(0, END)
+            del audio_input
 
 
 def update_audio_input(*args):
@@ -609,13 +623,15 @@ def update_audio_input(*args):
                     audio_title_entrybox.delete(0, END)
                     audio_title_entrybox.insert(0, track.title)
                 except(Exception,):
-                    audio_language.current(0)
-                    audio_title_entrybox.delete(0, END)
+                    pass
     else:
         messagebox.showinfo(title='Input Not Supported',
                             message="Try Again With a Supported File Type!\n\nIf this is a "
                                     "file that should be supported, please let me know.\n\n"
                                     + 'Unsupported file extension "' + str(pathlib.Path(audio_input).suffix) + '"')
+        audio_language.current(0)
+        audio_title_entrybox.delete(0, END)
+        del audio_input
 
 
 # Buttons -------------------------------------------------------------------------------------------------------------
@@ -646,7 +662,7 @@ def clear_audio_input():  # Deletes all inputs and sets defaults for audio box #
         audio_input_entry.configure(state=NORMAL)
         audio_input_entry.delete(0, END)
         audio_input_entry.configure(state=DISABLED)
-        audio_input = ''
+        del audio_input
         audio_language.current(0)
         audio_delay.set(0)
     except (Exception,):
@@ -735,6 +751,9 @@ def subtitle_input_button_commands():
                                         "file that should be supported, please let me know.\n\n"
                                         + 'Unsupported file extension "'
                                         + str(pathlib.Path(subtitle_input).suffix) + '"')
+            subtitle_language.current(0)
+            subtitle_title_entrybox.delete(0, END)
+            del subtitle_input
 
 
 def update_subtitle_input(*args):
@@ -753,6 +772,9 @@ def update_subtitle_input(*args):
                             message="Try Again With a Supported File Type!\n\nIf this is a "
                                     "file that should be supported, please let me know.\n\n"
                                     + 'Unsupported file extension "' + str(pathlib.Path(subtitle_input).suffix) + '"')
+        subtitle_language.current(0)
+        subtitle_title_entrybox.delete(0, END)
+        del subtitle_input
 
 
 # Buttons -------------------------------------------------------------------------------------------------------------
@@ -785,8 +807,9 @@ def clear_subtitle_input():  # Deletes all inputs and sets defaults for subtitle
         subtitle_title_entrybox.configure(state=NORMAL)
         subtitle_title_entrybox.delete(0, END)
         subtitle_title_entrybox.configure(state=DISABLED)
-        subtitle_input = ''
+        del subtitle_input
         subtitle_language.current(0)
+
     except (Exception,):
         pass
 
@@ -825,6 +848,7 @@ def chapter_input_button_commands():
                                         "file that should be supported, please let me know.\n\n"
                                         + 'Unsupported file extension "'
                                         + str(pathlib.Path(chapter_input).suffix) + '"')
+            del chapter_input
 
 
 def update_chapter_input(*args):
@@ -842,6 +866,7 @@ def update_chapter_input(*args):
                             message="Try Again With a Supported File Type!\n\nIf this is a "
                                     "file that should be supported, please let me know.\n\n"
                                     + 'Unsupported file extension "' + str(pathlib.Path(chapter_input).suffix) + '"')
+        del chapter_input
 
 
 # Buttons -------------------------------------------------------------------------------------------------------------
@@ -871,7 +896,7 @@ def clear_chapter_input():  # Deletes all inputs and sets defaults for chapter b
         chapter_input_entry.configure(state=NORMAL)
         chapter_input_entry.delete(0, END)
         chapter_input_entry.configure(state=DISABLED)
-        chapter_input = ''
+        del chapter_input
     except (Exception,):
         pass
 
@@ -920,7 +945,8 @@ def clear_output():  # Deletes all inputs and sets defaults for chapter box #1
         output_entry.configure(state=NORMAL)
         output_entry.delete(0, END)
         output_entry.configure(state=DISABLED)
-        output = ''
+        del output
+        messagebox.showinfo(title='Information', message='You must select an output for the program to continue')
     except (Exception,):
         pass
 
@@ -938,32 +964,67 @@ def start_job():
     global output_quoted
     total_progress_segments = 2
 
-    if detect_video_fps != '':
-        fps_input = ':fps=' + detect_video_fps
+    def error_msg_box():
+        messagebox.showerror(title='Error!', message='Please input or clear the ' + error_name + ' input box')
 
-    video_options = ' -add "' + VideoInput + '#video' + video_title_cmd_input + \
-                    ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + fps_input + '"'
+    if 'output' not in globals():
+        output_error = 1
+        messagebox.showinfo(title='Information', message='You must select an output for the program to continue')
+    if 'output' in globals():
+        output_error = 0
 
-    if 'audio_input' in globals():
-        total_progress_segments += 1
-        audio_options = ' -add "' + audio_input + '#audio' + audio_title_cmd_input + ':delay=' + \
-                        audio_delay.get() + ':lang=' + iso_639_2_codes_dictionary[audio_language.get()] + '"'
-    elif 'audio_input' not in globals():
-        audio_options = ''
+    try:
+        if detect_video_fps != '':
+            fps_input = ':fps=' + detect_video_fps
 
-    if 'subtitle_input' in globals():
-        total_progress_segments += 1
-        subtitle_options = ' -add "' + subtitle_input + subtitle_title_cmd_input + ':lang=' + \
-                           iso_639_2_codes_dictionary[subtitle_language.get()] + '"'
-    elif 'subtitle_input' not in globals():
-        subtitle_options = ''
+        video_options = ' -add "' + VideoInput + '#video' + video_title_cmd_input + \
+                        ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + fps_input + '"'
+        video_errors = 0
+    except (Exception,):
+        video_errors = 1
+        error_name = 'video'
+        error_msg_box()
 
-    if 'chapter_input' in globals():
-        chapter_options = ' -add "' + chapter_input + fps_input + '" '
-    elif 'chapter_input' not in globals():
-        chapter_options = ''
+    try:
+        if 'audio_input' in globals():
+            total_progress_segments += 1
+            audio_options = ' -add "' + audio_input + '#audio' + audio_title_cmd_input + ':delay=' + \
+                            audio_delay.get() + ':lang=' + iso_639_2_codes_dictionary[audio_language.get()] + '"'
+        elif 'audio_input' not in globals():
+            audio_options = ''
+        audio_one_errors = 0
+    except (Exception,):
+        audio_one_errors = 1
+        error_name = 'audio #1'
+        error_msg_box()
 
-    if shell_options.get() == "Default":
+    try:
+        if 'subtitle_input' in globals():
+            total_progress_segments += 1
+            subtitle_options = ' -add "' + subtitle_input + subtitle_title_cmd_input + ':lang=' + \
+                               iso_639_2_codes_dictionary[subtitle_language.get()] + '"'
+        elif 'subtitle_input' not in globals():
+            subtitle_options = ''
+        subtitle_errors = 0
+    except (Exception,):
+        subtitle_errors = 1
+        error_name = 'subtitle'
+        error_msg_box()
+
+    try:
+        if 'chapter_input' in globals():
+            chapter_options = ' -add "' + chapter_input + fps_input + '" '
+        elif 'chapter_input' not in globals():
+            chapter_options = ''
+        chapter_errors = 0
+    except (Exception,):
+        chapter_errors = 1
+        error_name = 'subtitle'
+        error_msg_box()
+
+    total_errors = video_errors + audio_one_errors + subtitle_errors + chapter_errors + output_error
+
+    if shell_options.get() == "Default" and total_errors == 0:
         def close_encode():
             if step_label.cget('text') == 'Job Completed':
                 window.destroy()
@@ -1017,14 +1078,10 @@ def start_job():
         app_progress_bar = ttk.Progressbar(window, style="purple.Horizontal.TProgressbar", orient=HORIZONTAL,
                                            mode='determinate')
         app_progress_bar.grid(row=3, pady=(10, 10), padx=15, sticky=E + W)
-    if shell_options.get() == "Default":
+
+    if shell_options.get() == "Default" and total_errors == 0:
         finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + '-new ' \
                        + output_quoted + '"'
-        print(finalcommand)
-    elif shell_options.get() == "Debug":
-        finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + '-new ' \
-                       + output_quoted + '"'
-    if shell_options.get() == "Default":
         job = subprocess.Popen('cmd /c ' + finalcommand, universal_newlines=True,
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                                creationflags=subprocess.CREATE_NO_WINDOW)
