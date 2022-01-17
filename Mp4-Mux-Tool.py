@@ -82,6 +82,77 @@ mp4_root.config(menu=my_menu_bar)
 
 file_menu = Menu(my_menu_bar, tearoff=0, activebackground='dim grey')
 my_menu_bar.add_cascade(label='File', menu=file_menu)
+
+
+def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or None
+
+    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, \
+        detect_video_fps, audio_input, audio_title_cmd, audio_title_entrybox, audio_delay, audio_input_entry, \
+        subtitle_input, subtitle_input_entry, subtitle_language, subtitle_title_cmd_input, \
+        subtitle_title_entrybox, chapter_input, chapter_input_entry, chapter_title_cmd_input, output, output_entry
+    try:  # Video Reset
+        video_title_cmd_input = ''
+        video_title_entrybox.configure(state=NORMAL)
+        video_title_entrybox.delete(0, END)
+        video_title_entrybox.configure(state=DISABLED)
+        video_combo_language.current(0)
+        input_entry.configure(state=NORMAL)
+        input_entry.delete(0, END)
+        input_entry.configure(state=DISABLED)
+        fps_entry.configure(state=NORMAL)
+        fps_entry.delete(0, END)
+        fps_entry.configure(state=DISABLED)
+        del VideoInput
+        del detect_video_fps
+    except NameError as v:
+        v_error = str(v)
+
+    try:  # Audio Reset
+        audio_title_cmd = ''
+        audio_title_entrybox.delete(0, END)
+        audio_title_entrybox.configure(state=DISABLED)
+        audio_input_entry.configure(state=NORMAL)
+        audio_input_entry.delete(0, END)
+        audio_input_entry.configure(state=DISABLED)
+        del audio_input
+        audio_language.current(0)
+        audio_delay.set(0)
+    except NameError as a1:
+        a1_error = str(a1)
+
+    try:  # Subtitle Reset
+        subtitle_title_cmd_input = ''
+        subtitle_input_entry.configure(state=NORMAL)
+        subtitle_input_entry.delete(0, END)
+        subtitle_input_entry.configure(state=DISABLED)
+        subtitle_title_entrybox.configure(state=NORMAL)
+        subtitle_title_entrybox.delete(0, END)
+        subtitle_title_entrybox.configure(state=DISABLED)
+        del subtitle_input
+        subtitle_language.current(0)
+    except NameError as s1:
+        s1_error = str(s1)
+
+    try:  # Chapter Reset
+        chapter_title_cmd_input = ''
+        chapter_input_entry.configure(state=NORMAL)
+        chapter_input_entry.delete(0, END)
+        chapter_input_entry.configure(state=DISABLED)
+        del chapter_input
+    except NameError as c:
+        c_error = str(c)
+
+    try:  # Output Reset
+        output_entry.configure(state=NORMAL)
+        output_entry.delete(0, END)
+        output_entry.configure(state=DISABLED)
+        del output
+    except NameError as o:
+        o_error = str(o)
+
+
+file_menu.add_command(label='Clear Inputs', command=clear_inputs)
+file_menu.add_separator()
 file_menu.add_command(label='Exit', command=mp4_root_exit_function)
 
 options_menu = Menu(my_menu_bar, tearoff=0, activebackground='dim grey')
@@ -478,7 +549,7 @@ input_entry.dnd_bind('<<Drop>>', video_drop_input)
 
 
 def clear_video_input():
-    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry
+    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, detect_video_fps
     try:
         video_title_cmd_input = ''
         video_title_entrybox.configure(state=NORMAL)
@@ -488,7 +559,11 @@ def clear_video_input():
         input_entry.configure(state=NORMAL)
         input_entry.delete(0, END)
         input_entry.configure(state=DISABLED)
+        fps_entry.configure(state=NORMAL)
+        fps_entry.delete(0, END)
+        fps_entry.configure(state=DISABLED)
         del VideoInput
+        del detect_video_fps
     except (Exception,):
         pass
 
