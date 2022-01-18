@@ -297,8 +297,6 @@ for n in range(3):
     mp4_root.grid_columnconfigure(n, weight=1)
 for n in range(6):
     mp4_root.grid_rowconfigure(n, weight=1)
-# mp4_root.grid_rowconfigure(5, weight=1)
-# mp4_root.grid_rowconfigure(6, weight=1)
 
 # --------------------------------------------------------------------------------------- mp4_root Row/Column Configure
 
@@ -328,10 +326,24 @@ video_frame = LabelFrame(mp4_root, text=' Video ')
 video_frame.grid(row=0, columnspan=3, sticky=E + W + N + S, padx=20, pady=(5, 0))
 video_frame.configure(fg="white", bg="#434547", bd=4)
 
+video_frame.grid_columnconfigure(0, weight=1)
+video_frame.grid_rowconfigure(0, weight=1)
+
+# Video Notebook Frame ------------------------------------------------------------------------------------------------
+tabs = ttk.Notebook(video_frame, height=110)
+tabs.grid(row=0, column=0, columnspan=4, sticky=E + W + N + S, padx=10, pady=5)
+video_tab = Frame(tabs, background="#434547")
+video_tab2 = Frame(tabs, background="#434547")
+tabs.add(video_tab, text=' Input ')
+tabs.add(video_tab2, text=' Options ')
+
+for n in range(4):
+    video_tab.grid_columnconfigure(n, weight=1)
 for n in range(3):
-    video_frame.grid_columnconfigure(n, weight=1)
-for n in range(3):
-    video_frame.grid_rowconfigure(n, weight=1)
+    video_tab.grid_rowconfigure(n, weight=1)
+
+
+# ------------------------------------------------------------------------------------------------ Video Notebook Frame
 
 
 # Entry Box for Video Title -------------------------------------------------------------------------------------------
@@ -344,9 +356,9 @@ def video_title(*args):
 
 
 video_title_cmd = StringVar()
-video_title_entrybox_label = Label(video_frame, text='Video Title:', anchor=W, background='#434547', foreground='white')
+video_title_entrybox_label = Label(video_tab, text='Video Title:', anchor=W, background='#434547', foreground='white')
 video_title_entrybox_label.grid(row=1, column=1, columnspan=1, padx=10, pady=(0, 0), sticky=W)
-video_title_entrybox = Entry(video_frame, textvariable=video_title_cmd, borderwidth=4, background='#CACACA',
+video_title_entrybox = Entry(video_tab, textvariable=video_title_cmd, borderwidth=4, background='#CACACA',
                              state=DISABLED)
 video_title_entrybox.grid(row=2, column=1, columnspan=1, padx=(5, 15), pady=(0, 15), sticky=W + E)
 video_title_cmd.trace('w', video_title)
@@ -364,17 +376,17 @@ video_title_cmd.set('')
 #                      '50': '-fps 50',
 #                      '59.94': '-fps 59.94',
 #                      '60': '-fps 60'}
-# video_fps_menu_label = Label(video_frame, text='Framerate (FPS):', background="#434547", foreground="white")
+# video_fps_menu_label = Label(video_tab, text='Framerate (FPS):', background="#434547", foreground="white")
 # video_fps_menu_label.grid(row=1, column=3, columnspan=1, padx=10, pady=(0, 0), sticky=W)
-# combo_fps = ttk.Combobox(video_frame, values=list(video_fps_choices.keys()), justify="center",
+# combo_fps = ttk.Combobox(video_tab, values=list(video_fps_choices.keys()), justify="center",
 #                          textvariable=video_fps, width=10)
 # combo_fps.grid(row=2, column=3, columnspan=1, padx=10, pady=(0, 10), sticky=N + S + W + E)
 # combo_fps['state'] = 'readonly'
 # combo_fps.current(0)
 
-video_fps_menu_label = Label(video_frame, text='Framerate (FPS):', background="#434547", foreground="white")
+video_fps_menu_label = Label(video_tab, text='Framerate (FPS):', background="#434547", foreground="white")
 video_fps_menu_label.grid(row=1, column=2, columnspan=1, padx=(3, 0), pady=(0, 0), sticky=W)
-fps_entry = Entry(video_frame, borderwidth=4, background='#CACACA', state=DISABLED, width=10)
+fps_entry = Entry(video_tab, borderwidth=4, background='#CACACA', state=DISABLED, width=10)
 fps_entry.grid(row=2, column=2, columnspan=2, padx=(5, 10), pady=(0, 15), sticky=W + E)
 
 #
@@ -382,16 +394,30 @@ fps_entry.grid(row=2, column=2, columnspan=2, padx=(5, 10), pady=(0, 15), sticky
 
 # Video Language Selection --------------------------------------------------------------------------------------------
 video_language = StringVar()
-video_language_menu_label = Label(video_frame, text='Language:', background="#434547", foreground="white")
+video_language_menu_label = Label(video_tab, text='Language:', background="#434547", foreground="white")
 video_language_menu_label.grid(row=1, column=0, columnspan=1, padx=10, pady=(0, 0), sticky=W)
-video_combo_language = ttk.Combobox(video_frame, values=list(iso_639_2_codes_dictionary.keys()), justify="center",
+video_combo_language = ttk.Combobox(video_tab, values=list(iso_639_2_codes_dictionary.keys()), justify="center",
                                     textvariable=video_language, width=15)
 video_combo_language.grid(row=2, column=0, columnspan=1, padx=10, pady=(0, 10), sticky=W + E + N + S)
 video_combo_language['state'] = 'readonly'
 video_combo_language.current(0)
 
-
 # ------------------------------------------------------------------------------------------------------ Video Language
+
+# Dolby Vision --------------------------------------------------------------------------------------------------------
+dolby_profiles = {'None': '', 'Profile 5': ':dv-profile=5:hdr=none', 'Profile 8.1': ':dv-profile=8.hdr10:hdr=none',
+                  'Profile 8.2': ':dv-profile=8.bt709:hdr=none'}
+dolby_v_profile = StringVar()
+dolby_v_profile_menu_label = Label(video_tab2, text='Dolby Vision:', background="#434547", foreground="white")
+dolby_v_profile_menu_label.grid(row=0, column=0, columnspan=1, padx=10, pady=(0, 0), sticky=W)
+dolby_v_profile_combo = ttk.Combobox(video_tab2, values=list(dolby_profiles.keys()), justify="center",
+                                     textvariable=dolby_v_profile, width=15)
+dolby_v_profile_combo.grid(row=1, column=0, columnspan=1, padx=10, pady=(0, 10), sticky=W + E + N + S)
+dolby_v_profile_combo['state'] = 'readonly'
+dolby_v_profile_combo.current(0)
+
+
+# -------------------------------------------------------------------------------------------------------- Dolby Vision
 
 def input_button_commands():
     global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, detect_video_fps, \
@@ -536,13 +562,13 @@ def update_file_input(*args):
 # Buttons -------------------------------------------------------------------------------------------------------------
 input_dnd = StringVar()
 input_dnd.trace('w', update_file_input)
-input_button = HoverButton(video_frame, text='Open File', command=input_button_commands, foreground='white',
+input_button = HoverButton(video_tab, text='Open File', command=input_button_commands, foreground='white',
                            background='#23272A', borderwidth='3', activebackground='grey', width=15)
 input_button.grid(row=0, column=0, columnspan=1, padx=5, pady=5, sticky=W + E)
 input_button.drop_target_register(DND_FILES)
 input_button.dnd_bind('<<Drop>>', video_drop_input)
 
-input_entry = Entry(video_frame, borderwidth=4, background='#CACACA', state=DISABLED, width=40)
+input_entry = Entry(video_tab, borderwidth=4, background='#CACACA', state=DISABLED, width=40)
 input_entry.grid(row=0, column=1, columnspan=2, padx=(5, 0), pady=5, sticky=W + E)
 input_entry.drop_target_register(DND_FILES)
 input_entry.dnd_bind('<<Drop>>', video_drop_input)
@@ -568,7 +594,7 @@ def clear_video_input():
         pass
 
 
-delete_input_button = HoverButton(video_frame, text='X', command=clear_video_input, foreground='white',
+delete_input_button = HoverButton(video_tab, text='X', command=clear_video_input, foreground='white',
                                   background='#23272A', borderwidth='3', activebackground='grey', width=2)
 delete_input_button.grid(row=0, column=3, columnspan=1, padx=10, pady=5, sticky=E)
 
@@ -586,7 +612,7 @@ audio_frame.grid_rowconfigure(0, weight=1)
 
 # Audio Notebook Frame ------------------------------------------------------------------------------------------------
 tabs = ttk.Notebook(audio_frame, height=110)
-tabs.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S, padx=10, pady=5)
+tabs.grid(row=0, column=0, columnspan=4, sticky=E + W + N + S, padx=10, pady=5)
 audio_tab = Frame(tabs, background="#434547")
 tabs.add(audio_tab, text=' Track #1 ')
 
@@ -761,7 +787,7 @@ subtitle_frame.grid_rowconfigure(0, weight=1)
 
 # Subtitle Notebook Frame ---------------------------------------------------------------------------------------------
 tabs = ttk.Notebook(subtitle_frame, height=110)
-tabs.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S, padx=10, pady=5)
+tabs.grid(row=0, column=0, columnspan=4, sticky=E + W + N + S, padx=10, pady=5)
 subtitle_tab = Frame(tabs, background="#434547")
 tabs.add(subtitle_tab, text=' Track #1 ')
 
@@ -1053,7 +1079,8 @@ def start_job():
             fps_input = ':fps=' + detect_video_fps
 
         video_options = ' -add "' + VideoInput + '#video' + video_title_cmd_input + \
-                        ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + fps_input + '"'
+                        ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + fps_input + \
+                        dolby_profiles[dolby_v_profile.get()] + '"'
         video_errors = 0
     except (Exception,):
         video_errors = 1
@@ -1088,7 +1115,7 @@ def start_job():
 
     try:
         if 'chapter_input' in globals():
-            chapter_options = ' -add "' + chapter_input + fps_input + '" '
+            chapter_options = ' -add "' + chapter_input + fps_input + '"'
         elif 'chapter_input' not in globals():
             chapter_options = ''
         chapter_errors = 0
@@ -1155,8 +1182,9 @@ def start_job():
         app_progress_bar.grid(row=3, pady=(10, 10), padx=15, sticky=E + W)
 
     if shell_options.get() == "Default" and total_errors == 0:
-        finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + '-new ' \
+        finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + ' -new ' \
                        + output_quoted + '"'
+        print(finalcommand)
         job = subprocess.Popen('cmd /c ' + finalcommand, universal_newlines=True,
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                                creationflags=subprocess.CREATE_NO_WINDOW)
@@ -1208,7 +1236,8 @@ def view_command():
         fps_input = ':fps=' + detect_video_fps
 
     video_options = ' -add "' + VideoInput + '#video' + video_title_cmd_input + \
-                    ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + fps_input + '"'
+                    ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + fps_input + \
+                    dolby_profiles[dolby_v_profile.get()] + '"'
 
     if 'audio_input' in globals():
         audio_options = ' -add "' + audio_input + '#audio' + audio_title_cmd_input + ':delay=' + \
@@ -1223,11 +1252,12 @@ def view_command():
         subtitle_options = ''
 
     if 'chapter_input' in globals():
-        chapter_options = ' -add "' + chapter_input + fps_input + '" '
+        chapter_options = ' -add "' + chapter_input + fps_input + '"'
     elif 'chapter_input' not in globals():
         chapter_options = ''
 
-    finalcommand = mp4box + video_options + audio_options + subtitle_options + chapter_options + '-new ' + output_quoted
+    finalcommand = mp4box + video_options + audio_options + subtitle_options + chapter_options + ' -new ' + \
+                   output_quoted
     try:
         encode_window_progress.configure(state=NORMAL)
         encode_window_progress.delete(1.0, END)
