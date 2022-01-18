@@ -86,9 +86,9 @@ my_menu_bar.add_cascade(label='File', menu=file_menu)
 
 def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or None
 
-    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, \
-        detect_video_fps, audio_input, audio_title_cmd, audio_title_entrybox, audio_delay, audio_input_entry, \
-        subtitle_input, subtitle_input_entry, subtitle_language, subtitle_title_cmd_input, \
+    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, dolby_v_profile_combo, \
+        input_entry, detect_video_fps, audio_input, audio_title_cmd, audio_title_entrybox, audio_delay, \
+        audio_input_entry, subtitle_input, subtitle_input_entry, subtitle_language, subtitle_title_cmd_input, \
         subtitle_title_entrybox, chapter_input, chapter_input_entry, chapter_title_cmd_input, output, output_entry
     try:  # Video Reset
         video_title_cmd_input = ''
@@ -102,6 +102,7 @@ def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or No
         fps_entry.configure(state=NORMAL)
         fps_entry.delete(0, END)
         fps_entry.configure(state=DISABLED)
+        dolby_v_profile_combo.current(0)
         del VideoInput
         del detect_video_fps
     except NameError as v:
@@ -575,7 +576,8 @@ input_entry.dnd_bind('<<Drop>>', video_drop_input)
 
 
 def clear_video_input():
-    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, detect_video_fps
+    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, \
+        detect_video_fps, dolby_v_profile_combo
     try:
         video_title_cmd_input = ''
         video_title_entrybox.configure(state=NORMAL)
@@ -588,6 +590,7 @@ def clear_video_input():
         fps_entry.configure(state=NORMAL)
         fps_entry.delete(0, END)
         fps_entry.configure(state=DISABLED)
+        dolby_v_profile_combo.current(0)
         del VideoInput
         del detect_video_fps
     except (Exception,):
@@ -1184,7 +1187,6 @@ def start_job():
     if shell_options.get() == "Default" and total_errors == 0:
         finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + ' -new ' \
                        + output_quoted + '"'
-        print(finalcommand)
         job = subprocess.Popen('cmd /c ' + finalcommand, universal_newlines=True,
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                                creationflags=subprocess.CREATE_NO_WINDOW)
