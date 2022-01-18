@@ -103,6 +103,7 @@ def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or No
         fps_entry.delete(0, END)
         fps_entry.configure(state=DISABLED)
         dolby_v_profile_combo.current(0)
+        status_label.configure(text='Select "Open File" or drag and drop a video file to begin')
         del VideoInput
         del detect_video_fps
     except NameError as v:
@@ -115,9 +116,10 @@ def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or No
         audio_input_entry.configure(state=NORMAL)
         audio_input_entry.delete(0, END)
         audio_input_entry.configure(state=DISABLED)
-        del audio_input
         audio_language.current(0)
         audio_delay.set(0)
+        audio_input_button.configure(state=DISABLED)
+        del audio_input
     except NameError as a1:
         a1_error = str(a1)
 
@@ -129,8 +131,9 @@ def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or No
         subtitle_title_entrybox.configure(state=NORMAL)
         subtitle_title_entrybox.delete(0, END)
         subtitle_title_entrybox.configure(state=DISABLED)
-        del subtitle_input
         subtitle_language.current(0)
+        subtitle_input_button.configure(state=DISABLED)
+        del subtitle_input
     except NameError as s1:
         s1_error = str(s1)
 
@@ -139,6 +142,7 @@ def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or No
         chapter_input_entry.configure(state=NORMAL)
         chapter_input_entry.delete(0, END)
         chapter_input_entry.configure(state=DISABLED)
+        chapter_input_button.configure(state=DISABLED)
         del chapter_input
     except NameError as c:
         c_error = str(c)
@@ -147,6 +151,7 @@ def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or No
         output_entry.configure(state=NORMAL)
         output_entry.delete(0, END)
         output_entry.configure(state=DISABLED)
+        output_button.configure(state=DISABLED)
         del output
     except NameError as o:
         o_error = str(o)
