@@ -9,7 +9,7 @@ import webbrowser
 from configparser import ConfigParser
 from ctypes import windll
 from tkinter import filedialog, StringVar, ttk, messagebox, PhotoImage, Menu, LabelFrame, E, N, S, W, Label, \
-    Entry, DISABLED, NORMAL, END, Frame, Spinbox, CENTER, Checkbutton, HORIZONTAL, Toplevel, SUNKEN
+    Entry, DISABLED, NORMAL, END, Frame, Spinbox, CENTER, Checkbutton, HORIZONTAL, Toplevel, SUNKEN, OptionMenu
 
 from TkinterDnD2 import *
 from pymediainfo import MediaInfo
@@ -676,6 +676,117 @@ audio_language.current(0)
 
 
 # ------------------------------------------------------------------------------------------------------ Audio Language
+
+
+# Audio Stream Selection ----------------------------------------------------------------------------------
+def check_audio_tracks_info():
+    def audio_track_choices(*args):  # Function to allow program to collect information on all of the tracks from input
+        # file and place them inside an option menu
+        root = Toplevel()
+        root.configure(background="#434547")
+        window_height = 180
+        window_width = 336
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
+        x_coordinate = int((screen_width / 2) - (window_width / 2))
+        y_coordinate = int((screen_height / 2) - (window_height / 2))
+        root.geometry(f'{window_width}x{window_height}+{x_coordinate}+{y_coordinate}')
+        root.resizable(0, 0)  # makes window not resizable
+        root.overrideredirect(1)  # will remove the top badge of window
+
+        # Input Frame -------------------------------------------------------------------------------------------
+        track_frame = LabelFrame(root, text=' Track Selection ')
+        track_frame.grid(row=0, column=0, columnspan=5, sticky=E + W, padx=10, pady=(8, 0))
+        track_frame.configure(fg="white", bg="#434547", bd=3)
+
+        track_frame.rowconfigure(0, weight=1)
+        for n in range(0):
+            track_frame.grid_columnconfigure(n, weight=1)
+
+        result = []
+        media_info = MediaInfo.parse(audio_input)
+        for track in media_info.tracks:
+            if track.track_type == 'Audio':
+                if str(track.format) != 'None':
+                    audio_format = '|  ' + str(track.format) + '  |'
+                else:
+                    audio_format = ''
+                if str(track.channel_s) != 'None':
+                    audio_channels = '|  ' + 'Channels: ' + str(track.channel_s) + '  |'
+                else:
+                    audio_channels = ''
+                if str(track.other_bit_rate) != 'None':
+                    audio_bitrate = '|  ' + str(track.other_bit_rate).replace('[', '')\
+                        .replace(']', '').replace("'", '') + '  |'
+                else:
+                    audio_bitrate = ''
+                if str(track.other_language) != 'None':
+                    audio_language = '|  ' + str(track.other_language[0]) + '  |'
+                else:
+                    audio_language = ''
+                if str(track.title) != 'None':
+                    if len(str(track.title)) > 50:
+                        audio_title = '|  Title: ' + str(track.title)[:50] + '...  |'
+                    else:
+                        audio_title = '|  Title: ' + str(track.title) + '  |'
+                else:
+                    audio_title = ''
+                if str(track.other_sampling_rate) != 'None':
+                    audio_sampling_rate = '|  ' + str(track.other_sampling_rate) \
+                        .replace('[', '').replace(']', '').replace("'", '') + '  |'
+                else:
+                    audio_sampling_rate = ''
+                if str(track.other_duration) != 'None':
+                    audio_duration = '|  ' + str(track.other_duration[0]) + '  |'
+                else:
+                    audio_duration = ''
+                if str(track.delay) != 'None':
+                    if str(track.delay) == '0':
+                        audio_delay = ''
+                    else:
+                        audio_delay = '|  Delay: ' + str(track.delay) + '  |'
+                else:
+                    audio_delay = ''
+                if str(track.track_id) != 'None':
+                    audio_track_id = '|  ID: ' + str(track.track_id) + '  |'
+                    audio_track_id_get = str(track.track_id)
+                else:
+                    print('no ID')
+                new_t_info = audio_format + audio_channels + audio_bitrate + audio_sampling_rate + audio_delay + \
+                             audio_duration + audio_language + audio_title + audio_track_id
+                for y in [new_t_info]:
+                    result.append(y)
+
+        audio_stream_info_output = {}
+        for i in range(int(str(total_audio_tracks)[-1])):
+            audio_stream_info_output[f'Track #{i + 1}:   {result[i]}'] = f'#ID:{audio_track_id_get}'
+
+        global acodec_stream, acodec_stream_choices
+        acodec_stream = StringVar()
+        acodec_stream_choices = audio_stream_info_output
+        acodec_stream.set(next(iter(audio_stream_info_output)))  # set the default option
+        acodec_stream_menu = OptionMenu(track_frame, acodec_stream, *acodec_stream_choices.keys())
+        acodec_stream_menu.config(background="#23272A", foreground="white", highlightthickness=1, width=30, anchor='w')
+        acodec_stream_menu.grid(row=0, column=0, columnspan=1, padx=10, pady=3, sticky=N + S + W + E)
+        acodec_stream_menu["menu"].configure(activebackground="dim grey")
+
+        def testing():
+            print(acodec_stream.get())
+            print(acodec_stream_choices[acodec_stream.get()])
+            root.destroy()
+
+        select_track = HoverButton(track_frame, text="Choose Track", command=testing, foreground="white",
+                                    background="#23272A", borderwidth="3", activebackground='grey')
+        select_track.grid(row=1, column=0, columnspan=1, padx=5, pady=(60, 5), sticky=N + S + E + W)
+
+    media_info = MediaInfo.parse(audio_input)
+    for track in media_info.tracks:
+        if track.track_type == 'General':
+            total_audio_tracks = track.count_of_audio_streams
+    if total_audio_tracks is not None:
+        audio_track_choices()
+
+
 def audio_input_button_commands():
     global audio_input, audio_input_quoted
     audio_extensions = ('.ac3', '.aac', '.mp4', '.m4a', '.mp2', '.mp3', '.opus', '.ogg')
@@ -701,6 +812,7 @@ def audio_input_button_commands():
                         audio_title_entrybox.insert(0, track.title)
                     except(Exception,):
                         pass
+            check_audio_tracks_info()
         else:
             messagebox.showinfo(title='Input Not Supported',
                                 message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -733,6 +845,7 @@ def update_audio_input(*args):
                     audio_title_entrybox.insert(0, track.title)
                 except(Exception,):
                     pass
+        check_audio_tracks_info()
     else:
         messagebox.showinfo(title='Input Not Supported',
                             message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -1098,7 +1211,7 @@ def start_job():
     try:
         if 'audio_input' in globals():
             total_progress_segments += 1
-            audio_options = ' -add "' + audio_input + '#audio' + audio_title_cmd_input + ':delay=' + \
+            audio_options = ' -add "' + audio_input + acodec_stream_choices[acodec_stream.get()] + audio_title_cmd_input + ':delay=' + \
                             audio_delay.get() + ':lang=' + iso_639_2_codes_dictionary[audio_language.get()] + '"'
         elif 'audio_input' not in globals():
             audio_options = ''
@@ -1219,7 +1332,10 @@ def start_job():
         step_label.configure(text='Job Completed')
         if config['auto_close_progress_window']['option'] == 'on':
             window.destroy()
-    if shell_options.get() == "Debug":
+    if shell_options.get() == "Debug" and total_errors == 0:
+        finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + ' -new ' \
+                       + output_quoted + '"'
+        print(finalcommand)
         subprocess.Popen('cmd /k ' + finalcommand)
 
 
