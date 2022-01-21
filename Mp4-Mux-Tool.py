@@ -356,7 +356,7 @@ for n in range(3):
 def video_title(*args):
     global video_title_cmd_input
     if video_title_cmd.get().strip() == '':
-        video_title_cmd_input = ''
+        video_title_cmd_input = ':name='
     else:
         video_title_cmd_input = ':name=' + video_title_cmd.get().strip()
 
@@ -636,7 +636,7 @@ for n in range(3):
 def audio_title(*args):
     global audio_title_cmd_input
     if audio_title_cmd.get().strip() == '':
-        audio_title_cmd_input = ''
+        audio_title_cmd_input = ':name='
     else:
         audio_title_cmd_input = ':name=' + audio_title_cmd.get().strip()
 
@@ -680,31 +680,43 @@ audio_language.current(0)
 
 # Audio Stream Selection ----------------------------------------------------------------------------------
 def check_audio_tracks_info():
-    def audio_track_choices(*args):  # Function to allow program to collect information on all of the tracks from input
-        # file and place them inside an option menu
-        root = Toplevel()
-        root.configure(background="#434547")
-        window_height = 180
-        window_width = 336
-        screen_width = root.winfo_screenwidth()
-        screen_height = root.winfo_screenheight()
-        x_coordinate = int((screen_width / 2) - (window_width / 2))
-        y_coordinate = int((screen_height / 2) - (window_height / 2))
-        root.geometry(f'{window_width}x{window_height}+{x_coordinate}+{y_coordinate}')
-        root.resizable(0, 0)  # makes window not resizable
-        root.overrideredirect(1)  # will remove the top badge of window
+    global audio_input
 
-        # Input Frame -------------------------------------------------------------------------------------------
-        track_frame = LabelFrame(root, text=' Track Selection ')
+    def audio_track_choice():  # If audio input has only 1 audio track
+        global acodec_stream, acodec_stream_choices
+        acodec_stream = StringVar()  # Makes a new variable
+        acodec_stream_choices = {'Only One Track': '#1'}  # Makes a new dictionary with #1 as the only option
+        acodec_stream.set('Only One Track')  # Sets variable to select #1 for command line
+
+    def audio_track_choices(*args):  # If audio input has more then 2 audio tracks, makes a new window to select track
+        global acodec_stream, acodec_stream_choices
+        audio_track_win = Toplevel()  # Toplevel window
+        audio_track_win.configure(background='#191a1a')  # Set color of audio_track_win background
+        window_height = 180  # win height
+        window_width = 480  # win width
+        screen_width = audio_track_win.winfo_screenwidth()  # down
+        screen_height = audio_track_win.winfo_screenheight()  # down
+        x_coordinate = int((screen_width / 2) - (window_width / 2))  # down
+        y_coordinate = int((screen_height / 2) - (window_height / 2))  # down
+        audio_track_win.geometry(f'{window_width}x{window_height}+{x_coordinate}+{y_coordinate}')  # code calculates
+        # middle position of window
+        audio_track_win.resizable(0, 0)  # makes window not resizable
+        audio_track_win.overrideredirect(1)  # will remove the top badge of window
+        audio_track_win.grab_set()  # forces audio_track_win to stay on top of root
+        mp4_root.attributes('-alpha', 0.8)  # Lowers mp4root transparency to .8
+
+        # Input Frame -------------------------------------------------------------------------------------------------
+        track_frame = LabelFrame(audio_track_win, text=' Track Selection ')
         track_frame.grid(row=0, column=0, columnspan=5, sticky=E + W, padx=10, pady=(8, 0))
-        track_frame.configure(fg="white", bg="#434547", bd=3)
+        track_frame.configure(fg="white", bg="#636669", bd=3)
 
         track_frame.rowconfigure(0, weight=1)
-        for n in range(0):
-            track_frame.grid_columnconfigure(n, weight=1)
+        track_frame.grid_columnconfigure(0, weight=1)
+        # ------------------------------------------------------------------------------------------------- Input Frame
 
-        result = []
-        media_info = MediaInfo.parse(audio_input)
+        # Code to gather multiple audio tracks information for use with the gui ---------------------------------------
+        result = []  # Creates an empty list to be filled with the code below
+        media_info = MediaInfo.parse(audio_input)  # Uses pymediainfo to get information for track selection
         for track in media_info.tracks:
             if track.track_type == 'Audio':
                 if str(track.format) != 'None':
@@ -716,7 +728,7 @@ def check_audio_tracks_info():
                 else:
                     audio_channels = ''
                 if str(track.other_bit_rate) != 'None':
-                    audio_bitrate = '|  ' + str(track.other_bit_rate).replace('[', '')\
+                    audio_bitrate = '|  ' + str(track.other_bit_rate).replace('[', '') \
                         .replace(']', '').replace("'", '') + '  |'
                 else:
                     audio_bitrate = ''
@@ -751,40 +763,59 @@ def check_audio_tracks_info():
                     audio_track_id = '|  ID: ' + str(track.track_id) + '  |'
                     audio_track_id_get = str(track.track_id)
                 else:
-                    print('no ID')
-                new_t_info = audio_format + audio_channels + audio_bitrate + audio_sampling_rate + audio_delay + \
-                             audio_duration + audio_language + audio_title + audio_track_id
-                for y in [new_t_info]:
-                    result.append(y)
+                    messagebox.showerror(title='Error!', message='Cannot auto detect track ID')
+                audio_track_info = audio_format + audio_channels + audio_bitrate + audio_sampling_rate + \
+                                   audio_delay + audio_duration + audio_language + audio_title + audio_track_id
+                for new_list in [audio_track_info]:  # Take all of the pymedia input and add it into a list
+                    result.append(new_list)
+        # ---------------------------------------- Code to gather all the audio tracks information for use with the gui
 
+        # Code to take all the information from the newly created list(s) and put it into a dictionary ----------------
         audio_stream_info_output = {}
         for i in range(int(str(total_audio_tracks)[-1])):
-            audio_stream_info_output[f'Track #{i + 1}:   {result[i]}'] = f'#ID:{audio_track_id_get}'
+            audio_stream_info_output[f'Track #{i + 1}:   {result[i]}'] = f'#{audio_track_id_get}'
+        # ---------------- Code to take all the information from the newly created list(s) and put it into a dictionary
 
-        global acodec_stream, acodec_stream_choices
+        # Code uses the above dictionary to create a drop-down menu of audio tracks to display/select included track --
         acodec_stream = StringVar()
         acodec_stream_choices = audio_stream_info_output
         acodec_stream.set(next(iter(audio_stream_info_output)))  # set the default option
         acodec_stream_menu = OptionMenu(track_frame, acodec_stream, *acodec_stream_choices.keys())
-        acodec_stream_menu.config(background="#23272A", foreground="white", highlightthickness=1, width=30, anchor='w')
+        acodec_stream_menu.config(background="#23272A", foreground="white", highlightthickness=1, width=48, anchor='w')
         acodec_stream_menu.grid(row=0, column=0, columnspan=1, padx=10, pady=3, sticky=N + S + W + E)
         acodec_stream_menu["menu"].configure(activebackground="dim grey")
 
-        def testing():
-            print(acodec_stream.get())
-            print(acodec_stream_choices[acodec_stream.get()])
-            root.destroy()
+        # -- Code uses the above dictionary to create a drop-down menu of audio tracks to display/select included track
 
-        select_track = HoverButton(track_frame, text="Choose Track", command=testing, foreground="white",
-                                    background="#23272A", borderwidth="3", activebackground='grey')
+        # Saves audio window and closes it while restoring transparency of main GUI -----------------------------------
+        def close_audio_win():
+            mp4_root.attributes('-alpha', 1.0)  # Restores mp4root transparency to default
+            audio_track_win.grab_release()
+            audio_track_win.destroy()  # Closes audio window
+
+        select_track = HoverButton(track_frame, text="Choose Track", command=close_audio_win, foreground="white",
+                                   background="#23272A", borderwidth="3", activebackground='grey')
         select_track.grid(row=1, column=0, columnspan=1, padx=5, pady=(60, 5), sticky=N + S + E + W)
+        # ----------------------------------- Saves audio window and closes it while restoring transparency of main GUI
 
     media_info = MediaInfo.parse(audio_input)
     for track in media_info.tracks:
         if track.track_type == 'General':
             total_audio_tracks = track.count_of_audio_streams
-    if total_audio_tracks is not None:
-        audio_track_choices()
+    if total_audio_tracks is not None and int(total_audio_tracks) == 1:
+        audio_track_choice()  # Starts single track function
+    elif total_audio_tracks is not None and int(total_audio_tracks) >= 2:
+        audio_track_choices()  # Starts function for more then 1 track
+    else:  # If the input has 0 audio tracks it resets the audio frame gui back to default/none
+        audio_delay.set(0)
+        audio_language.current(0)
+        audio_title_entrybox.delete(0, END)
+        del audio_input
+        audio_input_entry.configure(state=NORMAL)
+        audio_input_entry.delete(0, END)
+        audio_input_entry.configure(state=DISABLED)
+        # Error message explaining why file input failed
+        messagebox.showinfo(title='Info', message='File has 0 audio streams, open a file with at least 1 audio stream')
 
 
 def audio_input_button_commands():
@@ -812,12 +843,13 @@ def audio_input_button_commands():
                         audio_title_entrybox.insert(0, track.title)
                     except(Exception,):
                         pass
-            check_audio_tracks_info()
+            check_audio_tracks_info()  # Function to get audio input from input file
         else:
             messagebox.showinfo(title='Input Not Supported',
                                 message="Try Again With a Supported File Type!\n\nIf this is a "
                                         "file that should be supported, please let me know.\n\n"
                                         + 'Unsupported file extension "' + str(pathlib.Path(audio_input).suffix) + '"')
+            audio_delay.set(0)
             audio_language.current(0)
             audio_title_entrybox.delete(0, END)
             del audio_input
@@ -845,7 +877,7 @@ def update_audio_input(*args):
                     audio_title_entrybox.insert(0, track.title)
                 except(Exception,):
                     pass
-        check_audio_tracks_info()
+        check_audio_tracks_info()  # Function to get audio input from input file
     else:
         messagebox.showinfo(title='Input Not Supported',
                             message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -924,7 +956,7 @@ for n in range(3):
 def subtitle_title(*args):
     global subtitle_title_cmd_input
     if subtitle_title_cmd.get().strip() == '':
-        subtitle_title_cmd_input = ''
+        subtitle_title_cmd_input = ':name='
     else:
         subtitle_title_cmd_input = ':name=' + subtitle_title_cmd.get().strip()
 
@@ -1180,6 +1212,7 @@ delete_output_button.grid(row=0, column=3, columnspan=1, padx=10, pady=(10, 5), 
 
 # -------------------------------------------------------------------------------------------------------------- Output
 
+
 # Start Job -----------------------------------------------------------------------------------------------------------
 # Command -------------------------------------------------------------------------------------------------------------
 def start_job():
@@ -1199,9 +1232,9 @@ def start_job():
         if detect_video_fps != '':
             fps_input = ':fps=' + detect_video_fps
 
-        video_options = ' -add "' + VideoInput + '#video' + video_title_cmd_input + \
+        video_options = ' -add "' + VideoInput + '#1' + video_title_cmd_input + \
                         ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + fps_input + \
-                        dolby_profiles[dolby_v_profile.get()] + '"'
+                        dolby_profiles[dolby_v_profile.get()] + ':ID=1"'
         video_errors = 0
     except (Exception,):
         video_errors = 1
@@ -1211,8 +1244,9 @@ def start_job():
     try:
         if 'audio_input' in globals():
             total_progress_segments += 1
-            audio_options = ' -add "' + audio_input + acodec_stream_choices[acodec_stream.get()] + audio_title_cmd_input + ':delay=' + \
-                            audio_delay.get() + ':lang=' + iso_639_2_codes_dictionary[audio_language.get()] + '"'
+            audio_options = ' -add "' + audio_input + acodec_stream_choices[acodec_stream.get()] + \
+                            audio_title_cmd_input + ':delay=' + audio_delay.get() + ':lang=' + \
+                            iso_639_2_codes_dictionary[audio_language.get()] + ':ID=2"'
         elif 'audio_input' not in globals():
             audio_options = ''
         audio_one_errors = 0
@@ -1224,8 +1258,8 @@ def start_job():
     try:
         if 'subtitle_input' in globals():
             total_progress_segments += 1
-            subtitle_options = ' -add "' + subtitle_input + subtitle_title_cmd_input + ':lang=' + \
-                               iso_639_2_codes_dictionary[subtitle_language.get()] + '"'
+            subtitle_options = ' -add "' + subtitle_input + '#1' + subtitle_title_cmd_input + ':lang=' + \
+                               iso_639_2_codes_dictionary[subtitle_language.get()] + ':ID=3"'
         elif 'subtitle_input' not in globals():
             subtitle_options = ''
         subtitle_errors = 0
@@ -1358,19 +1392,20 @@ def view_command():
     if detect_video_fps != '':
         fps_input = ':fps=' + detect_video_fps
 
-    video_options = ' -add "' + VideoInput + '#video' + video_title_cmd_input + \
+    video_options = ' -add "' + VideoInput + '#1' + video_title_cmd_input + \
                     ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + fps_input + \
-                    dolby_profiles[dolby_v_profile.get()] + '"'
+                    dolby_profiles[dolby_v_profile.get()] + ':ID=1"'
 
     if 'audio_input' in globals():
-        audio_options = ' -add "' + audio_input + '#audio' + audio_title_cmd_input + ':delay=' + \
-                        audio_delay.get() + ':lang=' + iso_639_2_codes_dictionary[audio_language.get()] + '"'
+        audio_options = ' -add "' + audio_input + acodec_stream_choices[acodec_stream.get()] + \
+                        audio_title_cmd_input + ':delay=' + audio_delay.get() + ':lang=' + \
+                        iso_639_2_codes_dictionary[audio_language.get()] + ':ID=2"'
     elif 'audio_input' not in globals():
         audio_options = ''
 
     if 'subtitle_input' in globals():
-        subtitle_options = ' -add "' + subtitle_input + subtitle_title_cmd_input + ':lang=' + \
-                           iso_639_2_codes_dictionary[subtitle_language.get()] + '"'
+        subtitle_options = ' -add "' + subtitle_input + '#1' + subtitle_title_cmd_input + ':lang=' + \
+                           iso_639_2_codes_dictionary[subtitle_language.get()] + ':ID=3"'
     elif 'subtitle_input' not in globals():
         subtitle_options = ''
 
