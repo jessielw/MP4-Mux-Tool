@@ -16,6 +16,8 @@ from pymediainfo import MediaInfo
 
 from ISO_639_2 import *
 from Packages.about import openaboutwindow
+
+
 # ------------------------------------------------------------------------------------------------------------- Imports
 
 
@@ -1411,12 +1413,25 @@ def start_job():
 
 # ------------------------------------------------------------------------------------------------------------- Command
 
+# Check to see if output file already exists and asks the user if they want to over-write it --------------------------
+def check_for_existing_output():
+    if pathlib.Path(output).is_file():  # Checks if 'output' variable already exist
+        overwrite_output = messagebox.askyesno(title='Overwrite?',  # If exists would you like to over-write?
+                                               message=f'Would you like to overwrite {str(output)}?')
+        if overwrite_output:  # If "yes"
+            threading.Thread(target=start_job).start()  # Run the start job command
+        if not overwrite_output:  # If "no"
+            output_button_commands()  # Open Output button function to set a new output file location
+    else:  # If output doesn't exist go on and run the start job code
+        threading.Thread(target=start_job).start()
+# -------------------------- Check to see if output file already exists and asks the user if they want to over-write it
 
-start_button = HoverButton(mp4_root, text='Start Job', command=lambda: threading.Thread(target=start_job).start(),
-                           foreground='white', background='#23272A', borderwidth='3', activebackground='grey',
-                           state=DISABLED)
+
+# Start Button Code ---------------------------------------------------------------------------------------------------
+start_button = HoverButton(mp4_root, text='Start Job', command=check_for_existing_output, foreground='white',
+                           background='#23272A', borderwidth='3', activebackground='grey', state=DISABLED)
 start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(15, 2), sticky=E)
-
+# --------------------------------------------------------------------------------------------------- Start Button Code
 
 # ----------------------------------------------------------------------------------------------------------- Start Job
 
