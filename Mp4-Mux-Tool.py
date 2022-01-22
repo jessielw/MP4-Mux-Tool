@@ -1,4 +1,4 @@
-# Imports--------------------------------------------------------------------
+# Imports--------------------------------------------------------------------------------------------------------------
 import pathlib
 import pyperclip
 import subprocess
@@ -16,14 +16,15 @@ from pymediainfo import MediaInfo
 
 from ISO_639_2 import *
 from Packages.about import openaboutwindow
+# ------------------------------------------------------------------------------------------------------------- Imports
 
 
-# Main Gui & Windows --------------------------------------------------------
-def mp4_root_exit_function():
+# Main Gui & Windows --------------------------------------------------------------------------------------------------
+def mp4_root_exit_function():  # Pop up window when you file + exit or press 'X' to close the program
     confirm_exit = messagebox.askyesno(title='Prompt', message="Are you sure you want to exit the program?\n\n"
                                                                "     Note: This will end all current tasks!",
                                        parent=mp4_root)
-    if confirm_exit:
+    if confirm_exit:  # If user selects 'Yes', program attempts to kill all tasks then closes GUI
         try:
             subprocess.Popen(f"TASKKILL /F /im MP4-Mux-Tool.exe /T", creationflags=subprocess.CREATE_NO_WINDOW)
             mp4_root.destroy()
@@ -31,48 +32,55 @@ def mp4_root_exit_function():
             mp4_root.destroy()
 
 
-mp4_root = TkinterDnD.Tk()
-mp4_root.title("MP4-Mux-Tool Beta v1.0")
-mp4_root.iconphoto(True, PhotoImage(file='Runtime/Images/mp4mux.png'))
-mp4_root.configure(background="#434547")
-window_height = 760
-window_width = 605
-screen_width = mp4_root.winfo_screenwidth()
-screen_height = mp4_root.winfo_screenheight()
-x_coordinate = int((screen_width / 2) - (window_width / 2))
-y_coordinate = int((screen_height / 2) - (window_height / 2))
-mp4_root.geometry(f'{window_width}x{window_height}+{x_coordinate}+{y_coordinate}')
-mp4_root.protocol('WM_DELETE_WINDOW', mp4_root_exit_function)
+mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
+mp4_root.title("MP4-Mux-Tool Beta v1.0")  # Sets the version of the program
+mp4_root.iconphoto(True, PhotoImage(file='Runtime/Images/mp4mux.png'))  # Sets icon for all windows
+mp4_root.configure(background="#434547")  # Sets gui background color
+window_height = 760  # Gui window height
+window_width = 605  # Gui window width
+screen_width = mp4_root.winfo_screenwidth()  # down
+screen_height = mp4_root.winfo_screenheight()  # down
+x_coordinate = int((screen_width / 2) - (window_width / 2))  # down
+y_coordinate = int((screen_height / 2) - (window_height / 2))  # down
+mp4_root.geometry(f'{window_width}x{window_height}+{x_coordinate}+{y_coordinate}')  # does the math for center open
+mp4_root.protocol('WM_DELETE_WINDOW', mp4_root_exit_function)  # Code to use exit function when selecting 'X'
 
+# Block of code to fix DPI awareness issues on Windows 7 or higher
 try:
     windll.shcore.SetProcessDpiAwareness(1)  # if your Windows version >= 8.1
 except(Exception,):
     windll.user32.SetProcessDPIAware()  # Windows 8.0 or less
+# Block of code to fix DPI awareness issues on Windows 7 or higher
 
 # Config Parser -------------------------------------------------------------------------------------------------------
 config_file = 'Runtime/config.ini'  # Creates (if it doesn't exist) and defines location of config.ini
 config = ConfigParser()
 config.read(config_file)
 
-if not config.has_section('mp4box_path'):
+if not config.has_section('mp4box_path'):  # Creates mp4box.exe config info
     config.add_section('mp4box_path')
 if not config.has_option('mp4box_path', 'path'):
     config.set('mp4box_path', 'path', '')
 
-if not config.has_section('debug_option'):
+if not config.has_section('debug_option'):  # Creates debug config info
     config.add_section('debug_option')
 if not config.has_option('debug_option', 'option'):
     config.set('debug_option', 'option', '')
 
-if not config.has_section('auto_close_progress_window'):
+if not config.has_section('auto_close_progress_window'):  # Creates auto close progress on complete config info
     config.add_section('auto_close_progress_window')
 if not config.has_option('auto_close_progress_window', 'option'):
     config.set('auto_close_progress_window', 'option', '')
 
-try:
+if not config.has_section('reset_program_on_start_job'):  # Creates reset main gui on start job config info
+    config.add_section('reset_program_on_start_job')
+if not config.has_option('reset_program_on_start_job', 'option'):
+    config.set('reset_program_on_start_job', 'option', '')
+
+try:  # writes all the above config information to config.ini file
     with open(config_file, 'w') as configfile:
         config.write(configfile)
-except (Exception,):
+except (Exception,):  # If for some reason there is an error writing the file, this pop up window will let you know
     messagebox.showinfo(title='Error', message='Could Not Write to config.ini file, delete and try again')
 # ------------------------------------------------------------------------------------------------------- Config Parser
 
@@ -104,6 +112,8 @@ def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or No
         fps_entry.configure(state=DISABLED)
         dolby_v_profile_combo.current(0)
         status_label.configure(text='Select "Open File" or drag and drop a video file to begin')
+        show_command.configure(state=DISABLED)
+        start_button.configure(state=DISABLED)
         del VideoInput
         del detect_video_fps
     except NameError as v:
@@ -192,7 +202,7 @@ options_submenu.add_radiobutton(label='CMD Shell (Debug)', variable=shell_option
 auto_close_window = StringVar()
 auto_close_window.set(config['auto_close_progress_window']['option'])
 if auto_close_window.get() == '':
-    auto_close_window.set('off')
+    auto_close_window.set('on')
 elif auto_close_window.get() != '':
     auto_close_window.set(config['auto_close_progress_window']['option'])
 
@@ -208,9 +218,32 @@ def update_auto_close():
 
 update_auto_close()
 options_submenu2 = Menu(mp4_root, tearoff=0, activebackground='dim grey')
-options_menu.add_cascade(label='Auto-Close Progress Window', menu=options_submenu2)
+options_menu.add_cascade(label='Auto-Close Progress Window On Completion', menu=options_submenu2)
 options_submenu2.add_radiobutton(label='On', variable=auto_close_window, value='on', command=update_auto_close)
 options_submenu2.add_radiobutton(label='Off', variable=auto_close_window, value='off', command=update_auto_close)
+
+reset_gui_on_start = StringVar()
+reset_gui_on_start.set(config['reset_program_on_start_job']['option'])
+if reset_gui_on_start.get() == '':
+    reset_gui_on_start.set('on')
+elif reset_gui_on_start.get() != '':
+    reset_gui_on_start.set(config['reset_program_on_start_job']['option'])
+
+
+def update_reset_on_job():
+    try:
+        config.set('reset_program_on_start_job', 'option', reset_gui_on_start.get())
+        with open(config_file, 'w') as configfile:
+            config.write(configfile)
+    except (Exception,):
+        pass
+
+
+update_reset_on_job()
+options_submenu3 = Menu(mp4_root, tearoff=0, activebackground='dim grey')
+options_menu.add_cascade(label='Reset GUI When Start Job Is Selected', menu=options_submenu3)
+options_submenu3.add_radiobutton(label='On', variable=reset_gui_on_start, value='on', command=update_reset_on_job)
+options_submenu3.add_radiobutton(label='Off', variable=reset_gui_on_start, value='off', command=update_reset_on_job)
 
 options_menu.add_separator()
 
@@ -1342,6 +1375,8 @@ def start_job():
         job = subprocess.Popen('cmd /c ' + finalcommand, universal_newlines=True,
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                                creationflags=subprocess.CREATE_NO_WINDOW)
+        if config['reset_program_on_start_job']['option'] == 'on':
+            clear_inputs()
         for line in job.stdout:
             encode_window_progress.configure(state=NORMAL)
             encode_window_progress.insert(END, line)
@@ -1369,8 +1404,9 @@ def start_job():
     if shell_options.get() == "Debug" and total_errors == 0:
         finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + ' -new ' \
                        + output_quoted + '"'
-        print(finalcommand)
         subprocess.Popen('cmd /k ' + finalcommand)
+        if config['reset_program_on_start_job']['option'] == 'on':
+            clear_inputs()
 
 
 # ------------------------------------------------------------------------------------------------------------- Command
