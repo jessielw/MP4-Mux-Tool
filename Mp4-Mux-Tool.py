@@ -35,7 +35,7 @@ def mp4_root_exit_function():  # Pop up window when you file + exit or press 'X'
 
 
 mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
-mp4_root.title("MP4-Mux-Tool Beta v1.0")  # Sets the version of the program
+mp4_root.title("MP4-Mux-Tool v1.0")  # Sets the version of the program
 mp4_root.iconphoto(True, PhotoImage(file='Runtime/Images/mp4mux.png'))  # Sets icon for all windows
 mp4_root.configure(background="#434547")  # Sets gui background color
 window_height = 760  # Gui window height
@@ -346,20 +346,21 @@ mp4box = config['mp4box_path']['path']
 
 if not pathlib.Path(mp4box.replace('"', '')).is_file():  # Checks config for bundled app paths path
     # mp4box -----------------------------------------------------------------------
-    if pathlib.Path('Apps/mp4box/MP4Box.exe').is_file():
+    if pathlib.Path('Apps/mp4box/MP4Box.exe').is_file():  # If mp4box.exe is located in the apps folder
         messagebox.showinfo(title='Info', message='Program will use the included '
                                                   '"mp4box.exe" located in the "Apps" folder')
-        mp4box = '"' + str(pathlib.Path('Apps/mp4box/MP4Box.exe')) + '"'
-        try:
+        mp4box = '"' + str(pathlib.Path('Apps/mp4box/MP4Box.exe')) + '"'  # sets variable to mp4box.exe
+        try:  # Write path location to config.ini file
             config.set('mp4box_path', 'path', mp4box)
             with open(config_file, 'w') as configfile:
                 config.write(configfile)
-        except (Exception,):
-            pass
-    elif not pathlib.Path('Apps/mp4box/MP4Box.exe').is_file():
+        except (Exception,):  # If unable to write path to mp4box.exe present error message
+            messagebox.showerror(title='Error!', message=f'Could not save path to mp4box at '
+                                                         f'\n{mp4box}\n please try again')
+    elif not pathlib.Path('Apps/mp4box/MP4Box.exe').is_file():  # If mp4box.exe does not exist
         messagebox.showerror(title='Error!', message='Please download mp4box.exe and set path to '
-                                                     'mp4box.exe in the Options menu')
-        webbrowser.open('https://github.com/gpac/gpac/wiki/MP4Box')
+                                                     'mp4box.exe in the Options menu')  # Error message
+        webbrowser.open('https://github.com/gpac/gpac/wiki/MP4Box')  # Opens default web-browser to mp4box github
     # mp4box ------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------------- Bundled Apps
 # Video Frame ---------------------------------------------------------------------------------------------------------
@@ -390,9 +391,9 @@ for n in range(3):
 # Entry Box for Video Title -------------------------------------------------------------------------------------------
 def video_title(*args):
     global video_title_cmd_input
-    if video_title_cmd.get().strip() == '':
-        video_title_cmd_input = ':name='
-    else:
+    if video_title_cmd.get().strip() == '':  # If title box string is empty or only white space
+        video_title_cmd_input = ':name='  # .strip() is used to remove all white space from left or right of a string
+    else:  # If title box string has characters
         video_title_cmd_input = ':name=' + video_title_cmd.get().strip()
 
 
@@ -425,6 +426,7 @@ video_title_cmd.set('')
 # combo_fps['state'] = 'readonly'
 # combo_fps.current(0)
 
+# Video FPS Label is only for viewing purposes, you need input FPS for program to know what fps to output
 video_fps_menu_label = Label(video_tab, text='Framerate (FPS):', background="#434547", foreground="white")
 video_fps_menu_label.grid(row=1, column=2, columnspan=1, padx=(3, 0), pady=(0, 0), sticky=W)
 fps_entry = Entry(video_tab, borderwidth=4, background='#CACACA', state=DISABLED, width=10)
@@ -441,7 +443,7 @@ video_combo_language = ttk.Combobox(video_tab, values=list(iso_639_2_codes_dicti
                                     textvariable=video_language, width=15)
 video_combo_language.grid(row=2, column=0, columnspan=1, padx=10, pady=(0, 10), sticky=W + E + N + S)
 video_combo_language['state'] = 'readonly'
-video_combo_language.current(0)
+video_combo_language.current(0)  # Sets language to index 0 (UND) by default
 
 # ------------------------------------------------------------------------------------------------------ Video Language
 
@@ -455,12 +457,12 @@ dolby_v_profile_combo = ttk.Combobox(video_tab2, values=list(dolby_profiles.keys
                                      textvariable=dolby_v_profile, width=15)
 dolby_v_profile_combo.grid(row=1, column=0, columnspan=1, padx=10, pady=(0, 10), sticky=W + E + N + S)
 dolby_v_profile_combo['state'] = 'readonly'
-dolby_v_profile_combo.current(0)
+dolby_v_profile_combo.current(0)  # Sets profile to index 0 ('') by default
 
 
 # -------------------------------------------------------------------------------------------------------- Dolby Vision
 
-def input_button_commands():
+def input_button_commands():  # Open file block of code (non drag and drop)
     global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, detect_video_fps, \
         fps_entry, output_quoted
     video_extensions = ('.avi', '.mp4', '.m1v', '.m2v', '.m4v', '.264', '.h264', '.hevc', '.h265')
@@ -496,14 +498,14 @@ def input_button_commands():
             start_button.configure(state=NORMAL)
             show_command.configure(state=NORMAL)
             media_info = MediaInfo.parse(filename)
-            for track in media_info.tracks:
+            for track in media_info.tracks:  # Use mediainfo module to parse video section to collect frame rate
                 if track.track_type == "Video":
                     detect_video_fps = track.frame_rate
                     fps_entry.configure(state=NORMAL)
                     fps_entry.delete(0, END)
                     fps_entry.insert(0, detect_video_fps)
                     fps_entry.configure(state=DISABLED)
-                    try:
+                    try:  # Code to detect the position of the language code, for 3 digit, and set it to a variable
                         detect_index = [len(i) for i in track.other_language].index(3)
                         language_index = list(iso_639_2_codes_dictionary.values()).index(
                             track.other_language[detect_index])
@@ -513,7 +515,7 @@ def input_button_commands():
                     except(Exception,):
                         pass
         else:
-            messagebox.showinfo(title='Input Not Supported',
+            messagebox.showinfo(title='Input Not Supported',  # Error message if input is not a supported file type
                                 message="Try Again With a Supported File Type!\n\nIf this is a "
                                         "file that should be supported, please let me know.\n\n"
                                         + 'Unsupported file extension "' + str(pathlib.Path(VideoInput).suffix) + '"')
@@ -529,11 +531,11 @@ def input_button_commands():
 # ---------------------------------------------------------------------------------------------- Input Functions Button
 
 # Drag and Drop Functions ---------------------------------------------------------------------------------------------
-def video_drop_input(event):
+def video_drop_input(event):  # Drag and drop function
     input_dnd.set(event.data)
 
 
-def update_file_input(*args):
+def update_file_input(*args):  # Drag and drop block of code
     global VideoInput, autofilesave_dir_path, VideoInputQuoted, output, autosavefilename, detect_video_fps, \
         fps_entry, output_quoted
     input_entry.configure(state=NORMAL)
@@ -615,7 +617,7 @@ input_entry.drop_target_register(DND_FILES)
 input_entry.dnd_bind('<<Drop>>', video_drop_input)
 
 
-def clear_video_input():
+def clear_video_input():  # When user selects 'X' to clear input box
     global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, \
         detect_video_fps, dolby_v_profile_combo
     try:
@@ -754,49 +756,49 @@ def check_audio_tracks_info():
         media_info = MediaInfo.parse(audio_input)  # Uses pymediainfo to get information for track selection
         for track in media_info.tracks:
             if track.track_type == 'Audio':
-                if str(track.format) != 'None':
+                if str(track.format) != 'None':  # Gets format string of tracks (aac, ac3 etc...)
                     audio_format = '|  ' + str(track.format) + '  |'
                 else:
                     audio_format = ''
-                if str(track.channel_s) != 'None':
+                if str(track.channel_s) != 'None':  # Gets audio channels of input tracks
                     audio_channels = '|  ' + 'Channels: ' + str(track.channel_s) + '  |'
                 else:
                     audio_channels = ''
-                if str(track.other_bit_rate) != 'None':
+                if str(track.other_bit_rate) != 'None':  # Gets audio bitrate of input tracks
                     audio_bitrate = '|  ' + str(track.other_bit_rate).replace('[', '') \
                         .replace(']', '').replace("'", '') + '  |'
                 else:
                     audio_bitrate = ''
-                if str(track.other_language) != 'None':
+                if str(track.other_language) != 'None':  # Gets audio language of input tracks
                     audio_language = '|  ' + str(track.other_language[0]) + '  |'
                 else:
                     audio_language = ''
-                if str(track.title) != 'None':
-                    if len(str(track.title)) > 50:
-                        audio_title = '|  Title: ' + str(track.title)[:50] + '...  |'
+                if str(track.title) != 'None':  # Gets audio title of input tracks
+                    if len(str(track.title)) > 50:  # Counts title character length
+                        audio_title = '|  Title: ' + str(track.title)[:50] + '...  |'  # If title > 50 characters
                     else:
-                        audio_title = '|  Title: ' + str(track.title) + '  |'
+                        audio_title = '|  Title: ' + str(track.title) + '  |'  # If title is < 50 characters
                 else:
                     audio_title = ''
-                if str(track.other_sampling_rate) != 'None':
+                if str(track.other_sampling_rate) != 'None':  # Gets audio sampling rate of input tracks
                     audio_sampling_rate = '|  ' + str(track.other_sampling_rate) \
                         .replace('[', '').replace(']', '').replace("'", '') + '  |'
                 else:
                     audio_sampling_rate = ''
-                if str(track.other_duration) != 'None':
+                if str(track.other_duration) != 'None':  # Gets audio duration of input tracks
                     audio_duration = '|  ' + str(track.other_duration[0]) + '  |'
                 else:
                     audio_duration = ''
-                if str(track.delay) != 'None':
+                if str(track.delay) != 'None':  # Gets audio delay of input tracks
                     if str(track.delay) == '0':
                         audio_delay = ''
                     else:
                         audio_delay = '|  Delay: ' + str(track.delay) + '  |'
                 else:
                     audio_delay = ''
-                if str(track.track_id) != 'None':
-                    audio_track_id = '|  ID: ' + str(track.track_id) + '  |'
-                    audio_track_id_get = str(track.track_id)
+                if str(track.track_id) != 'None':  # Gets track ID of audio inputs (this is needed for mp4box output)
+                    audio_track_id = '|  ID: ' + str(track.track_id) + '  |'  # Code for viewing in drop down
+                    audio_track_id_get = str(track.track_id)  # Code for to save track # into a variable
                 else:
                     messagebox.showerror(title='Error!', message='Cannot auto detect track ID')
                 audio_track_info = audio_format + audio_channels + audio_bitrate + audio_sampling_rate + \
@@ -845,12 +847,13 @@ def check_audio_tracks_info():
         audio_delay.set(0)
         audio_language.current(0)
         audio_title_entrybox.delete(0, END)
-        del audio_input
         audio_input_entry.configure(state=NORMAL)
         audio_input_entry.delete(0, END)
         audio_input_entry.configure(state=DISABLED)
         # Error message explaining why file input failed
-        messagebox.showinfo(title='Info', message='File has 0 audio streams, open a file with at least 1 audio stream')
+        messagebox.showinfo(title='Info', message=f'"{pathlib.Path(audio_input).name}"\n\nhas 0 audio streams, '
+                                                  f'please open a file with at least 1 audio stream.')
+        del audio_input
 
 
 def audio_input_button_commands():
@@ -1415,7 +1418,7 @@ def start_job():
 
 # Check to see if output file already exists and asks the user if they want to over-write it --------------------------
 def check_for_existing_output():
-    if pathlib.Path(output).is_file():  # Checks if 'output' variable already exist
+    if pathlib.Path(output).is_file():  # Checks if 'output' variable/file already exists
         overwrite_output = messagebox.askyesno(title='Overwrite?',  # If exists would you like to over-write?
                                                message=f'Would you like to overwrite {str(output)}?')
         if overwrite_output:  # If "yes"
