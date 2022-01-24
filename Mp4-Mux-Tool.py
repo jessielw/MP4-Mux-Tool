@@ -842,7 +842,7 @@ def check_audio_tracks_info():
     if total_audio_tracks is not None and int(total_audio_tracks) == 1:
         audio_track_choice()  # Starts single track function
     elif total_audio_tracks is not None and int(total_audio_tracks) >= 2:
-        audio_track_choices()  # Starts function for more then 1 track
+        audio_track_choices()  # Starts function for more than 1 track
     else:  # If the input has 0 audio tracks it resets the audio frame gui back to default/none
         audio_delay.set(0)
         audio_language.current(0)
@@ -856,7 +856,7 @@ def check_audio_tracks_info():
         del audio_input
 
 
-def audio_input_button_commands():
+def audio_input_button_commands():  # Function for audio input button
     global audio_input, audio_input_quoted
     audio_extensions = ('.ac3', '.aac', '.mp4', '.m4a', '.mp2', '.mp3', '.opus', '.ogg')
     audio_input = filedialog.askopenfilename(initialdir="/", title="Select A File",
@@ -872,7 +872,7 @@ def audio_input_button_commands():
             media_info = MediaInfo.parse(audio_input)
             for track in media_info.tracks:
                 if track.track_type == 'Audio':
-                    try:
+                    try:  # Uses mediainfo to detect the language of the file and converts it to 3-digit code
                         detect_index = [len(i) for i in track.other_language].index(3)
                         language_index = list(iso_639_2_codes_dictionary.values()).index(
                             track.other_language[detect_index])
@@ -882,7 +882,7 @@ def audio_input_button_commands():
                     except(Exception,):
                         pass
             check_audio_tracks_info()  # Function to get audio input from input file
-        else:
+        else:  # If file opened isn't a supported format
             messagebox.showinfo(title='Input Not Supported',
                                 message="Try Again With a Supported File Type!\n\nIf this is a "
                                         "file that should be supported, please let me know.\n\n"
@@ -916,18 +916,19 @@ def update_audio_input(*args):
                 except(Exception,):
                     pass
         check_audio_tracks_info()  # Function to get audio input from input file
-    else:
+    else:  # If file opened isn't a supported format
         messagebox.showinfo(title='Input Not Supported',
                             message="Try Again With a Supported File Type!\n\nIf this is a "
                                     "file that should be supported, please let me know.\n\n"
                                     + 'Unsupported file extension "' + str(pathlib.Path(audio_input).suffix) + '"')
+        audio_delay.set(0)
         audio_language.current(0)
         audio_title_entrybox.delete(0, END)
         del audio_input
 
 
 # Buttons -------------------------------------------------------------------------------------------------------------
-def audio_drop_input(event):
+def audio_drop_input(event):  # Drag and drop function for audio input
     audio_input_dnd.set(event.data)
 
 
