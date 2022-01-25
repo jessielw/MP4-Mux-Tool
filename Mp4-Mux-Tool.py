@@ -796,14 +796,14 @@ def check_audio_tracks_info():
                         audio_delay = '|  Delay: ' + str(track.delay) + '  |'
                 else:
                     audio_delay = ''
-                if str(track.track_id) != 'None':  # Gets track ID of audio inputs (this is needed for mp4box output)
+                if str(track.track_id) != 'None':  # Gets track ID of audio inputs (this is needed for mp4box input)
                     audio_track_id = '|  ID: ' + str(track.track_id) + '  |'  # Code for viewing in drop down
-                    audio_track_id_get = str(track.track_id)  # Code for to save track # into a variable
+                    audio_track_id_get = str(track.track_id)  # Code to save track # into a variable
                 else:
                     messagebox.showerror(title='Error!', message='Cannot auto detect track ID')
                 audio_track_info = audio_format + audio_channels + audio_bitrate + audio_sampling_rate + \
                                    audio_delay + audio_duration + audio_language + audio_title + audio_track_id
-                for new_list in [audio_track_info]:  # Take all of the pymedia input and add it into a list
+                for new_list in [audio_track_info]:  # Take all the pymedia input and adds it into a list
                     result.append(new_list)
         # ---------------------------------------- Code to gather all the audio tracks information for use with the gui
 
@@ -893,7 +893,7 @@ def audio_input_button_commands():  # Function for audio input button
             del audio_input
 
 
-def update_audio_input(*args):
+def update_audio_input(*args):  # Drag and drop function for audio input
     global audio_input, audio_input_quoted
     audio_input_entry.configure(state=NORMAL)
     audio_input_entry.delete(0, END)
@@ -1232,7 +1232,7 @@ output_entry = Entry(output_frame, width=39, borderwidth=4, background='#CACACA'
 output_entry.grid(row=0, column=1, columnspan=3, padx=(0, 50), pady=(10, 5), sticky=W + E)
 
 
-def clear_output():  # Deletes all inputs and sets defaults for chapter box #1
+def clear_output():  # Deletes all inputs and sets defaults for output frame
     global output, output_entry
     try:
         output_entry.configure(state=NORMAL)
@@ -1256,91 +1256,98 @@ delete_output_button.grid(row=0, column=3, columnspan=1, padx=10, pady=(10, 5), 
 # Command -------------------------------------------------------------------------------------------------------------
 def start_job():
     global output_quoted
-    total_progress_segments = 2
+    total_progress_segments = 2  # Progress segments starts at 2 because video+output has to be defined in order for
+    # the program to work, they equal 2 progress segments
 
-    def error_msg_box():
+    def error_msg_box():  # Generic error box that shows the error via the 'error_name' variable
         messagebox.showerror(title='Error!', message='Please input or clear the ' + error_name + ' input box')
 
-    if 'output' not in globals():
-        output_error = 1
+    if 'output' not in globals():  # If the variable 'output' doesn't exist in globals
+        output_error = 1  # Set output error to 1 (error)
         messagebox.showinfo(title='Information', message='You must select an output for the program to continue')
-    if 'output' in globals():
-        output_error = 0
+    if 'output' in globals():  # If the variable exist in globals
+        output_error = 0  # Set output error to 0 (no error)
 
-    try:
-        if detect_video_fps != '':
-            fps_input = ':fps=' + detect_video_fps
+    try:  # Video is differently checked because it HAS to exist for the program to work, the other
+        # variables audio, subs, etc. check for globals to see if they exist at all
+        if detect_video_fps != '':  # If video fps equals anything other than '' (empty string/nothing)
+            fps_input = ':fps=' + detect_video_fps  # Set fps_input to string + detect_video_fps
 
+        # Build video_options for the final command line with all the variables
         video_options = ' -add "' + VideoInput + '#1' + video_title_cmd_input + \
                         ':lang=' + iso_639_2_codes_dictionary[video_language.get()] + fps_input + \
                         dolby_profiles[dolby_v_profile.get()] + ':ID=1"'
-        video_errors = 0
+        video_errors = 0  # Set's video_errors to 0 as long as all variables are found correctly
     except (Exception,):
-        video_errors = 1
-        error_name = 'video'
-        error_msg_box()
+        video_errors = 1  # Set's errors to 1 if the above try block cannot execute
+        error_name = 'video'  # Provides generic error name for the above error box
+        error_msg_box()  # Runs the error_msg_box function with the error name above
 
     try:
-        if 'audio_input' in globals():
-            total_progress_segments += 1
+        if 'audio_input' in globals():  # If the variable 'audio_input' does exist in globals
+            total_progress_segments += 1  # Add +1 to total_progress_segments, for final summed count of segments
+            # Build audio_options for the final command line with all the variables
             audio_options = ' -add "' + audio_input + acodec_stream_choices[acodec_stream.get()] + \
                             audio_title_cmd_input + ':delay=' + audio_delay.get() + ':lang=' + \
                             iso_639_2_codes_dictionary[audio_language.get()] + ':ID=2"'
-        elif 'audio_input' not in globals():
-            audio_options = ''
-        audio_one_errors = 0
+        elif 'audio_input' not in globals():  # If the variable 'audio_input' doesn't exist in globals
+            audio_options = ''  # Set's audio_options to '' (nothing/empty string)
+        audio_one_errors = 0  # Set output error to 0 (no error)
     except (Exception,):
-        audio_one_errors = 1
-        error_name = 'audio #1'
-        error_msg_box()
+        audio_one_errors = 1  # Set's errors to 1 if the above try block cannot execute
+        error_name = 'audio #1'  # Provides generic error name for the above error box
+        error_msg_box()  # Runs the error_msg_box function with the error name above
 
     try:
-        if 'subtitle_input' in globals():
-            total_progress_segments += 1
+        if 'subtitle_input' in globals():   # If the variable 'subtitle_input' does exist in globals
+            total_progress_segments += 1  # Add +1 to total_progress_segments, for final summed count of segments
+            # Build subtitle_options for the final command line with all the variables
             subtitle_options = ' -add "' + subtitle_input + '#1' + subtitle_title_cmd_input + ':lang=' + \
                                iso_639_2_codes_dictionary[subtitle_language.get()] + ':ID=3"'
         elif 'subtitle_input' not in globals():
-            subtitle_options = ''
-        subtitle_errors = 0
+            subtitle_options = ''  # Set's subtitle_options to '' (nothing/empty string)
+        subtitle_errors = 0  # Set output error to 0 (no error)
     except (Exception,):
-        subtitle_errors = 1
-        error_name = 'subtitle'
-        error_msg_box()
+        subtitle_errors = 1  # Set's errors to 1 if the above try block cannot execute
+        error_name = 'subtitle'  # Provides generic error name for the above error box
+        error_msg_box()  # Runs the error_msg_box function with the error name above
 
     try:
-        if 'chapter_input' in globals():
+        if 'chapter_input' in globals():  # If the variable 'chapter_input' does exist in globals
+            # Build subtitle_options for the final command line with all the variables
             chapter_options = ' -add "' + chapter_input + fps_input + '"'
-        elif 'chapter_input' not in globals():
-            chapter_options = ''
-        chapter_errors = 0
+        elif 'chapter_input' not in globals():  # If the variable 'chapter_input' doesn't exist in globals
+            chapter_options = ''  # Set's chapter_options to '' (nothing/empty string)
+        chapter_errors = 0  # Set output error to 0 (no error)
     except (Exception,):
-        chapter_errors = 1
-        error_name = 'subtitle'
-        error_msg_box()
+        chapter_errors = 1  # Set's errors to 1 if the above try block cannot execute
+        error_name = 'chapter'  # Provides generic error name for the above error box
+        error_msg_box()  # Runs the error_msg_box function with the error name above
 
+    # Combine all above errors, if exists and adds them to a sum (which should be 0), places them into var total_errors
     total_errors = video_errors + audio_one_errors + subtitle_errors + chapter_errors + output_error
 
-    if shell_options.get() == "Default" and total_errors == 0:
-        def close_encode():
-            if step_label.cget('text') == 'Job Completed':
-                window.destroy()
-            else:
-                confirm_exit = messagebox.askyesno(title='Prompt',
+    if shell_options.get() == "Default" and total_errors == 0:  # Run block if shell_options = Default and errors = 0
+        def close_encode():  # Block of code to close muxing window progress and terminate all sub-processes
+            if step_label.cget('text') == 'Job Completed':  # If muxing windows label says 'Job Completed'
+                window.destroy()  # Close muxing window only
+            else:  # If muxing windows label says anything other than 'Job Completed'
+                confirm_exit = messagebox.askyesno(title='Prompt',  # Prompt message box
                                                    message="Are you sure you want to stop the mux?", parent=window)
-                if confirm_exit:
-                    try:
+                if confirm_exit:  # If user selects yes on the message box
+                    try:  # Use subprocess.popen/cmd.exe to send a kill order to the job via job.pid
                         subprocess.Popen(f"TASKKILL /F /PID {job.pid} /T", creationflags=subprocess.CREATE_NO_WINDOW)
-                        window.destroy()
+                        window.destroy()  # Once the job is destroyed close muxing window
                     except (Exception,):
-                        window.destroy()
+                        window.destroy()  # If job already completes or cannot be closed, still close muxing window
 
-        def close_window():
+        def close_window():  # Function to make 'close_encode' multi-threaded, so it can be done while the program runs
             threading.Thread(target=close_encode).start()
 
-        window = tk.Toplevel(mp4_root)
-        window.title(str(pathlib.Path(VideoInput).stem))
-        window.configure(background="#434547")
-        encode_label = Label(window, text='- ' * 20 + 'Progress' + ' -' * 20,
+        window = tk.Toplevel(mp4_root)  # Define muxing window
+        window.title(str(pathlib.Path(VideoInput).stem))  # Set's muxing window title to VideoInput (no path no ext.)
+        window.configure(background="#434547")  # Set's muxing window background color
+        encode_label = Label(window, text='- ' * 20 + 'Progress' + ' -' * 20,  # Progress Label
                              font=("Times New Roman", 14), background='#434547', foreground="white")
         encode_label.grid(column=0, row=0)
         window.grid_columnconfigure(0, weight=1)
@@ -1351,12 +1358,13 @@ def start_job():
         encode_window_progress = scrolledtextwidget.ScrolledText(window, width=60, height=15, tabs=10, spacing2=3,
                                                                  spacing1=2, spacing3=3)
         encode_window_progress.grid(row=1, column=0, pady=(10, 6), padx=10, sticky=E + W)
+        # Set's 0 out of 'total_progres_segments', the sum of all the progress segments from above
         step_label = Label(window, text='Step ' + str(0) + ' out of ' + str(total_progress_segments),
                            font=("Times New Roman", 12), background='#434547', foreground="white")
         step_label.grid(column=0, row=2, sticky=E, padx=(0, 10))
-        updated_number = 0
+        updated_number = 0  # Set's a var with 0, so it can bne updated from 0 to +1 with every completed segment
 
-        def auto_close_window_toggle():
+        def auto_close_window_toggle():  # Function to save input from the checkbox below to config.ini
             try:
                 config.set('auto_close_progress_window', 'option', auto_close_window.get())
                 with open(config_file, 'w') as configfile:
@@ -1381,38 +1389,39 @@ def start_job():
         job = subprocess.Popen('cmd /c ' + finalcommand, universal_newlines=True,
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                                creationflags=subprocess.CREATE_NO_WINDOW)
-        if config['reset_program_on_start_job']['option'] == 'on':
+        if config['reset_program_on_start_job']['option'] == 'on':  # If program is set to reset gui upon successful
+            # start job command clear all inputs
             clear_inputs()
-        for line in job.stdout:
+        for line in job.stdout:  # Code to put the muxing progress text line by line from stdout into muxing window
             encode_window_progress.configure(state=NORMAL)
             encode_window_progress.insert(END, line)
             encode_window_progress.see(END)
             encode_window_progress.configure(state=DISABLED)
-            try:
+            try:  # Code to break down stdout information
                 strip = line.split()[-1].replace('(', '').replace(')', '').split('/')[0]
-                if strip == '00':
+                if strip == '00':  # Each time the code 'strip' says '00' add 1 to var update_number
                     updated_number = updated_number + 1
-                    if updated_number == total_progress_segments:
+                    if updated_number == total_progress_segments:  # For final step change label to below
                         step_label.configure(text='Muxing imports to .Mp4')
-                    else:
+                    else:  # If updated number does not equal total_progress_setgments update step by 1 each time
                         step_label.configure(text='Step ' + str(updated_number) + ' out of '
                                                   + str(total_progress_segments))
-                app_progress_bar['value'] = int(strip)
+                app_progress_bar['value'] = int(strip)  # Code to update the progress bar percentage
             except (Exception,):
                 pass
         encode_window_progress.configure(state=NORMAL)
-        encode_window_progress.insert(END, 'Job Completed!!')
+        encode_window_progress.insert(END, 'Job Completed!!')  # Once job is done insert into scroll box
         encode_window_progress.see(END)
         encode_window_progress.configure(state=DISABLED)
-        step_label.configure(text='Job Completed')
+        step_label.configure(text='Job Completed')  # Update label to say 'Job Completed' (needed for above code)
         if config['auto_close_progress_window']['option'] == 'on':
-            window.destroy()
-    if shell_options.get() == "Debug" and total_errors == 0:
+            window.destroy()  # If program is set to auto close muxing window when complete, close the window
+    if shell_options.get() == "Debug" and total_errors == 0:  # Command to muxing process in cmd.exe window
         finalcommand = '"' + mp4box + video_options + audio_options + subtitle_options + chapter_options + ' -new ' \
                        + output_quoted + '"'
         subprocess.Popen('cmd /k ' + finalcommand)
         if config['reset_program_on_start_job']['option'] == 'on':
-            clear_inputs()
+            clear_inputs()  # Clear gui after success job start in "Debug Mode"
 
 
 # ------------------------------------------------------------------------------------------------------------- Command
@@ -1442,7 +1451,8 @@ start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(15, 2), st
 
 # Show Command --------------------------------------------------------------------------------------------------------
 
-def view_command():
+def view_command():  # This function is to show the full command line output into a window, the code is the same as
+    # the command code above with a few minor changes
     global cmd_line_window, encode_window_progress, output, output_quoted
     if detect_video_fps != '':
         fps_input = ':fps=' + detect_video_fps
@@ -1471,13 +1481,13 @@ def view_command():
 
     finalcommand = mp4box + video_options + audio_options + subtitle_options + chapter_options + ' -new ' + \
                    output_quoted
-    try:
+    try:  # Attempt to update already opened window, this prevents spawning a new command window if it already exsists
         encode_window_progress.configure(state=NORMAL)
         encode_window_progress.delete(1.0, END)
         encode_window_progress.insert(END, finalcommand)
         encode_window_progress.configure(state=DISABLED)
         cmd_line_window.deiconify()
-    except (AttributeError, NameError):
+    except (AttributeError, NameError):  # If no window exists then spawn a new window with all the commands
         cmd_line_window = Toplevel()
         cmd_line_window.title('Command Line')
         cmd_line_window.configure(background="#434547")
@@ -1487,14 +1497,15 @@ def view_command():
         encode_window_progress.insert(END, finalcommand)
         encode_window_progress.configure(state=DISABLED)
 
-        def copy_to_clipboard():
+        def copy_to_clipboard():  # Function to allow copying full command to clipboard via pyperclip module
             pyperclip.copy(encode_window_progress.get(1.0, END))
 
         copy_text = HoverButton(cmd_line_window, text='Copy to clipboard', command=copy_to_clipboard,
                                 foreground='white', background='#23272A', borderwidth='3', activebackground='grey')
         copy_text.grid(row=1, column=0, columnspan=1, padx=(20, 10), pady=(15, 2), sticky=W + E)
 
-        def hide_instead():
+        def hide_instead():  # This hides the command window instead of fully destroying it/it's variables, it allows
+            # us to update the window instead of openeing a new one each time
             cmd_line_window.withdraw()
 
         cmd_line_window.protocol('WM_DELETE_WINDOW', hide_instead)
@@ -1507,7 +1518,9 @@ show_command.grid(row=5, column=0, columnspan=1, padx=(20, 10), pady=(15, 2), st
 # -------------------------------------------------------------------------------------------------------- Show Command
 
 
-# Status Label at bottom of main GUI -----------------------------------------------------------------
+# Status Label at bottom of main GUI ----------------------------------------------------------------- The status
+# label just updates based on the mouse cursor location, when you go over certain buttons it'll give you information
+# based on that location
 status_label = Label(mp4_root, text='Select "Open File" or drag and drop a video file to begin',
                      bd=4, relief=SUNKEN, anchor=E, background='#717171', foreground="white")
 status_label.grid(column=0, row=6, columnspan=4, sticky=W + E, pady=(0, 2), padx=3)
