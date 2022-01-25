@@ -1,1 +1,1 @@
-MediaInfo
+pymediainfo
