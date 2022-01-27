@@ -721,8 +721,12 @@ def check_audio_tracks_info():
 
     def audio_track_choice():  # If audio input has only 1 audio track
         global acodec_stream, acodec_stream_choices
+        media_info = MediaInfo.parse(audio_input)  # Uses pymediainfo to get information for track selection
+        for track in media_info.tracks:
+            if track.track_type == 'Audio':
+                audio_track_id_get = str(track.track_id)  # Code to save track # into a variable
         acodec_stream = StringVar()  # Makes a new variable
-        acodec_stream_choices = {'Only One Track': '#1'}  # Makes a new dictionary with #1 as the only option
+        acodec_stream_choices = {'Only One Track': f'#{audio_track_id_get}'}  # Temp dictionary with audio track ID
         acodec_stream.set('Only One Track')  # Sets variable to select #1 for command line
 
     def audio_track_choices(*args):  # If audio input has more then 2 audio tracks, makes a new window to select track
