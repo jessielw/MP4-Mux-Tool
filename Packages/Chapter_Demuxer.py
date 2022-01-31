@@ -8,7 +8,7 @@ def launch_chapter_demuxer():
     # Imports ---------------------------------------------------------------------------------------------------------
     from tkinter import filedialog, StringVar, messagebox, LabelFrame, E, N, S, W, Label, Entry, DISABLED, NORMAL, \
         END, Toplevel, SUNKEN, Button
-    import subprocess, pathlib
+    import subprocess, pathlib, webbrowser
     from pymediainfo import MediaInfo
     from configparser import ConfigParser
     from TkinterDnD2 import TkinterDnD, DND_FILES
@@ -31,6 +31,7 @@ def launch_chapter_demuxer():
         def chap_exit_function():
             chap_extract_win.grab_release()  # Release hold, so main gui can take focus again
             chap_extract_win.destroy()  # Close chap window
+
         # ------------- Exit Function
 
         chap_extract_win.title('Chapter Demuxer 1.0')  # Sets the version of the program
@@ -49,9 +50,22 @@ def launch_chapter_demuxer():
         chap_extract_win.grid_columnconfigure(2, weight=1)
 
         if standalone:
+            # Define path to needed binaries
             mkvextract = r'"Apps\mkvextract\mkvextract.exe"'
             mp4box = r'"Apps\mp4box\mp4box.exe"'
-        if not standalone:
+            # Define path to needed binaries
+
+            if not pathlib.Path(mkvextract).is_file():  # If mkvextract isn't detected in the Apps folder
+                messagebox.showerror(title='Error!', message='Program is missing mkvextract.exe, please download and '
+                                                             'place it in the Chapter-Demuxers '
+                                                             '\Apps\mkvextract\ folder')
+                webbrowser.open('https://www.fosshub.com/MKVToolNix.html?dwl=mkvtoolnix-64-bit-64.0.0.7z')
+            if not pathlib.Path(mp4box).is_file():  # If mp4box isn't detected in the Apps folder
+                messagebox.showerror(title='Error!', message='Program is missing mp4box.exe, please download and place '
+                                                             'it in the Chapters-Demuxers \Apps\mp4box\ folder')
+                webbrowser.open('https://www.mediafire.com/file/8pymy2869rmy5x5/mp4box.zip/file')
+
+        if not standalone:  # If paired with Mp4-Mux-Tool (or other programs)
             config_file = 'Runtime/config.ini'  # Creates (if it doesn't exist) and defines location of config.ini
             config = ConfigParser()
             config.read(config_file)
