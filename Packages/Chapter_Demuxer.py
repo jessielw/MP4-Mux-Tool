@@ -249,8 +249,7 @@ def launch_chapter_demuxer():
                                + output_quoted + '"'
 
             # Use subprocess.check_output to execute command then wait to finish executing before code moves to next
-            subprocess.check_output('cmd /c ' + finalcommand, universal_newlines=True,
-                                    creationflags=subprocess.CREATE_NO_WINDOW)
+            subprocess.run('cmd /c ' + finalcommand, universal_newlines=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
             if pathlib.Path(output).is_file():  # Once job is completed, update status label to say 'Completed'
                 status_label.configure(text='Completed!')
