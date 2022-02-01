@@ -35,7 +35,7 @@ def mp4_root_exit_function():  # Pop up window when you file + exit or press 'X'
 
 
 mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
-mp4_root.title("MP4-Mux-Tool v1.0")  # Sets the version of the program
+mp4_root.title("MP4-Mux-Tool v1.1")  # Sets the version of the program
 mp4_root.iconphoto(True, PhotoImage(file='Runtime/Images/mp4mux.png'))  # Sets icon for all windows
 mp4_root.configure(background="#434547")  # Sets gui background color
 window_height = 760  # Gui window height
