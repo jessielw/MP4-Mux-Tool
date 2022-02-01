@@ -579,7 +579,7 @@ def input_button_commands():  # Open file block of code (non drag and drop)
                             if pathlib.Path(filename).with_suffix(".txt").is_file():
                                 chapter_input_entry.configure(state=NORMAL)
                                 chapter_input_entry.delete(0, END)
-                                chapter_input_entry.insert(0, f'Imported chapters from: {filename.name}')
+                                chapter_input_entry.insert(0, f'Imported chapters from: "{filename.name}"')
                                 chapter_input_entry.configure(state=DISABLED)
                                 chapter_input = str(pathlib.Path(filename).with_suffix(".txt"))
         else:
@@ -664,7 +664,7 @@ def update_file_input(*args):  # Drag and drop block of code
                         if pathlib.Path(filename).with_suffix(".txt").is_file():
                             chapter_input_entry.configure(state=NORMAL)
                             chapter_input_entry.delete(0, END)
-                            chapter_input_entry.insert(0, f'Imported chapters from: {filename.name}')
+                            chapter_input_entry.insert(0, f'Imported chapters from: "{filename.name}"')
                             chapter_input_entry.configure(state=DISABLED)
                             chapter_input = str(pathlib.Path(filename).with_suffix(".txt"))
     else:
