@@ -102,7 +102,7 @@ def launch_chapter_demuxer():
 
         # Input Functions Button --------------------------------------------------------------------------------------
         def input_button_commands():  # Open file block of code (non drag and drop)
-            global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, detect_video_fps, \
+            global chapter_source_input, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, detect_video_fps, \
                 fps_entry, output_quoted, extension_type
             source_input = filedialog.askopenfilename(initialdir="/", title="Select A File", parent=chap_extract_win,
                                                       filetypes=[("Supported Formats", ('.mp4', '.mkv'))])
