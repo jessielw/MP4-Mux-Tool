@@ -1,9 +1,9 @@
-![](Mp4-Mux-Tool.v1.0.png)
+![](Mp4-Mux-Tool.v1.1.png)
 
 # Mp4-Mux-Tool # 
 
 ## Supported Operating Systems ##
-Windows 7 **(x64)**, Windows 8 **(x64)**, Windows 10, and Windows 11 **(x64)**
+Windows 7 **(x64)**, Windows 8 **(x64)**, Windows 10**(x64)**, and Windows 11 **(x64)**
 
 # How to use #
 ## Main Gui ##
