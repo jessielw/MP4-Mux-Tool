@@ -518,7 +518,7 @@ dolby_v_profile_combo.current(0)  # Sets profile to index 0 ('') by default
 
 def input_button_commands():  # Open file block of code (non drag and drop)
     global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, detect_video_fps, \
-        fps_entry, output_quoted
+        fps_entry, output_quoted, chapter_input
     video_extensions = ('.avi', '.mp4', '.m1v', '.m2v', '.m4v', '.264', '.h264', '.hevc', '.h265')
     VideoInput = filedialog.askopenfilename(initialdir="/", title="Select A File",
                                             filetypes=[("Supported Formats", video_extensions)])
@@ -581,6 +581,7 @@ def input_button_commands():  # Open file block of code (non drag and drop)
                                 chapter_input_entry.delete(0, END)
                                 chapter_input_entry.insert(0, f'Imported chapters from: {filename.name}')
                                 chapter_input_entry.configure(state=DISABLED)
+                                chapter_input = str(pathlib.Path(filename).with_suffix(".txt"))
         else:
             messagebox.showinfo(title='Input Not Supported',  # Error message if input is not a supported file type
                                 message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -665,6 +666,7 @@ def update_file_input(*args):  # Drag and drop block of code
                             chapter_input_entry.delete(0, END)
                             chapter_input_entry.insert(0, f'Imported chapters from: {filename.name}')
                             chapter_input_entry.configure(state=DISABLED)
+                            chapter_input = str(pathlib.Path(filename).with_suffix(".txt"))
     else:
         messagebox.showinfo(title='Input Not Supported',
                             message="Try Again With a Supported File Type!\n\nIf this is a "
