@@ -38,7 +38,7 @@ mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
 mp4_root.title("MP4-Mux-Tool v1.1")  # Sets the version of the program
 mp4_root.iconphoto(True, PhotoImage(file='Runtime/Images/mp4mux.png'))  # Sets icon for all windows
 mp4_root.configure(background="#434547")  # Sets gui background color
-window_height = 760  # Gui window height
+window_height = 800  # Gui window height
 window_width = 605  # Gui window width
 screen_width = mp4_root.winfo_screenwidth()  # down
 screen_height = mp4_root.winfo_screenheight()  # down
@@ -83,6 +83,11 @@ if not config.has_section('reset_program_on_start_job'):  # Creates reset main g
     config.add_section('reset_program_on_start_job')
 if not config.has_option('reset_program_on_start_job', 'option'):
     config.set('reset_program_on_start_job', 'option', '')
+
+if not config.has_section('auto_chapter_import'):  # Creates auto chapter import on start job config info
+    config.add_section('auto_chapter_import')
+if not config.has_option('auto_chapter_import', 'option'):
+    config.set('auto_chapter_import', 'option', 'on')
 
 try:  # writes all the above config information to config.ini file
     with open(config_file, 'w') as configfile:
@@ -267,6 +272,7 @@ def set_mp4box_path():
 
 
 options_menu.add_command(label='Set path to MP4Box', command=set_mp4box_path)
+
 
 def set_mkvextract_path():
     global mp4box
@@ -562,6 +568,19 @@ def input_button_commands():  # Open file block of code (non drag and drop)
                         video_title_entrybox.insert(0, track.title)
                     except(Exception,):
                         pass
+                if config['auto_chapter_import']['option'] == 'on':  # If checkbox to auto import chapter is checked
+                    if track.track_type == 'General':
+                        if track.count_of_menu_streams is not None:  # If source has chapters continue code
+                            finalcommand = '"' + mp4box + ' ' + f'"{filename}"' + ' -dump-chap-ogg -out ' + \
+                                           f'"{pathlib.Path(filename).with_suffix(".txt")}"' + '"'
+                            # Use subprocess.run to execute, then wait to finish executing before code moves to next
+                            subprocess.run('cmd /c ' + finalcommand, universal_newlines=True,
+                                           creationflags=subprocess.CREATE_NO_WINDOW)
+                            if pathlib.Path(filename).with_suffix(".txt").is_file():
+                                chapter_input_entry.configure(state=NORMAL)
+                                chapter_input_entry.delete(0, END)
+                                chapter_input_entry.insert(0, f'Imported chapters from: {filename.name}')
+                                chapter_input_entry.configure(state=DISABLED)
         else:
             messagebox.showinfo(title='Input Not Supported',  # Error message if input is not a supported file type
                                 message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -585,7 +604,7 @@ def video_drop_input(event):  # Drag and drop function
 
 def update_file_input(*args):  # Drag and drop block of code
     global VideoInput, autofilesave_dir_path, VideoInputQuoted, output, autosavefilename, detect_video_fps, \
-        fps_entry, output_quoted
+        fps_entry, output_quoted, chapter_input
     input_entry.configure(state=NORMAL)
     input_entry.delete(0, END)
     VideoInput = str(input_dnd.get()).replace("{", "").replace("}", "")
@@ -633,6 +652,19 @@ def update_file_input(*args):  # Drag and drop block of code
                     video_title_entrybox.insert(0, track.title)
                 except(Exception,):
                     pass
+            if config['auto_chapter_import']['option'] == 'on':  # If checkbox to auto import chapter is checked
+                if track.track_type == 'General':
+                    if track.count_of_menu_streams is not None:  # If source has chapters continue code
+                        finalcommand = '"' + mp4box + ' ' + f'"{filename}"' + ' -dump-chap-ogg -out ' + \
+                                       f'"{pathlib.Path(filename).with_suffix(".txt")}"' + '"'
+                        # Use subprocess.run to execute, then wait to finish executing before code moves to next
+                        subprocess.run('cmd /c ' + finalcommand, universal_newlines=True,
+                                       creationflags=subprocess.CREATE_NO_WINDOW)
+                        if pathlib.Path(filename).with_suffix(".txt").is_file():
+                            chapter_input_entry.configure(state=NORMAL)
+                            chapter_input_entry.delete(0, END)
+                            chapter_input_entry.insert(0, f'Imported chapters from: {filename.name}')
+                            chapter_input_entry.configure(state=DISABLED)
     else:
         messagebox.showinfo(title='Input Not Supported',
                             message="Try Again With a Supported File Type!\n\nIf this is a "
@@ -1214,7 +1246,6 @@ def update_chapter_input(*args):
         del chapter_input
 
 
-# Buttons -------------------------------------------------------------------------------------------------------------
 def chapter_drop_input(event):
     chapter_input_dnd.set(event.data)
 
@@ -1224,12 +1255,12 @@ chapter_input_dnd.trace('w', update_chapter_input)
 chapter_input_button = HoverButton(chapter_frame, text='Open File', command=chapter_input_button_commands,
                                    foreground='white', background='#23272A', borderwidth='3', activebackground='grey',
                                    state=DISABLED)
-chapter_input_button.grid(row=0, column=0, columnspan=1, padx=(10, 10), pady=(10, 5), sticky=W + E)
+chapter_input_button.grid(row=0, column=0, columnspan=1, padx=(10, 10), pady=(10, 0), sticky=W + E)
 chapter_input_button.drop_target_register(DND_FILES)
 chapter_input_button.dnd_bind('<<Drop>>', chapter_drop_input)
 
 chapter_input_entry = Entry(chapter_frame, width=39, borderwidth=4, background='#CACACA', state=DISABLED)
-chapter_input_entry.grid(row=0, column=1, columnspan=3, padx=(0, 50), pady=(10, 5), sticky=W + E)
+chapter_input_entry.grid(row=0, column=1, columnspan=3, padx=(0, 50), pady=(10, 0), sticky=W + E)
 chapter_input_entry.drop_target_register(DND_FILES)
 chapter_input_entry.dnd_bind('<<Drop>>', chapter_drop_input)
 
@@ -1248,7 +1279,29 @@ def clear_chapter_input():  # Deletes all inputs and sets defaults for chapter b
 
 delete_chapter_input_button = HoverButton(chapter_frame, text='X', command=clear_chapter_input, foreground='white',
                                           background='#23272A', borderwidth='3', activebackground='grey', width=2)
-delete_chapter_input_button.grid(row=0, column=3, columnspan=1, padx=10, pady=(10, 5), sticky=E)
+delete_chapter_input_button.grid(row=0, column=3, columnspan=1, padx=10, pady=(10, 0), sticky=E)
+
+
+# Auto Chapter Import Checkbutton -------------------------------------------------------------------------------------
+def save_chap_import_option():  # Function to write variable to config.ini so program remembers user setting
+    config.set('auto_chapter_import', 'option', auto_chap_import.get())
+    try:
+        with open(config_file, 'w') as configfile:
+            config.write(configfile)
+    except(Exception,):
+        pass
+
+
+auto_chap_import = StringVar()
+auto_chap_import_checkbox = Checkbutton(chapter_frame, text='Automatically import chapter from video input',
+                                        variable=auto_chap_import, onvalue='on', offvalue='off',
+                                        command=save_chap_import_option, takefocus=False)
+auto_chap_import_checkbox.grid(row=1, column=0, columnspan=2, rowspan=1, padx=10, pady=(1, 1), sticky=W)
+auto_chap_import_checkbox.configure(background="#434547", foreground="white", activebackground="#434547",
+                                    activeforeground="white", selectcolor="#434547", font=("Helvetica", 10))
+auto_chap_import.set(str(config['auto_chapter_import']['option']))  # Set's button status from config.ini
+
+# ------------------------------------------------------------------------------------- Auto Chapter Import Checkbutton
 
 # ------------------------------------------------------------------------------------------------------------- Chapter
 
@@ -1309,6 +1362,7 @@ delete_output_button.grid(row=0, column=3, columnspan=1, padx=10, pady=(10, 5), 
 def start_job():
     global output_quoted
     total_progress_segments = 2  # Progress segments starts at 2 because video+output has to be defined in order for
+
     # the program to work, they equal 2 progress segments
 
     def error_msg_box():  # Generic error box that shows the error via the 'error_name' variable
@@ -1351,7 +1405,7 @@ def start_job():
         error_msg_box()  # Runs the error_msg_box function with the error name above
 
     try:
-        if 'subtitle_input' in globals():   # If the variable 'subtitle_input' does exist in globals
+        if 'subtitle_input' in globals():  # If the variable 'subtitle_input' does exist in globals
             total_progress_segments += 1  # Add +1 to total_progress_segments, for final summed count of segments
             # Build subtitle_options for the final command line with all the variables
             subtitle_options = ' -add "' + subtitle_input + '#1' + subtitle_title_cmd_input + ':lang=' + \
@@ -1489,6 +1543,8 @@ def check_for_existing_output():
             output_button_commands()  # Open Output button function to set a new output file location
     else:  # If output doesn't exist go on and run the start job code
         threading.Thread(target=start_job).start()
+
+
 # -------------------------- Check to see if output file already exists and asks the user if they want to over-write it
 
 
@@ -1496,6 +1552,8 @@ def check_for_existing_output():
 start_button = HoverButton(mp4_root, text='Start Job', command=check_for_existing_output, foreground='white',
                            background='#23272A', borderwidth='3', activebackground='grey', state=DISABLED)
 start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(15, 2), sticky=E)
+
+
 # --------------------------------------------------------------------------------------------------- Start Button Code
 
 # ----------------------------------------------------------------------------------------------------------- Start Job
@@ -1646,8 +1704,6 @@ def reset_on_leave(e):
     status_label.configure(text='')
 
 
-output_button.bind("<Enter>", file_output_on_enter)
-output_button.bind("<Leave>", file_output_on_leave)
 delete_chapter_input_button.bind("<Enter>", reset_on_enter)
 delete_chapter_input_button.bind("<Leave>", reset_on_leave)
 delete_output_button.bind("<Enter>", reset_on_enter)
@@ -1682,6 +1738,18 @@ def start_job_button_on_leave(e):
 
 start_button.bind("<Enter>", start_job_button_on_enter)
 start_button.bind("<Leave>", start_job_button_on_leave)
+
+
+def auto_chap_checkbtn_on_enter(e):
+    status_label.configure(text='If checked - attempts to import embedded chapter file from video input')
+
+
+def auto_chap_checkbtn_on_leave(e):
+    status_label.configure(text='')
+
+
+auto_chap_import_checkbox.bind("<Enter>", auto_chap_checkbtn_on_enter)
+auto_chap_import_checkbox.bind("<Leave>", auto_chap_checkbtn_on_leave)
 
 # ----------------------------------------------------------------- Status Label at bottom of main GUI
 # End Loop ------------------------------------------------------------------------------------------------------------
