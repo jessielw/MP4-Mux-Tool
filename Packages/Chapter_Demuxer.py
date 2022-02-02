@@ -12,6 +12,7 @@ def launch_chapter_demuxer():
     from pymediainfo import MediaInfo
     from configparser import ConfigParser
     from TkinterDnD2 import TkinterDnD, DND_FILES
+    from ctypes import windll
 
     global chap_extract_win
 
@@ -45,6 +46,13 @@ def launch_chapter_demuxer():
         chap_extract_win.geometry(f'{window_width}x{window_height}+{x_coordinate}+{y_coordinate}')  # opens gui center
         chap_extract_win.grab_set()  # Keeps window above main root window
         chap_extract_win.protocol('WM_DELETE_WINDOW', chap_exit_function)  # Code to use exit function for 'X'
+
+        # Block of code to fix DPI awareness issues on Windows 7 or higher
+        try:
+            windll.shcore.SetProcessDpiAwareness(2)  # if your Windows version >= 8.1
+        except(Exception,):
+            windll.user32.SetProcessDPIAware()  # Windows 8.0 or less
+        # Block of code to fix DPI awareness issues on Windows 7 or higher
 
         chap_extract_win.rowconfigure(3, weight=1)
         chap_extract_win.grid_columnconfigure(2, weight=1)
@@ -102,8 +110,8 @@ def launch_chapter_demuxer():
 
         # Input Functions Button --------------------------------------------------------------------------------------
         def input_button_commands():  # Open file block of code (non drag and drop)
-            global chapter_source_input, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, detect_video_fps, \
-                fps_entry, output_quoted, extension_type
+            global chapter_source_input, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, \
+                detect_video_fps, fps_entry, output_quoted, extension_type
             source_input = filedialog.askopenfilename(initialdir="/", title="Select A File", parent=chap_extract_win,
                                                       filetypes=[("Supported Formats", ('.mp4', '.mkv'))])
             chap_input_entry.configure(state=NORMAL)  # Enable chapter input entry
