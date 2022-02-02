@@ -49,7 +49,7 @@ mp4_root.protocol('WM_DELETE_WINDOW', mp4_root_exit_function)  # Code to use exi
 
 # Block of code to fix DPI awareness issues on Windows 7 or higher
 try:
-    windll.shcore.SetProcessDpiAwareness(1)  # if your Windows version >= 8.1
+    windll.shcore.SetProcessDpiAwareness(2)  # if your Windows version >= 8.1
 except(Exception,):
     windll.user32.SetProcessDPIAware()  # Windows 8.0 or less
 # Block of code to fix DPI awareness issues on Windows 7 or higher
