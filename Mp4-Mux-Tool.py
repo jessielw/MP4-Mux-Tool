@@ -392,7 +392,7 @@ if not pathlib.Path(mp4box.replace('"', '')).is_file():  # Checks config for bun
     elif not pathlib.Path('Apps/mp4box/MP4Box.exe').is_file():  # If mp4box.exe does not exist
         messagebox.showerror(title='Error!', message='Please download mp4box.exe and set path to '
                                                      'mp4box.exe in the Options menu')  # Error message
-        webbrowser.open('https://github.com/gpac/gpac/wiki/MP4Box')  # Opens default web-browser to mp4box github
+        webbrowser.open('https://www.mediafire.com/file/8pymy2869rmy5x5/mp4box.zip/file')  # Gets recent build
     # mp4box ------------------------------------------------------------------------
 
 mkvextract = config['mkvextract_path']['path']
@@ -407,7 +407,7 @@ if not pathlib.Path(mkvextract.replace('"', '')).is_file():  # Checks config for
             with open(config_file, 'w') as configfile:
                 config.write(configfile)
         except (Exception,):  # If unable to write path to mp4box.exe present error message
-            messagebox.showerror(title='Error!', message=f'Could not save path to mp4box at '
+            messagebox.showerror(title='Error!', message=f'Could not save path to mkvextract at '
                                                          f'\n{mkvextract}\n please try again')
     elif not pathlib.Path('Apps/mkvextract/mkvextract.exe').is_file():  # If mkvextract.exe does not exist
         messagebox.showerror(title='Error!', message='Please download mkvextract.exe and set path to '
