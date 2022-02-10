@@ -503,13 +503,13 @@ video_combo_language.current(0)  # Sets language to index 0 (UND) by default
 
 # Dolby Vision --------------------------------------------------------------------------------------------------------
 dolby_profiles = {'None': '', 'Profile 5': ':dv-profile=5:hdr=none',
-                  'Profile 8.1 (HDR10 compatible)': ':dv-profile=8.hdr10:hdr=none',
-                  'Profile 8.2 (bt709 compatible)': ':dv-profile=8.bt709:hdr=none'}
+                  'Profile 8.1 (HDR10)': ':dv-profile=8.hdr10:hdr=none',
+                  'Profile 8.2 (bt709)': ':dv-profile=8.bt709:hdr=none'}
 dolby_v_profile = StringVar()
 dolby_v_profile_menu_label = Label(video_tab2, text='Dolby Vision:', background="#434547", foreground="white")
 dolby_v_profile_menu_label.grid(row=0, column=0, columnspan=1, padx=10, pady=(0, 0), sticky=W)
 dolby_v_profile_combo = ttk.Combobox(video_tab2, values=list(dolby_profiles.keys()), justify="center",
-                                     textvariable=dolby_v_profile, width=15)
+                                     textvariable=dolby_v_profile, width=20)
 dolby_v_profile_combo.grid(row=1, column=0, columnspan=1, padx=10, pady=(0, 10), sticky=W + E + N + S)
 dolby_v_profile_combo['state'] = 'readonly'
 dolby_v_profile_combo.current(0)  # Sets profile to index 0 ('') by default
