@@ -502,8 +502,9 @@ video_combo_language.current(0)  # Sets language to index 0 (UND) by default
 # ------------------------------------------------------------------------------------------------------ Video Language
 
 # Dolby Vision --------------------------------------------------------------------------------------------------------
-dolby_profiles = {'None': '', 'Profile 5': ':dv-profile=5:hdr=none', 'Profile 8.1': ':dv-profile=8.hdr10:hdr=none',
-                  'Profile 8.2': ':dv-profile=8.bt709:hdr=none'}
+dolby_profiles = {'None': '', 'Profile 5': ':dv-profile=5:hdr=none',
+                  'Profile 8.1 (HDR10 compatible)': ':dv-profile=8.hdr10:hdr=none',
+                  'Profile 8.2 (bt709 compatible)': ':dv-profile=8.bt709:hdr=none'}
 dolby_v_profile = StringVar()
 dolby_v_profile_menu_label = Label(video_tab2, text='Dolby Vision:', background="#434547", foreground="white")
 dolby_v_profile_menu_label.grid(row=0, column=0, columnspan=1, padx=10, pady=(0, 0), sticky=W)
