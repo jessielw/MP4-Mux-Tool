@@ -11,7 +11,7 @@ from ctypes import windll
 from tkinter import filedialog, StringVar, ttk, messagebox, PhotoImage, Menu, LabelFrame, E, N, S, W, Label, \
     Entry, DISABLED, NORMAL, END, Frame, Spinbox, CENTER, Checkbutton, HORIZONTAL, Toplevel, SUNKEN, OptionMenu
 
-from TkinterDnD2 import *
+from tkinterdnd2 import TkinterDnD, DND_FILES
 from pymediainfo import MediaInfo
 from ISO_639_2 import *
 from Packages.about import openaboutwindow
@@ -890,6 +890,7 @@ def check_audio_tracks_info():
                     messagebox.showerror(title='Error!', message='Cannot auto detect track ID')
                 audio_track_info = audio_format + audio_channels + audio_bitrate + audio_sampling_rate + \
                                    audio_delay + audio_duration + audio_language + audio_title + audio_track_id
+                print(audio_track_info)
                 for new_list in [audio_track_info]:  # Take all the pymedia input and adds it into a list
                     result.append(new_list)
         # ---------------------------------------- Code to gather all the audio tracks information for use with the gui
