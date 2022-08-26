@@ -5,3 +5,5 @@ dist/
 apps/
 __pycache__/
 config.ini
+Mp4-Mux-Tool.exe
+*.zip
