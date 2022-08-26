@@ -2,6 +2,6 @@
 Encoder/
 build/
 dist/
-Apps/
+apps/
 __pycache__/
 config.ini
