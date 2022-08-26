@@ -15,7 +15,7 @@ from tkinterdnd2 import TkinterDnD, DND_FILES
 from pymediainfo import MediaInfo
 from ISO_639_2 import *
 from packages.about import openaboutwindow
-from packages.Chapter_Demuxer import launch_chapter_demuxer
+from packages.chapterdemuxer import ChapterDemux
 
 
 # ------------------------------------------------------------------------------------------------------------- Imports
@@ -36,7 +36,7 @@ def mp4_root_exit_function():  # Pop up window when you file + exit or press 'X'
 
 mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
 mp4_root.title("MP4-Mux-Tool v1.12")  # Sets the version of the program
-mp4_root.iconphoto(True, PhotoImage(file='Runtime/Images/mp4mux.png'))  # Sets icon for all windows
+mp4_root.iconphoto(True, PhotoImage(file='runtime/Images/mp4mux.png'))  # Sets icon for all windows
 mp4_root.configure(background="#434547")  # Sets gui background color
 window_height = 800  # Gui window height
 window_width = 605  # Gui window width
@@ -55,7 +55,7 @@ except(Exception,):
 # Block of code to fix DPI awareness issues on Windows 7 or higher
 
 # Config Parser -------------------------------------------------------------------------------------------------------
-config_file = 'Runtime/config.ini'  # Creates (if it doesn't exist) and defines location of config.ini
+config_file = 'runtime/config.ini'  # Creates (if it doesn't exist) and defines location of config.ini
 config = ConfigParser()
 config.read(config_file)
 
@@ -311,7 +311,7 @@ options_menu.add_command(label='Reset Configuration File', command=reset_config)
 
 tools_menu = Menu(my_menu_bar, tearoff=0, activebackground="dim grey")
 my_menu_bar.add_cascade(label="Tools", menu=tools_menu)
-tools_menu.add_command(label='Chapter Demuxer', command=launch_chapter_demuxer)
+tools_menu.add_command(label='Chapter Demuxer', command=lambda: ChapterDemux(master=mp4_root, standalone=False))
 
 help_menu = Menu(my_menu_bar, tearoff=0, activebackground="dim grey")
 my_menu_bar.add_cascade(label="Help", menu=help_menu)
