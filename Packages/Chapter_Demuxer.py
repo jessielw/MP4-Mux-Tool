@@ -11,7 +11,7 @@ def launch_chapter_demuxer():
     import subprocess, pathlib, webbrowser
     from pymediainfo import MediaInfo
     from configparser import ConfigParser
-    from TkinterDnD2 import TkinterDnD, DND_FILES
+    from tkinterdnd2 import TkinterDnD, DND_FILES
     from ctypes import windll
 
     global chap_extract_win
@@ -59,19 +59,19 @@ def launch_chapter_demuxer():
 
         if standalone:
             # Define path to needed binaries
-            mkvextract = r'"Apps\mkvextract\mkvextract.exe"'
-            mp4box = r'"Apps\mp4box\mp4box.exe"'
+            mkvextract = r'"apps\mkvextract\mkvextract.exe"'
+            mp4box = r'"apps\mp4box\mp4box.exe"'
             # Define path to needed binaries
 
             if not pathlib.Path(str(mkvextract).replace('"', '')).is_file():  # If mkvextract isn't detected
                 messagebox.showerror(title='Error!', message='Program is missing mkvextract.exe, please download and '
                                                              'place it in the Chapter-Demuxers '
-                                                             '\Apps\mkvextract\ folder')
+                                                             '\apps\mkvextract\ folder')
                 webbrowser.open('https://www.fosshub.com/MKVToolNix.html?dwl=mkvtoolnix-64-bit-64.0.0.7z')
                 chap_extract_win.destroy()
             if not pathlib.Path(str(mp4box).replace('"', '')).is_file():  # If mp4box isn't detected
                 messagebox.showerror(title='Error!', message='Program is missing mp4box.exe, please download and place '
-                                                             'it in the Chapters-Demuxers \Apps\mp4box\ folder')
+                                                             'it in the Chapters-Demuxers \apps\mp4box\ folder')
                 webbrowser.open('https://www.mediafire.com/file/8pymy2869rmy5x5/mp4box.zip/file')
                 chap_extract_win.destroy()
 
