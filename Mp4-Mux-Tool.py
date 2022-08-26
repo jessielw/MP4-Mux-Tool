@@ -14,8 +14,8 @@ from tkinter import filedialog, StringVar, ttk, messagebox, PhotoImage, Menu, La
 from tkinterdnd2 import TkinterDnD, DND_FILES
 from pymediainfo import MediaInfo
 from ISO_639_2 import *
-from Packages.about import openaboutwindow
-from Packages.Chapter_Demuxer import launch_chapter_demuxer
+from packages.about import openaboutwindow
+from packages.Chapter_Demuxer import launch_chapter_demuxer
 
 
 # ------------------------------------------------------------------------------------------------------------- Imports
@@ -373,15 +373,15 @@ for n in range(6):
 
 # --------------------------------------------------------------------------------------- mp4_root Row/Column Configure
 
-# Bundled Apps --------------------------------------------------------------------------------------------------------
+# Bundled apps --------------------------------------------------------------------------------------------------------
 mp4box = config['mp4box_path']['path']
 
 if not pathlib.Path(mp4box.replace('"', '')).is_file():  # Checks config for bundled app paths path
     # mp4box -----------------------------------------------------------------------
-    if pathlib.Path('Apps/mp4box/MP4Box.exe').is_file():  # If mp4box.exe is located in the apps folder
+    if pathlib.Path('apps/mp4box/MP4Box.exe').is_file():  # If mp4box.exe is located in the apps folder
         messagebox.showinfo(title='Info', message='Program will use the included '
-                                                  '"mp4box.exe" located in the "Apps" folder')
-        mp4box = '"' + str(pathlib.Path('Apps/mp4box/MP4Box.exe')) + '"'  # sets variable to mp4box.exe
+                                                  '"mp4box.exe" located in the "apps" folder')
+        mp4box = '"' + str(pathlib.Path('apps/mp4box/MP4Box.exe')) + '"'  # sets variable to mp4box.exe
         try:  # Write path location to config.ini file
             config.set('mp4box_path', 'path', mp4box)
             with open(config_file, 'w') as configfile:
@@ -389,7 +389,7 @@ if not pathlib.Path(mp4box.replace('"', '')).is_file():  # Checks config for bun
         except (Exception,):  # If unable to write path to mp4box.exe present error message
             messagebox.showerror(title='Error!', message=f'Could not save path to mp4box at '
                                                          f'\n{mp4box}\n please try again')
-    elif not pathlib.Path('Apps/mp4box/MP4Box.exe').is_file():  # If mp4box.exe does not exist
+    elif not pathlib.Path('apps/mp4box/MP4Box.exe').is_file():  # If mp4box.exe does not exist
         messagebox.showerror(title='Error!', message='Please download mp4box.exe and set path to '
                                                      'mp4box.exe in the Options menu')  # Error message
         webbrowser.open('https://www.mediafire.com/file/8pymy2869rmy5x5/mp4box.zip/file')  # Gets recent build
@@ -398,10 +398,10 @@ if not pathlib.Path(mp4box.replace('"', '')).is_file():  # Checks config for bun
 mkvextract = config['mkvextract_path']['path']
 if not pathlib.Path(mkvextract.replace('"', '')).is_file():  # Checks config for bundled app paths path
     # mkvextract -----------------------------------------------------------------------
-    if pathlib.Path('Apps/mkvextract/mkvextract.exe').is_file():  # If mkvextract.exe is located in the apps folder
+    if pathlib.Path('apps/mkvextract/mkvextract.exe').is_file():  # If mkvextract.exe is located in the apps folder
         messagebox.showinfo(title='Info', message='Program will use the included '
-                                                  '"mkvextract.exe" located in the "Apps" folder')
-        mkvextract = '"' + str(pathlib.Path('Apps/mkvextract/mkvextract.exe')) + '"'  # sets variable to mkvextract.exe
+                                                  '"mkvextract.exe" located in the "apps" folder')
+        mkvextract = '"' + str(pathlib.Path('apps/mkvextract/mkvextract.exe')) + '"'  # sets variable to mkvextract.exe
         try:  # Write path location to config.ini file
             config.set('mkvextract_path', 'path', mkvextract)
             with open(config_file, 'w') as configfile:
@@ -409,14 +409,14 @@ if not pathlib.Path(mkvextract.replace('"', '')).is_file():  # Checks config for
         except (Exception,):  # If unable to write path to mp4box.exe present error message
             messagebox.showerror(title='Error!', message=f'Could not save path to mkvextract at '
                                                          f'\n{mkvextract}\n please try again')
-    elif not pathlib.Path('Apps/mkvextract/mkvextract.exe').is_file():  # If mkvextract.exe does not exist
+    elif not pathlib.Path('apps/mkvextract/mkvextract.exe').is_file():  # If mkvextract.exe does not exist
         messagebox.showerror(title='Error!', message='Please download mkvextract.exe and set path to '
                                                      'mkvextract.exe in the Options menu')  # Error message
         webbrowser.open('https://www.fosshub.com/MKVToolNix.html?dwl=mkvtoolnix-64-bit-64.0.0.7z')
         # Opens default web-browser to mkvextract (mkvtoolnix)
     # mkvextract ------------------------------------------------------------------------
 
-# -------------------------------------------------------------------------------------------------------- Bundled Apps
+# -------------------------------------------------------------------------------------------------------- Bundled apps
 # Video Frame ---------------------------------------------------------------------------------------------------------
 video_frame = LabelFrame(mp4_root, text=' Video ')
 video_frame.grid(row=0, columnspan=3, sticky=E + W + N + S, padx=20, pady=(5, 0))
