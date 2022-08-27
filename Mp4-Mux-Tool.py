@@ -1,4 +1,3 @@
-# Imports--------------------------------------------------------------------------------------------------------------
 import pathlib
 import pyperclip
 import subprocess
@@ -6,19 +5,17 @@ import threading
 import tkinter as tk
 import tkinter.scrolledtext as scrolledtextwidget
 import webbrowser
-from configparser import ConfigParser
 from ctypes import windll
 from tkinter import filedialog, StringVar, ttk, messagebox, PhotoImage, Menu, LabelFrame, E, N, S, W, Label, \
-    Entry, DISABLED, NORMAL, END, Frame, Spinbox, CENTER, Checkbutton, HORIZONTAL, Toplevel, SUNKEN, OptionMenu
+    Entry, DISABLED, NORMAL, END, Frame, Spinbox, CENTER, Checkbutton, HORIZONTAL, Toplevel, SUNKEN, OptionMenu, Button
 
 from tkinterdnd2 import TkinterDnD, DND_FILES
 from pymediainfo import MediaInfo
 from ISO_639_2 import *
 from packages.about import openaboutwindow
 from packages.chapterdemuxer import ChapterDemux
-
-
-# ------------------------------------------------------------------------------------------------------------- Imports
+from packages.base64images import icon_image
+from packages.configparams import *
 
 
 # Main Gui & Windows --------------------------------------------------------------------------------------------------
@@ -35,11 +32,11 @@ def mp4_root_exit_function():  # Pop up window when you file + exit or press 'X'
 
 
 mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
-mp4_root.title("MP4-Mux-Tool v1.12")  # Sets the version of the program
-mp4_root.iconphoto(True, PhotoImage(file='runtime/Images/mp4mux.png'))  # Sets icon for all windows
+mp4_root.title("MP4-Mux-Tool v1.13")  # Sets the version of the program
+mp4_root.iconphoto(True, PhotoImage(data=icon_image))  # Sets icon for all windows
 mp4_root.configure(background="#434547")  # Sets gui background color
 window_height = 800  # Gui window height
-window_width = 605  # Gui window width
+window_width = 800  # Gui window width
 screen_width = mp4_root.winfo_screenwidth()  # down
 screen_height = mp4_root.winfo_screenheight()  # down
 x_coordinate = int((screen_width / 2) - (window_width / 2))  # down
@@ -53,48 +50,6 @@ try:
 except(Exception,):
     windll.user32.SetProcessDPIAware()  # Windows 8.0 or less
 # Block of code to fix DPI awareness issues on Windows 7 or higher
-
-# Config Parser -------------------------------------------------------------------------------------------------------
-config_file = 'runtime/config.ini'  # Creates (if it doesn't exist) and defines location of config.ini
-config = ConfigParser()
-config.read(config_file)
-
-if not config.has_section('mp4box_path'):  # Creates mp4box.exe config info
-    config.add_section('mp4box_path')
-if not config.has_option('mp4box_path', 'path'):
-    config.set('mp4box_path', 'path', '')
-
-if not config.has_section('mkvextract_path'):  # Creates mp4box.exe config info
-    config.add_section('mkvextract_path')
-if not config.has_option('mkvextract_path', 'path'):
-    config.set('mkvextract_path', 'path', '')
-
-if not config.has_section('debug_option'):  # Creates debug config info
-    config.add_section('debug_option')
-if not config.has_option('debug_option', 'option'):
-    config.set('debug_option', 'option', '')
-
-if not config.has_section('auto_close_progress_window'):  # Creates auto close progress on complete config info
-    config.add_section('auto_close_progress_window')
-if not config.has_option('auto_close_progress_window', 'option'):
-    config.set('auto_close_progress_window', 'option', '')
-
-if not config.has_section('reset_program_on_start_job'):  # Creates reset main gui on start job config info
-    config.add_section('reset_program_on_start_job')
-if not config.has_option('reset_program_on_start_job', 'option'):
-    config.set('reset_program_on_start_job', 'option', '')
-
-if not config.has_section('auto_chapter_import'):  # Creates auto chapter import on start job config info
-    config.add_section('auto_chapter_import')
-if not config.has_option('auto_chapter_import', 'option'):
-    config.set('auto_chapter_import', 'option', 'on')
-
-try:  # writes all the above config information to config.ini file
-    with open(config_file, 'w') as configfile:
-        config.write(configfile)
-except (Exception,):  # If for some reason there is an error writing the file, this pop up window will let you know
-    messagebox.showinfo(title='Error', message='Could Not Write to config.ini file, delete and try again')
-# ------------------------------------------------------------------------------------------------------- Config Parser
 
 # Menu Items and Sub-Bars ---------------------------------------------------------------------------------------------
 my_menu_bar = Menu(mp4_root, tearoff=0)
@@ -343,27 +298,40 @@ mp4_root.option_add('*TCombobox*Listbox*selectForeground', '#404040')
 custom_style.map('TCombobox', foreground=[('hover', 'white')], background=[('hover', 'grey')])
 custom_style.configure("purple.Horizontal.TProgressbar", background='purple')
 
+# -------------------------------------------------------------------------------------------------------------- Themes
 
-# ----------------------------------- ComboBox Mouse Hover Code
-# ------------------------------------------ Custom Tkinter Theme
+class HoverButton(Button):
+    """simple class to convert button to a hoverbutton"""
 
-# Hover over button theme ---------------------------------------
-class HoverButton(tk.Button):
     def __init__(self, master, **kw):
-        tk.Button.__init__(self, master=master, **kw)
+        Button.__init__(self, master=master, **kw)
         self.defaultBackground = self["background"]
         self.bind("<Enter>", self.on_enter)
         self.bind("<Leave>", self.on_leave)
 
     def on_enter(self, e):
-        self['background'] = self['activebackground']
+        self["background"] = self["activebackground"]
+        if self.cget("text") == "Video":
+            status_label.configure(text='Video inputs supported (.avi, .mp4, .m1v/.m2v, .m4v, .264, .h264, .hevc, or '
+                                        '.h265)')
+        if self.cget("text") == "Audio":
+            status_label.configure(text='Audio inputs supported (.ac3, .aac, .mp4, .m4a, .mp2, .mp3, .opus, or .ogg)')
+        if self.cget("text") == "Subtitle":
+            status_label.configure(text='Subtitle inputs supported (.srt, .idx, .ttxt)')
+        if self.cget("text") == "Chapter":
+            status_label.configure(text='Chapter input supported OGG (.txt)')
+        if self.cget("text") == "Output":
+            status_label.configure(text='Select File Save Location (*.mp4)')
+        if self.cget("text") == "X":
+            status_label.configure(text='Remove input and settings')
+        if self.cget("text") == "View Command":
+            status_label.configure(text='Select to show complete command line')
+        if self.cget("text") == "Mux":
+            status_label.configure(text='Select to begin muxing')
 
     def on_leave(self, e):
-        self['background'] = self.defaultBackground
-
-
-# --------------------------------------- Hover over button theme
-# -------------------------------------------------------------------------------------------------------------- Themes
+        self["background"] = self.defaultBackground
+        status_label.configure(text="")
 
 # mp4_root Row/Column Configure ---------------------------------------------------------------------------------------
 for n in range(3):
@@ -688,7 +656,7 @@ def update_file_input(*args):  # Drag and drop block of code
 # Buttons -------------------------------------------------------------------------------------------------------------
 input_dnd = StringVar()
 input_dnd.trace('w', update_file_input)
-input_button = HoverButton(video_tab, text='Open File', command=input_button_commands, foreground='white',
+input_button = HoverButton(video_tab, text='Video', command=input_button_commands, foreground='white',
                            background='#23272A', borderwidth='3', activebackground='grey', width=15)
 input_button.grid(row=0, column=0, columnspan=1, padx=5, pady=5, sticky=W + E)
 input_button.drop_target_register(DND_FILES)
@@ -1022,7 +990,7 @@ def audio_drop_input(event):  # Drag and drop function for audio input
 
 audio_input_dnd = StringVar()
 audio_input_dnd.trace('w', update_audio_input)
-audio_input_button = HoverButton(audio_tab, text='Open File', command=audio_input_button_commands, foreground='white',
+audio_input_button = HoverButton(audio_tab, text='Audio', command=audio_input_button_commands, foreground='white',
                                  background='#23272A', borderwidth='3', activebackground='grey', state=DISABLED)
 audio_input_button.grid(row=0, column=0, columnspan=1, padx=(10, 10), pady=(10, 5), sticky=W + E)
 audio_input_button.drop_target_register(DND_FILES)
@@ -1165,7 +1133,7 @@ def subtitle_drop_input(event):
 
 subtitle_input_dnd = StringVar()
 subtitle_input_dnd.trace('w', update_subtitle_input)
-subtitle_input_button = HoverButton(subtitle_tab, text='Open File', command=subtitle_input_button_commands,
+subtitle_input_button = HoverButton(subtitle_tab, text='Subtitle', command=subtitle_input_button_commands,
                                     foreground='white', background='#23272A', borderwidth='3', activebackground='grey',
                                     state=DISABLED)
 subtitle_input_button.grid(row=0, column=0, columnspan=1, padx=(10, 10), pady=(10, 5), sticky=W + E)
@@ -1256,7 +1224,7 @@ def chapter_drop_input(event):
 
 chapter_input_dnd = StringVar()
 chapter_input_dnd.trace('w', update_chapter_input)
-chapter_input_button = HoverButton(chapter_frame, text='Open File', command=chapter_input_button_commands,
+chapter_input_button = HoverButton(chapter_frame, text='Chapter', command=chapter_input_button_commands,
                                    foreground='white', background='#23272A', borderwidth='3', activebackground='grey',
                                    state=DISABLED)
 chapter_input_button.grid(row=0, column=0, columnspan=1, padx=(10, 10), pady=(10, 0), sticky=W + E)
@@ -1297,7 +1265,7 @@ def save_chap_import_option():  # Function to write variable to config.ini so pr
 
 
 auto_chap_import = StringVar()
-auto_chap_import_checkbox = Checkbutton(chapter_frame, text='Automatically import chapter from video input',
+auto_chap_import_checkbox = Checkbutton(chapter_frame, text='Import chapters from video input',
                                         variable=auto_chap_import, onvalue='on', offvalue='off',
                                         command=save_chap_import_option, takefocus=False)
 auto_chap_import_checkbox.grid(row=1, column=0, columnspan=2, rowspan=1, padx=10, pady=(1, 1), sticky=W)
@@ -1553,7 +1521,7 @@ def check_for_existing_output():
 
 
 # Start Button Code ---------------------------------------------------------------------------------------------------
-start_button = HoverButton(mp4_root, text='Start Job', command=check_for_existing_output, foreground='white',
+start_button = HoverButton(mp4_root, text='Mux', command=check_for_existing_output, foreground='white',
                            background='#23272A', borderwidth='3', activebackground='grey', state=DISABLED)
 start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(15, 2), sticky=E)
 
@@ -1640,112 +1608,8 @@ status_label = Label(mp4_root, text='Select "Open File" or drag and drop a video
 status_label.grid(column=0, row=6, columnspan=4, sticky=W + E, pady=(0, 2), padx=3)
 
 
-def input_button_on_enter(e):
-    status_label.configure(text='Video inputs supported (.avi, .mp4, .m1v/.m2v, .m4v, .264, .h264, .hevc, or .h265)')
-
-
-def input_button_on_leave(e):
-    status_label.configure(text='')
-
-
-input_button.bind("<Enter>", input_button_on_enter)
-input_button.bind("<Leave>", input_button_on_leave)
-
-
-def audio_input_on_enter(e):
-    status_label.configure(text='Audio inputs supported (.ac3, .aac, .mp4, .m4a, .mp2, .mp3, .opus, or .ogg)')
-
-
-def audio_input_on_leave(e):
-    status_label.configure(text='')
-
-
-audio_input_button.bind("<Enter>", audio_input_on_enter)
-audio_input_button.bind("<Leave>", audio_input_on_leave)
-
-
-def subtitle_input_on_enter(e):
-    status_label.configure(text='Subtitle inputs supported (.srt, .idx, .ttxt)')
-
-
-def subtitle_input_on_leave(e):
-    status_label.configure(text='')
-
-
-subtitle_input_button.bind("<Enter>", subtitle_input_on_enter)
-subtitle_input_button.bind("<Leave>", subtitle_input_on_leave)
-
-
-def chapter_input_on_enter(e):
-    status_label.configure(text='Chapter input supported OGG (.txt)')
-
-
-def chapter_input_on_leave(e):
-    status_label.configure(text='')
-
-
-chapter_input_button.bind("<Enter>", chapter_input_on_enter)
-chapter_input_button.bind("<Leave>", chapter_input_on_leave)
-
-
-def file_output_on_enter(e):
-    status_label.configure(text='Select File Save Location (*.mp4)')
-
-
-def file_output_on_leave(e):
-    status_label.configure(text='')
-
-
-output_button.bind("<Enter>", file_output_on_enter)
-output_button.bind("<Leave>", file_output_on_leave)
-
-
-def reset_on_enter(e):
-    status_label.configure(text='Remove input and settings')
-
-
-def reset_on_leave(e):
-    status_label.configure(text='')
-
-
-delete_chapter_input_button.bind("<Enter>", reset_on_enter)
-delete_chapter_input_button.bind("<Leave>", reset_on_leave)
-delete_output_button.bind("<Enter>", reset_on_enter)
-delete_output_button.bind("<Leave>", reset_on_leave)
-delete_audio_input_button.bind("<Enter>", reset_on_enter)
-delete_audio_input_button.bind("<Leave>", reset_on_leave)
-delete_input_button.bind("<Enter>", reset_on_enter)
-delete_input_button.bind("<Leave>", reset_on_leave)
-delete_subtitle_input_button.bind("<Enter>", reset_on_enter)
-delete_subtitle_input_button.bind("<Leave>", reset_on_leave)
-
-
-def view_command_button_on_enter(e):
-    status_label.configure(text='Select to show complete command line')
-
-
-def view_command_button_on_leave(e):
-    status_label.configure(text='')
-
-
-show_command.bind("<Enter>", view_command_button_on_enter)
-show_command.bind("<Leave>", view_command_button_on_leave)
-
-
-def start_job_button_on_enter(e):
-    status_label.configure(text='Select to begin muxing')
-
-
-def start_job_button_on_leave(e):
-    status_label.configure(text='')
-
-
-start_button.bind("<Enter>", start_job_button_on_enter)
-start_button.bind("<Leave>", start_job_button_on_leave)
-
-
 def auto_chap_checkbtn_on_enter(e):
-    status_label.configure(text='If checked - attempts to import embedded chapter file from video input')
+    status_label.configure(text='Import embedded chapter file from video input')
 
 
 def auto_chap_checkbtn_on_leave(e):
@@ -1756,5 +1620,9 @@ auto_chap_import_checkbox.bind("<Enter>", auto_chap_checkbtn_on_enter)
 auto_chap_import_checkbox.bind("<Leave>", auto_chap_checkbtn_on_leave)
 
 # ----------------------------------------------------------------- Status Label at bottom of main GUI
+
+# if __name__ == "__main__":
+#     print("Hello, World!")
+
 # End Loop ------------------------------------------------------------------------------------------------------------
 mp4_root.mainloop()
