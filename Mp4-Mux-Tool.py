@@ -74,86 +74,91 @@ class MainGui:
         self.my_menu_bar = Menu(self.mp4_win, tearoff=0)
         self.mp4_win.config(menu=self.my_menu_bar)
 
-        # create File menu
+        # file menu
         self.file_menu = Menu(self.my_menu_bar, tearoff=0, activebackground='dim grey')
         self.my_menu_bar.add_cascade(label='File', menu=self.file_menu)
-
-        ##
-        ##
-        ##
         self.file_menu.add_command(label='Clear Inputs', command=self.clear_inputs)
         self.file_menu.add_separator()
         self.file_menu.add_command(label='Exit', command=self.mp4_win_exit_function)
 
+        # options menu
         self.options_menu = Menu(self.my_menu_bar, tearoff=0, activebackground='dim grey')
         self.my_menu_bar.add_cascade(label='Options', menu=self.options_menu)
-
         self.options_submenu = Menu(self.mp4_win, tearoff=0, activebackground='dim grey')
         self.options_menu.add_cascade(label='Shell Options', menu=self.options_submenu)
-        
+
+        # options menu - debug
         self.shell_options = StringVar()
         self.shell_options.set(config['debug_option']['option'])
-        if self.shell_options.get() == '':
-            self.shell_options.set('Default')
-        elif self.shell_options.get() != '':
-            self.shell_options.set(config['debug_option']['option'])
-        config_writer(config_file, 'debug_option', 'option', self.shell_options.get())
-
         self.options_submenu.add_radiobutton(label='Progress Bars', variable=self.shell_options, value="Default",
-                                        command=lambda: config_writer(config_file, 'debug_option', 'option', self.shell_options.get()))
+                                             command=lambda: config_writer('debug_option', 'option',
+                                                                           self.shell_options.get()))
         self.options_submenu.add_radiobutton(label='CMD Shell (Debug)', variable=self.shell_options, value="Debug",
-                                        command=lambda: config_writer(config_file, 'debug_option', 'option', self.shell_options.get()))
+                                             command=lambda: config_writer('debug_option', 'option',
+                                                                           self.shell_options.get()))
 
+        # options menu - auto close progress window
         self.auto_close_window = StringVar()
         self.auto_close_window.set(config['auto_close_progress_window']['option'])
-        if self.auto_close_window.get() == '':
-            self.auto_close_window.set('on')
-        elif self.auto_close_window.get() != '':
-            self.auto_close_window.set(config['auto_close_progress_window']['option'])
-
-        config_writer(config_file, 'auto_close_progress_window', 'option', self.auto_close_window.get())
         self.options_submenu2 = Menu(self.mp4_win, tearoff=0, activebackground='dim grey')
         self.options_menu.add_cascade(label='Auto-Close Progress Window On Completion', menu=self.options_submenu2)
-        self.options_submenu2.add_radiobutton(label='On', variable=self.auto_close_window, value='on', command=lambda: config_writer(config_file, 'auto_close_progress_window', 'option', self.auto_close_window.get()))
+        self.options_submenu2.add_radiobutton(label='On', variable=self.auto_close_window, value='on',
+                                              command=lambda: config_writer('auto_close_progress_window',
+                                                                            'option', self.auto_close_window.get()))
         self.options_submenu2.add_radiobutton(label='Off', variable=self.auto_close_window, value='off',
-                                         command=lambda: config_writer(config_file, 'auto_close_progress_window', 'option', self.auto_close_window.get()))
+                                              command=lambda: config_writer('auto_close_progress_window',
+                                                                            'option', self.auto_close_window.get()))
 
+        # options menu - reset config
         self.reset_gui_on_start = StringVar()
         self.reset_gui_on_start.set(config['reset_program_on_start_job']['option'])
-        if self.reset_gui_on_start.get() == '':
-            self.reset_gui_on_start.set('on')
-        elif self.reset_gui_on_start.get() != '':
-            self.reset_gui_on_start.set(config['reset_program_on_start_job']['option'])
-        config_writer(config_file, 'reset_program_on_start_job', 'option', self.reset_gui_on_start.get())
-
         self.options_submenu3 = Menu(self.mp4_win, tearoff=0, activebackground='dim grey')
         self.options_menu.add_cascade(label='Reset GUI When Start Job Is Selected', menu=self.options_submenu3)
         self.options_submenu3.add_radiobutton(label='On', variable=self.reset_gui_on_start, value='on',
-                                         command=lambda: config_writer(config_file, 'reset_program_on_start_job', 'option', self.reset_gui_on_start.get()))
+                                              command=lambda: config_writer('reset_program_on_start_job',
+                                                                            'option', self.reset_gui_on_start.get()))
         self.options_submenu3.add_radiobutton(label='Off', variable=self.reset_gui_on_start, value='off',
-                                         command=lambda: config_writer(config_file, 'reset_program_on_start_job', 'option', self.reset_gui_on_start.get()))
-
+                                              command=lambda: config_writer('reset_program_on_start_job',
+                                                                            'option', self.reset_gui_on_start.get()))
         self.options_menu.add_separator()
+
+        # options menu - define tool paths
         self.options_menu.add_command(label='Set path to MP4Box', command=self.set_mp4box_path)
         self.options_menu.add_command(label='Set path to mkvextract', command=self.set_mkvextract_path)
         self.options_menu.add_separator()
+
+        # options menu - reset config file
         self.options_menu.add_command(label='Reset Configuration File', command=self.reset_config)
 
+        # tools menu
         self.tools_menu = Menu(self.my_menu_bar, tearoff=0, activebackground="dim grey")
         self.my_menu_bar.add_cascade(label="Tools", menu=self.tools_menu)
-        self.tools_menu.add_command(label='Chapter Demuxer', command=lambda: ChapterDemux(master=self.mp4_win, standalone=False))
 
+        # tools menu - Chapter Demuxer
+        self.tools_menu.add_command(label='Chapter Demuxer',
+                                    command=lambda: ChapterDemux(master=self.mp4_win, standalone=False))
+
+        # help menu
         self.help_menu = Menu(self.my_menu_bar, tearoff=0, activebackground="dim grey")
         self.my_menu_bar.add_cascade(label="Help", menu=self.help_menu)
+
+        # help menu - About
         self.help_menu.add_command(label="About", command=openaboutwindow)
 
-        self.video_frame = LabelFrame(self.mp4_win, text=' Video ')
+        # video frame
+        self.video_frame = LabelFrame(self.mp4_win, text=' Video ', fg="white", bg="#434547", bd=4)
         self.video_frame.grid(row=0, columnspan=3, sticky=E + W + N + S, padx=20, pady=(5, 0))
-        self.video_frame.configure(fg="white", bg="#434547", bd=4)
 
+        # video frame grid
         self.video_frame.grid_columnconfigure(0, weight=1)
         self.video_frame.grid_rowconfigure(0, weight=1)
 
+        # bind file drop for video input to video frame
+        self.video_frame.drop_target_register(DND_FILES)
+        self.video_frame.dnd_bind('<<Drop>>', lambda drop_event: self.open_video_source(
+            [x for x in self.mp4_win.splitlist(drop_event.data)][0]))
+
+        # video frame notebook tabs
         self.tabs = ttk.Notebook(self.video_frame, height=110)
         self.tabs.grid(row=0, column=0, columnspan=4, sticky=E + W + N + S, padx=10, pady=5)
         self.video_tab = Frame(self.tabs, background="#434547")
@@ -161,31 +166,36 @@ class MainGui:
         self.tabs.add(self.video_tab, text=' Input ')
         self.tabs.add(self.video_tab2, text=' Options ')
 
+        # video frame notebook tabs grid
         for vt_c in range(4):
             self.video_tab.grid_columnconfigure(vt_c, weight=1)
         for vt_r in range(3):
             self.video_tab.grid_rowconfigure(vt_r, weight=1)
 
+        # button video input
+        self.input_dnd = StringVar()
+        self.input_dnd_button = HoverButton(self.video_tab, text='Video', command=self.manual_video_input,
+                                            foreground='white',background='#23272A', borderwidth='3',
+                                            activebackground='grey', width=15)
+        self.input_dnd_button.grid(row=0, column=0, columnspan=1, padx=5, pady=5, sticky=W + E)
+
+        # video title
         self.video_title_cmd = StringVar()
         self.video_title_entry_label = Label(self.video_tab, text='Video Title:', anchor=W, background='#434547',
-                                           foreground='white')
+                                             foreground='white')
         self.video_title_entry_label.grid(row=1, column=1, columnspan=1, padx=10, pady=(0, 0), sticky=W)
         self.video_title_entry = Entry(self.video_tab, textvariable=self.video_title_cmd, borderwidth=4,
                                        background='#CACACA', state=DISABLED)
         self.video_title_entry.grid(row=2, column=1, columnspan=1, padx=(5, 15), pady=(0, 15), sticky=W + E)
 
-        self.input_dnd = StringVar()
-        self.input_dnd.trace('w', update_file_input)
-        self.input_dnd = HoverButton(self.video_tab, text='Video', command=input_button_commands, foreground='white',
-                                   background='#23272A', borderwidth='3', activebackground='grey', width=15)
-        self.input_dnd.grid(row=0, column=0, columnspan=1, padx=5, pady=5, sticky=W + E)
-        self.input_dnd.drop_target_register(DND_FILES)
-        self.input_dnd.dnd_bind('<<Drop>>', video_drop_input)
+
+
+        #
+        #
+        #
 
         self.input_entry = Entry(self.video_tab, borderwidth=4, background='#CACACA', state=DISABLED, width=40)
         self.input_entry.grid(row=0, column=1, columnspan=2, padx=(5, 0), pady=5, sticky=W + E)
-        self.input_entry.drop_target_register(DND_FILES)
-        self.input_entry.dnd_bind('<<Drop>>', video_drop_input)
 
         self.delete_input_button = HoverButton(self.video_tab, text='X', command=clear_video_input, foreground='white',
                                           background='#23272A', borderwidth='3', activebackground='grey', width=2)
@@ -858,6 +868,21 @@ class MainGui:
                                    background='#23272A', borderwidth='3', activebackground='grey', state=DISABLED)
         self.start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(15, 2), sticky=E)
 
+    def manual_video_input(self):
+        """gui dialog function for video input when the button is clicked"""
+        vid_input = filedialog.askopenfilename(parent=self.mp4_win, initialdir="/", title="Select Video File")
+
+        if vid_input:
+            self.open_video_source(vid_input)
+
+    def open_video_source(self, video_input):
+        """this will be the open video source for both inputs!"""
+        # work here, check extensions, perfect
+        # use code from input_button_commands() and adapt
+        video_extensions = ('.avi', '.mp4', '.m1v', '.m2v', '.m4v', '.264', '.h264', '.hevc', '.h265')
+
+        print(video_input)
+
     # def start_job():
     #     global output_quoted
     #     total_progress_segments = 2  # Progress segments starts at 2 because video+output has to be defined in order for
@@ -1233,25 +1258,25 @@ class MainGui:
         path = filedialog.askopenfilename(parent=self.mp4_win, title='Select Location to "mp4box.exe"',
                                           filetypes=[('MP4Box', 'mp4box.exe')])
         if pathlib.Path(path).is_file():
-            config_writer(config_file, 'mp4box_path', 'path', str(pathlib.Path(path)))
+            config_writer('mp4box_path', 'path', str(pathlib.Path(path)))
 
     def set_mkvextract_path(self):
         """dialog to set the path to mkvextract"""
         path = filedialog.askopenfilename(parent=self.mp4_win, title='Select Location to "mkvextract.exe"',
                                           filetypes=[('mkvextract', 'mkvextract.exe')])
         if pathlib.Path(path).is_file():
-            config_writer(config_file, 'mkvextract_path', 'path', str(pathlib.Path(path)))
+            config_writer('mkvextract_path', 'path', str(pathlib.Path(path)))
 
     def reset_config(self):
         """dialog for user to confirm config reset"""
         msg = messagebox.askyesno(parent=self.mp4_win, title='Warning',
                                   message='Are you sure you want to reset the config.ini file settings?')
         if msg:
-            config_writer(config_file, 'mp4box_path', 'path', '')
-            config_writer(config_file, 'mkvextract_path', 'path', '')
-            config_writer(config_file, 'debug_option', 'option', '')
-            config_writer(config_file, 'auto_close_progress_window', 'option', '')
-            config_writer(config_file, 'reset_program_on_start_job', 'option', '')
+            config_writer('mp4box_path', 'path', '')
+            config_writer('mkvextract_path', 'path', '')
+            config_writer('debug_option', 'option', '')
+            config_writer('auto_close_progress_window', 'option', '')
+            config_writer('reset_program_on_start_job', 'option', '')
             self.mp4_win_exit_function()
 
 
