@@ -17,17 +17,17 @@ if not config.has_option("mkvextract_path", "path"):
 if not config.has_section("debug_option"):
     config.add_section("debug_option")
 if not config.has_option("debug_option", "option"):
-    config.set("debug_option", "option", "")
+    config.set("debug_option", "option", "Default")
 
 if not config.has_section("auto_close_progress_window"):
     config.add_section("auto_close_progress_window")
 if not config.has_option("auto_close_progress_window", "option"):
-    config.set("auto_close_progress_window", "option", "")
+    config.set("auto_close_progress_window", "option", "on")
 
 if not config.has_section("reset_program_on_start_job"):
     config.add_section("reset_program_on_start_job")
 if not config.has_option("reset_program_on_start_job", "option"):
-    config.set("reset_program_on_start_job", "option", "")
+    config.set("reset_program_on_start_job", "option", "off")
 
 if not config.has_section("auto_chapter_import"):
     config.add_section("auto_chapter_import")
