@@ -108,6 +108,7 @@ class AudioTrackSelection:
             row=1, column=0, columnspan=1, padx=5, pady=(60, 5), sticky=N + S + E + W
         )
 
+        # wait for the window to be closed before continuing
         audio_track_win.wait_window()
 
     def __loop_audio_tracks(self):
