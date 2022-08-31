@@ -34,9 +34,9 @@ class AudioTrackSelection:
         elif self.track_count and self.track_count == "1":
             self.track_id = int(self.media_info.audio_tracks[0].track_id)
         elif self.track_count and self.track_count >= "2":
-            self.multi_audio_track()
+            self.__multi_audio_track()
 
-    def multi_audio_track(self):
+    def __multi_audio_track(self):
         """window that will open above main window for the user to select which audio track they want from input"""
         audio_track_win = Toplevel()
         audio_track_win.configure(background="#191a1a")
