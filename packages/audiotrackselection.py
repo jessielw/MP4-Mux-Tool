@@ -228,4 +228,5 @@ class AudioTrackSelection:
         return audio_stream_info_output
 
     def get(self):
-        return self.track_id
+        """returns the media info of the selected audio track in dictionary format"""
+        return self.media_info.tracks[self.track_id].to_data()
