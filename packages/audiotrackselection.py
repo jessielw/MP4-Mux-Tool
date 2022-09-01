@@ -4,6 +4,7 @@ from tkinter import Toplevel, LabelFrame, messagebox, OptionMenu, StringVar, N, 
 
 from pymediainfo import MediaInfo
 
+from packages.ISO_639_2 import *
 from packages.hoverbutton import HoverButton
 
 
@@ -32,7 +33,10 @@ class AudioTrackSelection:
         if not self.track_count or self.track_count == "0":
             self.track_id = None
         elif self.track_count and self.track_count == "1":
-            self.track_id = int(self.media_info.audio_tracks[0].track_id)
+            if self.media_info.audio_tracks[0].track_id:
+                self.track_id = self.media_info.audio_tracks[0].track_id
+            else:
+                self.track_id = "0"
         elif self.track_count and self.track_count >= "2":
             self.__multi_audio_track()
 
@@ -71,7 +75,7 @@ class AudioTrackSelection:
             )
             return
 
-        # Code uses the above dictionary to create a drop-down menu of audio tracks to display/select included track --
+        # Code uses the above dictionary to create a drop-down menu of audio tracks to display/select included track
         audio_id = StringVar()
         audio_id.set(list(audio_stream_info_output)[0])
         audio_id_menu = OptionMenu(
@@ -212,9 +216,7 @@ class AudioTrackSelection:
                 + audio_track_id
             )
 
-            # add parsed string to result list
-            for audio_info in [audio_track_info]:
-                result.append(audio_info)
+            result.append(audio_track_info)
 
         # create a dictionary and loop results
         audio_stream_info_output = {}
@@ -227,6 +229,14 @@ class AudioTrackSelection:
 
         # return dictionary for option menu
         return audio_stream_info_output
+
+    def __detect_title(self, audio_id):
+        """check audio track for embedded track title"""
+        detected_title = self.media_info.tracks[audio_id].title
+        if detected_title:
+            return detected_title
+        else:
+            return ""
 
     def __audio_delay(self, audio_id):
         """find audio delay from selected track and return it to be used within the program"""
@@ -264,13 +274,31 @@ class AudioTrackSelection:
             if not find_delay:
                 return "0"
 
+    def __language_detection(self, audio_id):
+        """returns the ISO_638_2 language code"""
+        if self.media_info.tracks[audio_id].other_language:
+            detect_index = [
+                len(i) for i in self.media_info.tracks[audio_id].other_language
+            ].index(3)
+            language_index = list(iso_639_2_codes_dictionary.values()).index(
+                self.media_info.tracks[audio_id].other_language[detect_index]
+            )
+            return language_index
+        else:
+            return ""
+
     def get(self):
         """returns the media info of the selected audio track in dictionary format"""
         if not self.track_id:
             return None
         else:
-            delay = self.__audio_delay(audio_id=self.track_id)
+            delay = self.__audio_delay(audio_id=int(self.track_id))
+            language = self.__language_detection(audio_id=int(self.track_id))
+            title = self.__detect_title(audio_id=int(self.track_id))
+            # language = ""
             return {
-                "track_data": self.media_info.tracks[self.track_id].to_data(),
-                "embedded_delay": delay,
+                "track_data": self.media_info.tracks[int(self.track_id)].to_data(),
+                "detected_delay": delay,
+                "detected_language": language,
+                "detected_title": title,
             }
