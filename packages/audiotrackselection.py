@@ -145,9 +145,9 @@ class AudioTrackSelection:
 
             # get audio language of input tracks
             if track.other_language:
-                self.audio_language = "|  " + str(track.other_language[0]) + "  |"
+                audio_language = "|  " + str(track.other_language[0]) + "  |"
             else:
-                self.audio_language = ""
+                audio_language = ""
 
             # get audio title of input tracks
             if track.title:
@@ -182,11 +182,12 @@ class AudioTrackSelection:
                 audio_duration = ""
 
             # get audio delay of input tracks
-            if track.delay:
-                if str(track.delay) == "0":
+            delay = self.__audio_delay(track.track_id)
+            if delay:
+                if str(delay) == "0":
                     audio_delay = ""
                 else:
-                    audio_delay = "|  Delay: " + str(track.delay) + "  |"
+                    audio_delay = "|  Delay: " + str(delay) + "  |"
             else:
                 audio_delay = ""
 
@@ -206,7 +207,7 @@ class AudioTrackSelection:
                 + audio_sampling_rate
                 + audio_delay
                 + audio_duration
-                + self.audio_language
+                + audio_language
                 + audio_title
                 + audio_track_id
             )
@@ -227,6 +228,49 @@ class AudioTrackSelection:
         # return dictionary for option menu
         return audio_stream_info_output
 
+    def __audio_delay(self, audio_id):
+        """find audio delay from selected track and return it to be used within the program"""
+
+        # if input file is MP4 then use source_delay of the selected audio track to obtain the delay
+        if pathlib.Path(self.audio_input).suffix == ".mp4":
+            if self.media_info.tracks[audio_id].source_delay:
+                return int(self.media_info.tracks[audio_id].source_delay)
+            elif not self.media_info.tracks[audio_id].source_delay:
+                return 0
+
+        # if input file is MKV then use delay_relative_to_video of the selected audio track to obtain the delay
+        elif pathlib.Path(self.audio_input).suffix == ".mkv":
+            if self.media_info.tracks[audio_id].delay_relative_to_video:
+                return int(self.media_info.tracks[audio_id].delay_relative_to_video)
+            elif not self.media_info.tracks[audio_id].delay_relative_to_video:
+                return 0
+
+        # if input file is MKA then use delay of the selected audio track to obtain the delay
+        elif pathlib.Path(self.audio_input).suffix == ".mka":
+            if self.media_info.tracks[audio_id].delay:
+                return int(self.media_info.tracks[audio_id].delay)
+            elif not self.media_info.tracks[audio_id].delay:
+                return 0
+
+        # if the file is any other supported format, search for the delay string in the filename
+        else:
+            find_delay = re.search(
+                r"delay\s?(\d*)\s?ms",
+                str(pathlib.Path(self.audio_input).name),
+                re.IGNORECASE,
+            )
+            if find_delay:
+                return int(find_delay.group(1))
+            if not find_delay:
+                return 0
+
     def get(self):
         """returns the media info of the selected audio track in dictionary format"""
-        return self.media_info.tracks[self.track_id].to_data()
+        if not self.track_id:
+            return None
+        else:
+            delay = self.__audio_delay(audio_id=self.track_id)
+            return {
+                "track_data": self.media_info.tracks[self.track_id].to_data(),
+                "embedded_delay": delay,
+            }
