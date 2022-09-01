@@ -234,35 +234,35 @@ class AudioTrackSelection:
         # if input file is MP4 then use source_delay of the selected audio track to obtain the delay
         if pathlib.Path(self.audio_input).suffix == ".mp4":
             if self.media_info.tracks[audio_id].source_delay:
-                return int(self.media_info.tracks[audio_id].source_delay)
+                return str(self.media_info.tracks[audio_id].source_delay)
             elif not self.media_info.tracks[audio_id].source_delay:
-                return 0
+                return "0"
 
         # if input file is MKV then use delay_relative_to_video of the selected audio track to obtain the delay
         elif pathlib.Path(self.audio_input).suffix == ".mkv":
             if self.media_info.tracks[audio_id].delay_relative_to_video:
-                return int(self.media_info.tracks[audio_id].delay_relative_to_video)
+                return str(self.media_info.tracks[audio_id].delay_relative_to_video)
             elif not self.media_info.tracks[audio_id].delay_relative_to_video:
-                return 0
+                return "0"
 
         # if input file is MKA then use delay of the selected audio track to obtain the delay
         elif pathlib.Path(self.audio_input).suffix == ".mka":
             if self.media_info.tracks[audio_id].delay:
-                return int(self.media_info.tracks[audio_id].delay)
+                return str(self.media_info.tracks[audio_id].delay)
             elif not self.media_info.tracks[audio_id].delay:
-                return 0
+                return "0"
 
         # if the file is any other supported format, search for the delay string in the filename
         else:
             find_delay = re.search(
-                r"delay\s?(\d*)\s?ms",
+                r"delay\s?(-?\d*)\s?ms",
                 str(pathlib.Path(self.audio_input).name),
                 re.IGNORECASE,
             )
             if find_delay:
-                return int(find_delay.group(1))
+                return str(find_delay.group(1))
             if not find_delay:
-                return 0
+                return "0"
 
     def get(self):
         """returns the media info of the selected audio track in dictionary format"""
