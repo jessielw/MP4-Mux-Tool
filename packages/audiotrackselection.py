@@ -9,7 +9,7 @@ from packages.hoverbutton import HoverButton
 
 
 class AudioTrackSelection:
-    """used to get the track ID and return it for mp4box"""
+    """use to get track information for use within the program"""
 
     def __init__(self, mp4_root, audio_input):
         """determine how many audio tracks are in opened file"""
@@ -285,7 +285,7 @@ class AudioTrackSelection:
             )
             return language_index
         else:
-            return ""
+            return 0
 
     def get(self):
         """returns the media info of the selected audio track in dictionary format"""
