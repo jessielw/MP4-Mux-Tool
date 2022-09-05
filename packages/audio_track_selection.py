@@ -4,7 +4,7 @@ from tkinter import Toplevel, LabelFrame, messagebox, OptionMenu, StringVar, N, 
 
 from pymediainfo import MediaInfo
 
-from packages.ISO_639_2 import *
+from packages.iso_639_2 import *
 from packages.hoverbutton import HoverButton
 
 
