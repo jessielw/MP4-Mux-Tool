@@ -21,6 +21,7 @@ class OpenTheme:
             self.colors = SystemTheme(main_gui=self)
 
             self.custom_window_bg_color = self.colors.custom_window_bg_color
+            self.custom_button_colors = self.colors.custom_button_colors
             self.custom_entry_colors = self.colors.custom_entry_colors
             self.custom_label_frame_colors = self.colors.custom_label_frame_colors
             self.custom_frame_bg_colors = self.colors.custom_frame_bg_colors
@@ -34,6 +35,7 @@ class OpenTheme:
 
         elif self.config_parser["theme"]["selected_theme"] == "bhd_theme":
             self.custom_window_bg_color = bhd_theme.custom_window_bg_color
+            self.custom_button_colors = bhd_theme.custom_button_colors
             self.custom_entry_colors = bhd_theme.custom_entry_colors
             self.custom_label_frame_colors = bhd_theme.custom_label_frame_colors
             self.custom_frame_bg_colors = bhd_theme.custom_frame_bg_colors
