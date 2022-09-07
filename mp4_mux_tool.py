@@ -14,7 +14,7 @@ from packages.base64_images import icon_image
 from packages.config_params import *
 from packages.config_writer import config_writer
 from packages.hoverbutton import HoverButton
-from packages.style import GuiStyle
+from packages.tk_style import GuiStyle
 from packages.main_menu import MainMenu
 from packages.video_frame import VideoSection
 from packages.audio_frame import AudioSection
@@ -24,6 +24,12 @@ from packages.output_frame import OutputSection
 from packages.progress_window import ProgressWindow
 from packages.show_command import ShowCommand
 from packages.apps import BundledApps
+from packages.flow_control import MainGUIFlowControl
+from packages.themes.theme_control import OpenTheme
+from packages.themes.system_theme import SystemTheme
+
+from configparser import ConfigParser
+from packages.config_writer import config_file
 
 # Block of code to fix DPI awareness issues on Windows 7 or higher
 try:
@@ -34,14 +40,21 @@ except(Exception,):
 
 # Block of code to fix DPI awareness issues on Windows 7 or higher
 
+# class GuiController:
+#
+#     def __init__(self):
+#         pass
 
 class MainGui:
+
+    video_loaded = True
 
     def __init__(self, master):
         self.mp4_win = master
         self.mp4_win.title("MP4-Mux-Tool v1.13")
         self.mp4_win.iconphoto(True, PhotoImage(data=icon_image))
-        self.mp4_win.configure(background="#434547")
+        self.open_theme = OpenTheme(main_gui=self)
+        self.mp4_win.configure(background=self.open_theme.custom_window_bg_color)
         self.window_height = 800
         self.window_width = 800
         self.screen_width = self.mp4_win.winfo_screenwidth()
@@ -64,6 +77,7 @@ class MainGui:
         self.chapter_section_instance = ChapterSection(main_gui=self)
         self.output_section_instance = OutputSection(main_gui=self)
         self.bundled_apps_instance = BundledApps(main_gui=self)
+        self.flow_control_instance = MainGUIFlowControl(main_gui=self)
 
         self.show_command = HoverButton(self.mp4_win, text='View Command', command=lambda: ShowCommand,
                                         foreground='white',
@@ -104,7 +118,6 @@ class MainGui:
 
         # ----------------------------------------------------------------- Status Label at bottom of main GUI
 
-
 # class HoverButton(Button):
 #     """simple class to convert button to a hoverbutton"""
 #
@@ -141,5 +154,5 @@ class MainGui:
 
 if __name__ == "__main__":
     root = TkinterDnD.Tk()
-    MainGui(root)
+    main = MainGui(master=root)
     root.mainloop()
