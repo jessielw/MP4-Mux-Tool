@@ -34,5 +34,10 @@ if not config.has_section("auto_chapter_import"):
 if not config.has_option("auto_chapter_import", "option"):
     config.set("auto_chapter_import", "option", "on")
 
+if not config.has_section("theme"):
+    config.add_section("theme")
+if not config.has_option("theme", "selected_theme"):
+    config.set("theme", "selected_theme", "system_default")
+
 with open(config_file, "w") as configfile:
     config.write(configfile)
