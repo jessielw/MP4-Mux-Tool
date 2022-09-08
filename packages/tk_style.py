@@ -2,10 +2,10 @@ from tkinter import ttk
 
 
 class GuiStyle:
-    """control ttk style here"""
+    """controls ttk style when called"""
 
-    def __init__(self, main_gui):
-        self.mp4_win = main_gui.mp4_win
+    def __init__(self, theme_instance):
+        """modifies the ttk theme, notebook, combobox, and the progress bar"""
 
         # create ttk.Style instance
         custom_style = ttk.Style()
@@ -15,41 +15,96 @@ class GuiStyle:
             "jlw_style",
             parent="alt",
             settings={
-                # notebook theme
-                "TNotebook": {"configure": {"tabmargins": [5, 5, 5, 0]}},
+                # notebook theme settings
+                "TNotebook": {
+                    "configure": {
+                        "tabmargins": [5, 5, 5, 0],
+                        "background": theme_instance.custom_frame_bg_colors[
+                            "specialbg"
+                        ],
+                    }
+                },
                 "TNotebook.Tab": {
                     "configure": {
                         "padding": [5, 1],
-                        "background": "grey",
-                        "foreground": "white",
+                        "background": theme_instance.custom_listbox_color[
+                            "selectbackground"
+                        ],
+                        "foreground": theme_instance.custom_button_colors["foreground"],
                         "focuscolor": "",
                     },
                     "map": {
-                        "background": [("selected", "#434547")],
+                        "background": [
+                            (
+                                "selected",
+                                theme_instance.custom_frame_bg_colors["specialbg"],
+                            )
+                        ],
                         "expand": [("selected", [1, 1, 1, 0])],
                     },
                 },
-                # combobox theme
+                # combobox theme settings
                 "TCombobox": {
                     "configure": {
-                        "selectbackground": "#23272A",
-                        "fieldbackground": "#23272A",
-                        "background": "white",
-                        "foreground": "white",
+                        "selectbackground": theme_instance.custom_listbox_color[
+                            "selectbackground"
+                        ],
+                        "fieldbackground": theme_instance.custom_listbox_color[
+                            "selectbackground"
+                        ],
+                        "foreground": theme_instance.custom_listbox_color["foreground"],
+                        "selectforeground": theme_instance.custom_listbox_color[
+                            "selectforeground"
+                        ],
                     }
                 },
             },
         )
 
-        # enable the newly defined theme
+        # enables the use of the custom theme
         custom_style.theme_use("jlw_style")
 
-        # combobox mouse hover code
-        self.mp4_win.option_add("*TCombobox*Listbox*Background", "#404040")
-        self.mp4_win.option_add("*TCombobox*Listbox*Foreground", "#FFFFFF")
-        self.mp4_win.option_add("*TCombobox*Listbox*selectBackground", "#FFFFFF")
-        self.mp4_win.option_add("*TCombobox*Listbox*selectForeground", "#404040")
-        custom_style.map(
-            "TCombobox", foreground=[("hover", "white")], background=[("hover", "grey")]
+        # adjust the progress bar layout
+        custom_style.layout(
+            "text.Horizontal.TProgressbar",
+            [
+                (
+                    "Horizontal.Progressbar.trough",
+                    {
+                        "children": [
+                            (
+                                "Horizontal.Progressbar.pbar",
+                                {"side": "left", "sticky": "ns"},
+                            )
+                        ],
+                        "sticky": "nswe",
+                    },
+                ),
+                ("Horizontal.Progressbar.label", {"sticky": "nswe"}),
+            ],
         )
-        custom_style.configure("purple.Horizontal.TProgressbar", background="purple")
+
+        # set initial text
+        custom_style.configure(
+            "text.Horizontal.TProgressbar",
+            text="",
+            anchor="center",
+            background=theme_instance.custom_button_colors["foreground"],
+            foreground=theme_instance.custom_button_colors["activeforeground"],
+        )
+        custom_style.master.option_add(
+            "*TCombobox*Listbox.foreground",
+            theme_instance.custom_listbox_color["foreground"],
+        )
+        custom_style.master.option_add(
+            "*TCombobox*Listbox.background",
+            theme_instance.custom_listbox_color["background"],
+        )
+        custom_style.master.option_add(
+            "*TCombobox*Listbox.selectBackground",
+            theme_instance.custom_listbox_color["background"],
+        )
+        custom_style.master.option_add(
+            "*TCombobox*Listbox.selectForeground",
+            theme_instance.custom_listbox_color["selectforeground"],
+        )
