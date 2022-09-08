@@ -12,7 +12,7 @@ from tkinter import (
 
 
 class SystemTheme:
-    """create temporary buttons and windows to generate a default OS based theme"""
+    """creates temporary widgets that never gets displayed to extract their default color/theme"""
 
     def __init__(self, main_gui):
         """create mp4 window variable and run the system theme method"""
