@@ -1,4 +1,5 @@
 from configparser import ConfigParser
+from tkinter import font
 
 from packages.config_writer import config_file
 from packages.themes import bhd_theme
@@ -25,6 +26,9 @@ class OpenTheme:
 
             # theme ttk
             self.__theme_ttk()
+
+        # get default os fonts
+        self.__theme_font()
 
     def __check_theme(self):
         """define theme parameters based off of config selection"""
@@ -76,3 +80,11 @@ class OpenTheme:
         relies on values extracted from __theme()
         """
         GuiStyle(theme_instance=self)
+
+    def __theme_font(self):
+        """get default os font to use within the program"""
+        detect_font = font.nametofont("TkDefaultFont")
+        self.set_font = detect_font.actual().get("family")
+        self.set_font_size = detect_font.actual().get("size")
+        self.detect_fixed_font = font.nametofont("TkFixedFont")
+        self.set_fixed_font = self.detect_fixed_font.actual().get("family")
