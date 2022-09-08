@@ -1,9 +1,9 @@
 from tkinter import E, W, N, S, LabelFrame, StringVar, DISABLED, Entry, filedialog, messagebox, NORMAL, END, Checkbutton
 import pathlib
-from packages.theme.hoverbutton import HoverButton
+from mp4muxtool.theme.hoverbutton import HoverButton
 from tkinterdnd2 import DND_FILES
 from configparser import ConfigParser
-from packages.config.config_writer import config_file
+from mp4muxtool.config.config_writer import config_file
 
 
 class ChapterSection:

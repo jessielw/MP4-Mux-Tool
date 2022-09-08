@@ -1,10 +1,10 @@
 from configparser import ConfigParser
 from tkinter import font
 
-from packages.config.config_writer import config_file
-from packages.themes.theme_files import bhd_theme
-from packages.themes.theme_files.system_theme import SystemTheme
-from packages.theme.tk_style import GuiStyle
+from mp4muxtool.config.config_writer import config_file
+from mp4muxtool.theme.themes import bhd_theme
+from mp4muxtool.theme.themes.system_theme import SystemTheme
+from mp4muxtool.theme.tk_style import GuiStyle
 
 
 class OpenTheme:

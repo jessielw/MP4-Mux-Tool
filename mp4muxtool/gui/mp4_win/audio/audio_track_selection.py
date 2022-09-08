@@ -4,8 +4,8 @@ from tkinter import Toplevel, LabelFrame, messagebox, OptionMenu, StringVar, N, 
 
 from pymediainfo import MediaInfo
 
-from packages.misc.iso_639_2 import *
-from packages.theme.hoverbutton import HoverButton
+from mp4muxtool.misc.iso_639_2 import *
+from mp4muxtool.theme.hoverbutton import HoverButton
 
 
 class AudioTrackSelection:

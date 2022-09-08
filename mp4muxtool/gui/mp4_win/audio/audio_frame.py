@@ -1,8 +1,8 @@
 from tkinter import Label, E, W, N, S, LabelFrame, ttk, Frame, StringVar, DISABLED, Entry, filedialog, messagebox, NORMAL, END
 import pathlib
-from packages.gui.mp4_win.audio.audio_track_selection import AudioTrackSelection
-from packages.theme.hoverbutton import HoverButton
-from packages.misc.iso_639_2 import iso_639_2_codes_dictionary
+from mp4muxtool.gui.mp4_win.audio.audio_track_selection import AudioTrackSelection
+from mp4muxtool.theme.hoverbutton import HoverButton
+from mp4muxtool.misc.iso_639_2 import iso_639_2_codes_dictionary
 
 
 class AudioSection:

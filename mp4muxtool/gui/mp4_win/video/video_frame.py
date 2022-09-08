@@ -2,8 +2,8 @@ from tkinter import Label, E, W, N, S, LabelFrame, ttk, Frame, DISABLED, Entry, 
 
 from tkinterdnd2 import DND_FILES
 
-from packages.theme.hoverbutton import HoverButton
-from packages.misc.iso_639_2 import iso_639_2_codes_dictionary
+from mp4muxtool.theme.hoverbutton import HoverButton
+from mp4muxtool.misc.iso_639_2 import iso_639_2_codes_dictionary
 
 
 class VideoSection:

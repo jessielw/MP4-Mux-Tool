@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 
-from packages.config.config_params import config_file
+from mp4muxtool.config.config_params import config_file
 
 
 def config_writer(section, option, value, cfg_file=config_file):

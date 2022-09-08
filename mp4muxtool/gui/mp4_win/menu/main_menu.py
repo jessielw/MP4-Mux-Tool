@@ -1,9 +1,9 @@
 import pathlib
 from tkinter import filedialog, StringVar, messagebox, Menu, DISABLED, NORMAL, END
-from packages.config.config_params import *
-from packages.config.config_writer import config_writer
-from packages.gui.chapter_demuxer.chapterdemuxer import ChapterDemux
-from packages.gui.about.about import openaboutwindow
+from mp4muxtool.config.config_params import *
+from mp4muxtool.config.config_writer import config_writer
+from mp4muxtool.gui.chapter_demuxer.chapterdemuxer import ChapterDemux
+from mp4muxtool.gui.about.about import openaboutwindow
 
 
 class MainMenu:

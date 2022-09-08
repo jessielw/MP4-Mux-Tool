@@ -1,6 +1,6 @@
 from tkinter import E, W, N, S, LabelFrame, DISABLED, Entry, filedialog, messagebox, NORMAL, END
 import pathlib
-from packages.theme.hoverbutton import HoverButton
+from mp4muxtool.theme.hoverbutton import HoverButton
 
 
 class OutputSection:
