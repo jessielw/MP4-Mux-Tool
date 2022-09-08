@@ -1,4 +1,5 @@
 class BHDTheme:
+    """Saves dictionaries for all the custom color data"""
     def __init__(self):
         self.custom_button_colors = {
             "foreground": "white",

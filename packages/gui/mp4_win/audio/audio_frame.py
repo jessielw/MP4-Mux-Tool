@@ -1,9 +1,8 @@
 from tkinter import Label, E, W, N, S, LabelFrame, ttk, Frame, StringVar, DISABLED, Entry, filedialog, messagebox, NORMAL, END
 import pathlib
-from packages.audio_track_selection import AudioTrackSelection
-from packages.hoverbutton import HoverButton
-from tkinterdnd2 import DND_FILES
-from packages.iso_639_2 import iso_639_2_codes_dictionary
+from packages.gui.mp4_win.audio.audio_track_selection import AudioTrackSelection
+from packages.theme.hoverbutton import HoverButton
+from packages.misc.iso_639_2 import iso_639_2_codes_dictionary
 
 
 class AudioSection:
@@ -30,10 +29,10 @@ class AudioSection:
         for n in range(3):
             self.audio_tab.grid_rowconfigure(n, weight=1)
 
-        # bind drag and drop to audio tab
-        self.audio_frame.drop_target_register(DND_FILES)
-        self.audio_frame.dnd_bind('<<Drop>>', lambda drop_event: self.open_audio_source(
-            [x for x in self.mp4_win.splitlist(drop_event.data)][0]))
+        # # bind drag and drop to audio tab
+        # self.audio_frame.drop_target_register(DND_FILES)
+        # self.audio_frame.dnd_bind('<<Drop>>', lambda drop_event: self.open_audio_source(
+        #     [x for x in self.mp4_win.splitlist(drop_event.data)][0]))
 
         #
         self.audio_input_dnd = StringVar()

@@ -1,10 +1,10 @@
 from configparser import ConfigParser
 from tkinter import font
 
-from packages.config_writer import config_file
-from packages.themes import bhd_theme
-from packages.themes.system_theme import SystemTheme
-from packages.tk_style import GuiStyle
+from packages.config.config_writer import config_file
+from packages.themes.theme_files import bhd_theme
+from packages.themes.theme_files.system_theme import SystemTheme
+from packages.theme.tk_style import GuiStyle
 
 
 class OpenTheme:
@@ -76,7 +76,7 @@ class OpenTheme:
     def __theme_ttk(self):
         """
         Called only if the program is running any theme other than system_default
-        This calls the class GuiStyle which themes aspects of the ttk widgets, this
+        This calls the class GuiStyle which theme aspects of the ttk widgets, this
         relies on values extracted from __theme()
         """
         GuiStyle(theme_instance=self)

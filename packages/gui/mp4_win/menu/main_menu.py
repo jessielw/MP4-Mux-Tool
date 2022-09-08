@@ -1,13 +1,9 @@
 import pathlib
-import subprocess
-import webbrowser
-from ctypes import windll
-from tkinter import filedialog, StringVar, ttk, messagebox, PhotoImage, Menu, LabelFrame, E, N, S, W, Label, \
-    Entry, DISABLED, NORMAL, END, Frame, SUNKEN, Button
-from packages.config_params import *
-from packages.config_writer import config_writer
-from packages.chapterdemuxer import ChapterDemux
-from packages.about import openaboutwindow
+from tkinter import filedialog, StringVar, messagebox, Menu, DISABLED, NORMAL, END
+from packages.config.config_params import *
+from packages.config.config_writer import config_writer
+from packages.gui.chapter_demuxer.chapterdemuxer import ChapterDemux
+from packages.gui.about.about import openaboutwindow
 
 
 class MainMenu:

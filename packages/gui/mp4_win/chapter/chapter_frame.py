@@ -1,10 +1,9 @@
-from tkinter import Label, E, W, N, S, LabelFrame, ttk, Frame, StringVar, DISABLED, Entry, filedialog, messagebox, NORMAL, END, Checkbutton
+from tkinter import E, W, N, S, LabelFrame, StringVar, DISABLED, Entry, filedialog, messagebox, NORMAL, END, Checkbutton
 import pathlib
-from packages.hoverbutton import HoverButton
+from packages.theme.hoverbutton import HoverButton
 from tkinterdnd2 import DND_FILES
-from packages.iso_639_2 import iso_639_2_codes_dictionary
 from configparser import ConfigParser
-from packages.config_writer import config_file
+from packages.config.config_writer import config_file
 
 
 class ChapterSection:

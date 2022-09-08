@@ -1,18 +1,33 @@
-from tkinter import Label, E, W, N, S, LabelFrame, ttk, Frame, StringVar, DISABLED, Entry, filedialog, messagebox, NORMAL, END
-import pathlib
-from packages.hoverbutton import HoverButton
-from tkinterdnd2 import TkinterDnD, DND_FILES
-from packages.iso_639_2 import iso_639_2_codes_dictionary
+from tkinter import Label, E, W, N, S, LabelFrame, ttk, Frame, DISABLED, Entry, filedialog, NORMAL, END, SUNKEN
+
+from tkinterdnd2 import DND_FILES
+
+from packages.theme.hoverbutton import HoverButton
+from packages.misc.iso_639_2 import iso_639_2_codes_dictionary
 
 
 class VideoSection:
+    """
+    creates the video portion of the GUI as well as the required methods
+    """
 
     def __init__(self, main_gui):
+        """
+        creates all the widgets used within the video section
+        """
+
+        # parent window
         self.mp4_win = main_gui.mp4_win
 
+        # theme
+        self.theme = main_gui.open_theme
+
         # video frame
-        self.video_frame = LabelFrame(self.mp4_win, text=' Video ', fg="white", bg="#434547", bd=4)
-        self.video_frame.grid(row=0, columnspan=3, sticky=E + W + N + S, padx=20, pady=(5, 0))
+        self.video_frame = LabelFrame(self.mp4_win, text=' Video ', bd=3,
+                                      font=(self.theme.set_font, 9, "bold"),
+                                      fg=self.theme.custom_label_frame_colors["foreground"],
+                                      bg=self.theme.custom_label_frame_colors["background"])
+        self.video_frame.grid(row=0, columnspan=3, sticky=E + W + N + S, padx=5, pady=(5, 0))
 
         # video frame grid
         self.video_frame.grid_columnconfigure(0, weight=1)
@@ -26,8 +41,8 @@ class VideoSection:
         # video frame notebook tabs
         self.tabs = ttk.Notebook(self.video_frame, height=110)
         self.tabs.grid(row=0, column=0, columnspan=4, sticky=E + W + N + S, padx=10, pady=5)
-        self.video_tab = Frame(self.tabs, background="#434547")
-        self.video_tab2 = Frame(self.tabs, background="#434547")
+        self.video_tab = Frame(self.tabs, background=self.theme.custom_frame_bg_colors["specialbg"])
+        self.video_tab2 = Frame(self.tabs, background=self.theme.custom_frame_bg_colors["specialbg"])
         self.tabs.add(self.video_tab, text=' Input ')
         self.tabs.add(self.video_tab2, text=' Options ')
 
@@ -38,60 +53,92 @@ class VideoSection:
             self.video_tab.grid_rowconfigure(vt_r, weight=1)
 
         # button video input
-        self.input_dnd = StringVar()
         self.input_dnd_button = HoverButton(self.video_tab, text='Video', command=self.manual_video_input,
-                                            foreground='white',background='#23272A', borderwidth='3',
-                                            activebackground='grey', width=15)
+                                            borderwidth="3",
+                                            foreground=self.theme.custom_button_colors["foreground"],
+                                            background=self.theme.custom_button_colors["background"],
+                                            activeforeground=self.theme.custom_button_colors["activeforeground"],
+                                            activebackground=self.theme.custom_button_colors["activebackground"],
+                                            disabledforeground=self.theme.custom_button_colors["disabledforeground"])
         self.input_dnd_button.grid(row=0, column=0, columnspan=1, padx=5, pady=5, sticky=W + E)
 
-        # video title
-        self.video_title_cmd = StringVar()
-        self.video_title_entry_label = Label(self.video_tab, text='Video Title:', anchor=W, background='#434547',
-                                             foreground='white')
-        self.video_title_entry_label.grid(row=1, column=1, columnspan=1, padx=10, pady=(0, 0), sticky=W)
-        self.video_title_entry = Entry(self.video_tab, textvariable=self.video_title_cmd, borderwidth=4,
-                                       background='#CACACA', state=DISABLED)
-        self.video_title_entry.grid(row=2, column=1, columnspan=1, padx=(5, 15), pady=(0, 15), sticky=W + E)
-
-        self.input_entry = Entry(self.video_tab, borderwidth=4, background='#CACACA', state=DISABLED, width=40)
+        # input entry
+        self.input_entry = Entry(self.video_tab, state=DISABLED, width=40, borderwidth=4,
+        fg=self.theme.custom_entry_colors["foreground"],
+        bg=self.theme.custom_entry_colors["background"],
+        disabledforeground=self.theme.custom_entry_colors["disabledforeground"],
+        disabledbackground=self.theme.custom_entry_colors["disabledbackground"])
         self.input_entry.grid(row=0, column=1, columnspan=2, padx=(5, 0), pady=5, sticky=W + E)
 
-        self.delete_input_button = HoverButton(self.video_tab, text='X', command=self.clear_video_input, foreground='white',
-                                               background='#23272A', borderwidth='3', activebackground='grey', width=2)
+        # video title
+        self.video_title_entry_label = Label(self.video_tab, text='Video Title:', anchor=W, bd=0,
+        relief=SUNKEN,
+        background=self.theme.custom_label_colors["background"],
+        fg=self.theme.custom_label_colors["foreground"],
+        font=(self.theme.set_font, self.theme.set_font_size + 1))
+        self.video_title_entry_label.grid(row=1, column=1, columnspan=1, padx=10, pady=(0, 0), sticky=W)
+        self.video_title_entry = Entry(self.video_tab, state=DISABLED, borderwidth=4,
+        fg=self.theme.custom_entry_colors["foreground"],
+        bg=self.theme.custom_entry_colors["background"],
+        disabledforeground=self.theme.custom_entry_colors["disabledforeground"],
+        disabledbackground=self.theme.custom_entry_colors["disabledbackground"])
+        self.video_title_entry.grid(row=2, column=1, columnspan=1, padx=(5, 15), pady=(0, 15), sticky=W + E)
+
+        self.delete_input_button = HoverButton(self.video_tab, text='X', command=self.clear_video_input,
+                                               borderwidth="3", width=2,
+                                               foreground=self.theme.custom_button_colors["foreground"],
+                                               background=self.theme.custom_button_colors["background"],
+                                               activeforeground=self.theme.custom_button_colors["activeforeground"],
+                                               activebackground=self.theme.custom_button_colors["activebackground"],
+                                               disabledforeground=self.theme.custom_button_colors["disabledforeground"])
         self.delete_input_button.grid(row=0, column=3, columnspan=1, padx=10, pady=5, sticky=E)
 
         # Video FPS Label is only for viewing purposes, you need input FPS for program to know what fps to output
-        self.video_fps_menu_label = Label(self.video_tab, text='Framerate (FPS):', background="#434547",
-                                          foreground="white")
+        self.video_fps_menu_label = Label(self.video_tab, text='Framerate (FPS):', bd=0,
+        relief=SUNKEN,
+        background=self.theme.custom_label_colors["background"],
+        fg=self.theme.custom_label_colors["foreground"],
+        font=(self.theme.set_font, self.theme.set_font_size + 1))
         self.video_fps_menu_label.grid(row=1, column=2, columnspan=1, padx=(3, 0), pady=(0, 0), sticky=W)
-        self.fps_entry = Entry(self.video_tab, borderwidth=4, background='#CACACA', state=DISABLED, width=10)
+
+        self.fps_entry = Entry(self.video_tab, state=DISABLED, width=10, borderwidth=4,
+        fg=self.theme.custom_entry_colors["foreground"],
+        bg=self.theme.custom_entry_colors["background"],
+        disabledforeground=self.theme.custom_entry_colors["disabledforeground"],
+        disabledbackground=self.theme.custom_entry_colors["disabledbackground"])
         self.fps_entry.grid(row=2, column=2, columnspan=2, padx=(5, 10), pady=(0, 15), sticky=W + E)
 
-        self.video_language = StringVar()
-        self.video_language_menu_label = Label(self.video_tab, text='Language:', background="#434547",
-                                               foreground="white")
+        self.video_language_menu_label = Label(self.video_tab, text='Language:', bd=0,
+        relief=SUNKEN,
+        background=self.theme.custom_label_colors["background"],
+        fg=self.theme.custom_label_colors["foreground"],
+        font=(self.theme.set_font, self.theme.set_font_size + 1))
         self.video_language_menu_label.grid(row=1, column=0, columnspan=1, padx=10, pady=(0, 0), sticky=W)
+
         self.video_combo_language = ttk.Combobox(self.video_tab, values=list(iso_639_2_codes_dictionary.keys()),
-                                                 justify="center",
-                                                 textvariable=self.video_language, width=15)
+                                                 justify="center", width=15)
         self.video_combo_language.grid(row=2, column=0, columnspan=1, padx=10, pady=(0, 10), sticky=W + E + N + S)
         self.video_combo_language['state'] = 'readonly'
         self.video_combo_language.current(0)  # Sets language to index 0 (UND) by default
 
         # Dolby Vision ---------------------------------------------------------------------------------------------
-        self.dolby_profiles = {'None': '', 'Profile 5': ':dv-profile=5:hdr=none',
+        self.dolby_profiles = {'None': '',
+                               'Profile 5': ':dv-profile=5:hdr=none',
                                'Profile 8.1 (HDR10)': ':dv-profile=8.hdr10:hdr=none',
                                'Profile 8.2 (bt709)': ':dv-profile=8.bt709:hdr=none'}
-        self.dolby_v_profile = StringVar()
-        self.dolby_v_profile_menu_label = Label(self.video_tab2, text='Dolby Vision:', background="#434547",
-                                                foreground="white")
+
+        self.dolby_v_profile_menu_label = Label(self.video_tab2, text='Dolby Vision:', bd=0,
+        relief=SUNKEN,
+        background=self.theme.custom_label_colors["background"],
+        fg=self.theme.custom_label_colors["foreground"],
+        font=(self.theme.set_font, self.theme.set_font_size + 1))
         self.dolby_v_profile_menu_label.grid(row=0, column=0, columnspan=1, padx=10, pady=(0, 0), sticky=W)
+
         self.dolby_v_profile_combo = ttk.Combobox(self.video_tab2, values=list(self.dolby_profiles.keys()),
-                                                  justify="center",
-                                                  textvariable=self.dolby_v_profile, width=20)
+                                                  justify="center", width=20)
         self.dolby_v_profile_combo.grid(row=1, column=0, columnspan=1, padx=10, pady=(0, 10), sticky=W + E + N + S)
         self.dolby_v_profile_combo['state'] = 'readonly'
-        self.dolby_v_profile_combo.current(0)  # Sets profile to index 0 ('') by default
+        self.dolby_v_profile_combo.current(0)
 
     def manual_video_input(self):
         """gui dialog function for video input when the button is clicked"""
@@ -102,15 +149,8 @@ class VideoSection:
 
     def open_video_source(self, video_input):
         """this will be the open video source for both inputs!"""
-        # work here, check extensions, perfect
-        # use code from input_button_commands() and adapt
-        supported_video_extensions = ('.avi', '.mp4', '.m1v', '.m2v', '.m4v', '.264', '.h264', '.hevc', '.h265')
-
         print(video_input)
-        if pathlib.Path(video_input).suffix in supported_video_extensions:
-            print('yes')
-        # global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, detect_video_fps, \
-        #     self.fps_entry, output_quoted, chapter_input
+        return
 
         # if VideoInput:
         #     self.input_entry.configure(state=NORMAL)
@@ -207,6 +247,11 @@ class VideoSection:
             del detect_video_fps
         except (Exception,):
             pass
+
+    def get_info(self):
+        """return a dictionary of file input"""
+        pass
+        # return {"input_file": pathlib.Path(self.input_dnd.get()), "title": self.vid}
 
     # # Video FPS Selection -----------------------------------------------------------------------------------------------
     # video_fps = StringVar()

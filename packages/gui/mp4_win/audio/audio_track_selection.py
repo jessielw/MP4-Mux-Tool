@@ -4,8 +4,8 @@ from tkinter import Toplevel, LabelFrame, messagebox, OptionMenu, StringVar, N, 
 
 from pymediainfo import MediaInfo
 
-from packages.iso_639_2 import *
-from packages.hoverbutton import HoverButton
+from packages.misc.iso_639_2 import *
+from packages.theme.hoverbutton import HoverButton
 
 
 class AudioTrackSelection:
@@ -14,7 +14,7 @@ class AudioTrackSelection:
     def __init__(self, mp4_root, audio_input):
         """determine how many audio tracks are in opened file"""
 
-        # main window
+        # mp4_win window
         self.mp4_win = mp4_root
 
         # audio input
@@ -41,7 +41,7 @@ class AudioTrackSelection:
             self.__multi_audio_track()
 
     def __multi_audio_track(self):
-        """window that will open above main window for the user to select which audio track they want from input"""
+        """window that will open above mp4_win window for the user to select which audio track they want from input"""
         audio_track_win = Toplevel()
         audio_track_win.configure(background="#191a1a")
         audio_track_win.geometry(

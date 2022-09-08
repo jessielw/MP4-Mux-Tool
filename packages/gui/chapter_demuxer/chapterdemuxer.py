@@ -73,7 +73,7 @@ class ChapterDemux:
             f"{self.window_width}x{self.window_height}+"
             f"{self.x_coordinate}+{self.y_coordinate}"
         )
-        self.chap_extract_win.grab_set()  # Keeps window above main root window
+        self.chap_extract_win.grab_set()  # Keeps window above mp4_win root window
         self.chap_extract_win.protocol(
             "WM_DELETE_WINDOW", self.chap_exit_function
         )  # Code to use exit function for 'X'
@@ -381,7 +381,7 @@ class ChapterDemux:
                 self.extract_button.configure(state=DISABLED)
 
     def chap_exit_function(self):
-        self.chap_extract_win.grab_release()  # Release hold, so main gui can take focus again
+        self.chap_extract_win.grab_release()  # Release hold, so mp4_win gui can take focus again
         self.chap_extract_win.destroy()  # Close chap window
 
 
