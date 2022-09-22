@@ -95,10 +95,26 @@ class DemuxWindow(Toplevel):
         self.demux_win = self
         self.demux_win.configure(background=self.theme.custom_window_bg_color)
         self.demux_win.title("Demuxer")
-        self.demux_win.geometry(
-            f'{1000}x{400}+{str(int(self.mp4_win.geometry().split("+")[1]) + 148)}+'
-            f'{str(int(self.mp4_win.geometry().split("+")[2]) + 230)}'
-        )
+        self.demux_win_width = 1000
+        self.demux_win_height = 400
+
+        # if there is no saved window geometry code open window in the middle of main screen
+        if self.config_parser["window_positions"]["demux_window"] == "":
+            screen_width = self.demux_win.winfo_screenwidth()
+            screen_height = self.demux_win.winfo_screenheight()
+            movie_x_coordinate = int((screen_width / 2) - (self.demux_win_width / 2))
+            movie_y_coordinate = int((screen_height / 2) - (self.demux_win_height / 2))
+            self.demux_win.geometry(
+                f"{self.demux_win_width}x{self.demux_win_height}+"
+                f"{movie_x_coordinate}+{movie_y_coordinate}"
+            )
+
+        # if there is saved window geometry open the window with last known geometry
+        elif self.config_parser["window_positions"]["demux_window"] != "":
+            self.demux_win.geometry(
+                self.config_parser["window_positions"]["demux_window"]
+            )
+
         self.demux_win.resizable(False, False)
         self.demux_win.grab_set()
         self.demux_win.wm_transient(self.mp4_win)
@@ -298,4 +314,31 @@ class DemuxWindow(Toplevel):
 
         # one the thread is dead safely exit the window
         else:
-            self.demux_win.destroy()
+            self._demux_exit_func()
+
+    def _demux_exit_func(self):
+        """function to save window position to config and exit the window"""
+
+        # config parser
+        exit_parser = ConfigParser()
+        exit_parser.read(config_file)
+
+        # check if geometry is different
+        if exit_parser["window_positions"]["demux_window"] != self.demux_win.geometry():
+
+            # check to ensure window isn't smaller than the default settings before saving new settings
+            if (
+                int(self.demux_win.geometry().split("x")[0]) >= self.demux_win_width
+                or int(self.demux_win.geometry().split("x")[1].split("+")[0])
+                >= self.demux_win_height
+            ):
+                exit_parser.set(
+                    "window_positions",
+                    "demux_window",
+                    self.demux_win.geometry(),
+                )
+                with open(config_file, "w") as exit_config_file:
+                    exit_parser.write(exit_config_file)
+
+        # exit the window
+        self.demux_win.destroy()
