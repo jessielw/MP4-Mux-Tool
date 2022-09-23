@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import pathlib
 import re
 from os import PathLike
@@ -15,6 +13,7 @@ from tkinter import (
     E,
     Tk,
 )
+from typing import Union
 
 from pymediainfo import MediaInfo
 
@@ -25,7 +24,9 @@ from mp4muxtool.theme.hoverbutton import HoverButton
 class VideoTrackSelection:
     """use to get track information for use within the program"""
 
-    def __init__(self, mp4_root: Tk | Toplevel, video_input: str | PathLike):
+    def __init__(
+        self, mp4_root: Union[Tk, Toplevel], video_input: Union[str, PathLike]
+    ):
         """
         Determine how many video tracks are in opened file.
 
