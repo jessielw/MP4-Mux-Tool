@@ -16,21 +16,24 @@ class OpenTheme:
         self.config_parser = ConfigParser()
         self.config_parser.read(config_file)
 
+        # enable ttk theme
+        self.enable_ttk = None
+
         # run the check theme method
-        self.check = self.__check_theme()
+        self.check = self._check_theme()
 
         # if check theme returns anything other than None
         if self.check:
             # run the theme method with the returned values from the check theme method
-            self.__theme(values=self.check)
+            self._theme(values=self.check)
 
             # theme ttk
-            self.__theme_ttk()
+            self._theme_ttk()
 
         # get default os fonts
-        self.__theme_font()
+        self._theme_font()
 
-    def __check_theme(self):
+    def _check_theme(self):
         """define theme parameters based off of config selection"""
         values = None
 
@@ -58,7 +61,7 @@ class OpenTheme:
 
             return values
 
-    def __theme(self, values):
+    def _theme(self, values):
         """set the values for each widget to class variables to be used within the program"""
         self.custom_window_bg_color = values.custom_window_bg_color
         self.custom_button_colors = values.custom_button_colors
@@ -73,15 +76,15 @@ class OpenTheme:
         self.custom_spinbox_color = values.custom_spinbox_color
         self.custom_text_color = values.custom_text_color
 
-    def __theme_ttk(self):
+    def _theme_ttk(self):
         """
         Called only if the program is running any theme other than system_default
         This calls the class GuiStyle which theme aspects of the ttk widgets, this
-        relies on values extracted from __theme()
+        relies on values extracted from _theme()
         """
-        GuiStyle(theme_instance=self)
+        self.enable_ttk = GuiStyle(theme_instance=self)
 
-    def __theme_font(self):
+    def _theme_font(self):
         """get default os font to use within the program"""
         detect_font = font.nametofont("TkDefaultFont")
         self.set_font = detect_font.actual().get("family")
