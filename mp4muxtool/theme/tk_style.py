@@ -8,10 +8,10 @@ class GuiStyle:
         """modifies the ttk theme, notebook, combobox, and the progress bar"""
 
         # create ttk.Style instance
-        custom_style = ttk.Style()
+        self.custom_style = ttk.Style()
 
         # create theme
-        custom_style.theme_create(
+        self.custom_style.theme_create(
             "jlw_style",
             parent="alt",
             settings={
@@ -20,7 +20,7 @@ class GuiStyle:
                     "configure": {
                         "tabmargins": [5, 5, 5, 0],
                         "background": theme_instance.custom_frame_bg_colors[
-                            "specialbg"
+                            "background"
                         ],
                     }
                 },
@@ -54,7 +54,7 @@ class GuiStyle:
                         ],
                         "foreground": theme_instance.custom_listbox_color["foreground"],
                         "selectforeground": theme_instance.custom_listbox_color[
-                            "selectforeground"
+                            "foreground"
                         ],
                     }
                 },
@@ -62,10 +62,10 @@ class GuiStyle:
         )
 
         # enables the use of the custom theme
-        custom_style.theme_use("jlw_style")
+        self.custom_style.theme_use("jlw_style")
 
         # adjust the progress bar layout
-        custom_style.layout(
+        self.custom_style.layout(
             "text.Horizontal.TProgressbar",
             [
                 (
@@ -85,26 +85,26 @@ class GuiStyle:
         )
 
         # set initial text
-        custom_style.configure(
+        self.custom_style.configure(
             "text.Horizontal.TProgressbar",
             text="",
             anchor="center",
-            background=theme_instance.custom_button_colors["foreground"],
+            background=theme_instance.custom_button_colors["background"],
             foreground=theme_instance.custom_button_colors["activeforeground"],
         )
-        custom_style.master.option_add(
+        self.custom_style.master.option_add(
             "*TCombobox*Listbox.foreground",
             theme_instance.custom_listbox_color["foreground"],
         )
-        custom_style.master.option_add(
+        self.custom_style.master.option_add(
             "*TCombobox*Listbox.background",
             theme_instance.custom_listbox_color["background"],
         )
-        custom_style.master.option_add(
+        self.custom_style.master.option_add(
             "*TCombobox*Listbox.selectBackground",
             theme_instance.custom_listbox_color["background"],
         )
-        custom_style.master.option_add(
+        self.custom_style.master.option_add(
             "*TCombobox*Listbox.selectForeground",
             theme_instance.custom_listbox_color["selectforeground"],
         )
