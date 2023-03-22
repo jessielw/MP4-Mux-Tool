@@ -7,3 +7,5 @@ __pycache__/
 config.ini
 Mp4-Mux-Tool.exe
 *.zip
+venv/
+codec
