@@ -1,35 +1,22 @@
-import pathlib
-import subprocess
-import webbrowser
 from ctypes import windll
-from tkinter import filedialog, StringVar, ttk, messagebox, PhotoImage, Menu, LabelFrame, E, N, S, W, Label, \
-    Entry, DISABLED, NORMAL, END, Frame, SUNKEN, Button
+from tkinter import PhotoImage, E, W, Label, \
+    DISABLED, SUNKEN, Tk
 
-from tkinterdnd2 import TkinterDnD, DND_FILES
-from pymediainfo import MediaInfo
-from packages.iso_639_2 import *
-from packages.about import openaboutwindow
-from packages.chapterdemuxer import ChapterDemux
-from packages.base64_images import icon_image
-from packages.config_params import *
-from packages.config_writer import config_writer
-from packages.hoverbutton import HoverButton
-from packages.tk_style import GuiStyle
-from packages.main_menu import MainMenu
-from packages.video_frame import VideoSection
-from packages.audio_frame import AudioSection
-from packages.subtitle_frame import SubtitleSection
-from packages.chapter_frame import ChapterSection
-from packages.output_frame import OutputSection
-from packages.progress_window import ProgressWindow
-from packages.show_command import ShowCommand
-from packages.apps import BundledApps
-from packages.flow_control import MainGUIFlowControl
-from packages.themes.theme_control import OpenTheme
-from packages.themes.system_theme import SystemTheme
+import tkinterdnd2
+from tkinterdnd2 import TkinterDnD
 
-from configparser import ConfigParser
-from packages.config_writer import config_file
+from mp4muxtool.misc.base64_images import icon_image
+from mp4muxtool.theme.hoverbutton import HoverButton
+from mp4muxtool.gui.mp4_win.menu.main_menu import MainMenu
+from mp4muxtool.gui.mp4_win.video.video_frame import VideoSection
+from mp4muxtool.gui.mp4_win.audio.audio_frame import AudioSection
+from mp4muxtool.gui.mp4_win.subtitle.subtitle_frame import SubtitleSection
+from mp4muxtool.gui.mp4_win.chapter.chapter_frame import ChapterSection
+from mp4muxtool.gui.mp4_win.output.output_frame import OutputSection
+from mp4muxtool.gui.show_command.show_command import ShowCommand
+from mp4muxtool.misc.apps import BundledApps
+from mp4muxtool.misc.flow_control import MainGUIFlowControl
+from mp4muxtool.theme.theme_control import OpenTheme
 
 # Block of code to fix DPI awareness issues on Windows 7 or higher
 try:
@@ -40,17 +27,13 @@ except(Exception,):
 
 # Block of code to fix DPI awareness issues on Windows 7 or higher
 
-# class GuiController:
-#
-#     def __init__(self):
-#         pass
+class MainGui(tkinterdnd2.Tk):
 
-class MainGui:
+    # video_loaded = True
 
-    video_loaded = True
-
-    def __init__(self, master):
-        self.mp4_win = master
+    def __init__(self):
+        super().__init__()
+        self.mp4_win = self
         self.mp4_win.title("MP4-Mux-Tool v1.13")
         self.mp4_win.iconphoto(True, PhotoImage(data=icon_image))
         self.open_theme = OpenTheme(main_gui=self)
@@ -62,14 +45,13 @@ class MainGui:
         self.x_coordinate = int((self.screen_width / 2) - (self.window_width / 2))
         self.y_coordinate = int((self.screen_height / 2) - (self.window_height / 2))
         self.mp4_win.geometry(f'{self.window_width}x{self.window_height}+{self.x_coordinate}+{self.y_coordinate}')
-        self.mp4_win.protocol('WM_DELETE_WINDOW', self.mp4_win_exit_function)
+        # self.mp4_win.protocol('WM_DELETE_WINDOW', self.mp4_win_exit_function)
 
         for mp4_c in range(3):
             self.mp4_win.grid_columnconfigure(mp4_c, weight=1)
         for mp4_r in range(6):
             self.mp4_win.grid_rowconfigure(mp4_r, weight=1)
 
-        self.style_instance = GuiStyle(main_gui=self)
         self.main_menu_instance = MainMenu(main_gui=self)
         self.video_section_instance = VideoSection(main_gui=self)
         self.audio_section_instance = AudioSection(main_gui=self)
@@ -97,10 +79,17 @@ class MainGui:
         # self.auto_chap_import_checkbox.bind("<Enter>", auto_chap_checkbtn_on_enter)
         # self.auto_chap_import_checkbox.bind("<Leave>", auto_chap_checkbtn_on_leave)
 
+        # test code
+        # from mp4muxtool.gui.mp4_win.demuxer.demux_window import DemuxWindow
+        # DemuxWindow(self.mp4_win)
+        #
+
+        self.mp4_win.mainloop()
+
     def mp4_win_exit_function(self):
         self.mp4_win.destroy()
-        """FIX THIS WITH PSTUL"""
-
+        # """FIX THIS WITH PSTUL"""
+        #
         # confirm_exit = messagebox.askyesno(title='Prompt', message="Are you sure you want to exit the program?\n\n"
         #                                                            "     Note: This will end all current tasks!",
         #                                    parent=self.mp4_win)
@@ -111,12 +100,12 @@ class MainGui:
         #     except (Exception,):
         #         self.mp4_win.destroy()
 
-        #
-        # Status Label at bottom of main GUI ----------------------------------------------------------------- The status
+
+        # Status Label at bottom of mp4_win GUI ----------------------------------------------------------------- The status
         # label just updates based on the mouse cursor location, when you go over certain buttons it'll give you information
         # based on that location
-
-        # ----------------------------------------------------------------- Status Label at bottom of main GUI
+        #
+        # ----------------------------------------------------------------- Status Label at bottom of mp4_win GUI
 
 # class HoverButton(Button):
 #     """simple class to convert button to a hoverbutton"""
@@ -129,30 +118,30 @@ class MainGui:
 #
 #     def on_enter(self, e):
 #         self["background"] = self["activebackground"]
-#         # if self.cget("text") == "Video":
-#         #     self.status_label.configure(text='Video inputs supported (.avi, .mp4, .m1v/.m2v, .m4v, .264, .h264, .hevc, or '
-#         #                                 '.h265)')
-#         # if self.cget("text") == "Audio":
-#         #     self.status_label.configure(text='Audio inputs supported (.ac3, .aac, .mp4, .m4a, .mp2, .mp3, .opus, or .ogg)')
-#         # if self.cget("text") == "Subtitle":
-#         #     self.status_label.configure(text='Subtitle inputs supported (.srt, .idx, .ttxt)')
-#         # if self.cget("text") == "Chapter":
-#         #     self.status_label.configure(text='Chapter input supported OGG (.txt)')
-#         # if self.cget("text") == "Output":
-#         #     self.status_label.configure(text='Select File Save Location (*.mp4)')
-#         # if self.cget("text") == "X":
-#         #     self.status_label.configure(text='Remove input and settings')
-#         # if self.cget("text") == "View Command":
-#         #     self.status_label.configure(text='Select to show complete command line')
-#         # if self.cget("text") == "Mux":
-#         #     self.status_label.configure(text='Select to begin muxing')
-#
-#     def on_leave(self, e):
-#         self["background"] = self.defaultBackground
-#         # self.status_label.configure(text="")
+        # if self.cget("text") == "Video":
+        #     self.status_label.configure(text='Video inputs supported (.avi, .mp4, .m1v/.m2v, .m4v, .264, .h264, .hevc, or '
+        #                                 '.h265)')
+        # if self.cget("text") == "Audio":
+        #     self.status_label.configure(text='Audio inputs supported (.ac3, .aac, .mp4, .m4a, .mp2, .mp3, .opus, or .ogg)')
+        # if self.cget("text") == "Subtitle":
+        #     self.status_label.configure(text='Subtitle inputs supported (.srt, .idx, .ttxt)')
+        # if self.cget("text") == "Chapter":
+        #     self.status_label.configure(text='Chapter input supported OGG (.txt)')
+        # if self.cget("text") == "Output":
+        #     self.status_label.configure(text='Select File Save Location (*.mp4)')
+        # if self.cget("text") == "X":
+        #     self.status_label.configure(text='Remove input and settings')
+        # if self.cget("text") == "View Command":
+        #     self.status_label.configure(text='Select to show complete command line')
+        # if self.cget("text") == "Mux":
+        #     self.status_label.configure(text='Select to begin muxing')
+
+    # def on_leave(self, e):
+    #     self["background"] = self.defaultBackground
+    #     # self.status_label.configure(text="")
 
 
 if __name__ == "__main__":
-    root = TkinterDnD.Tk()
-    main = MainGui(master=root)
-    root.mainloop()
+    # root = TkinterDnD.Tk()
+    main_gui = MainGui()
+    # root.mainloop()
