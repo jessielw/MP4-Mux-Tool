@@ -281,8 +281,8 @@ class DemuxWindow(Toplevel):
             self.encode_window_progress.config(state=NORMAL)
             final_output = (
                 f"\n\nExit Code {self.demux_input.status['return_code']} - "
-                f"Status: {self.demux_input.status['status']}\n"
-                f"Output Filename: {str(self.demux_input.status['output_filename'])}"
+                f"Status: {self.demux_input.status['status']}\n\n"
+                f"Output Filename:\n{str(self.demux_input.status['output_filename'])}"
             )
             self.encode_window_progress.insert(END, final_output)
             self.encode_window_progress.see(END)
