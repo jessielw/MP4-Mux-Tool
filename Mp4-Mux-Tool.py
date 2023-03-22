@@ -32,7 +32,7 @@ def mp4_root_exit_function():  # Pop up window when you file + exit or press 'X'
 
 
 mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
-mp4_root.title("MP4-Mux-Tool v1.13")  # Sets the version of the program
+mp4_root.title("MP4-Mux-Tool v1.14")  # Sets the version of the program
 mp4_root.iconphoto(True, PhotoImage(data=icon_image))  # Sets icon for all windows
 mp4_root.configure(background="#434547")  # Sets gui background color
 window_height = 800  # Gui window height
@@ -488,7 +488,7 @@ dolby_v_profile_combo.current(0)  # Sets profile to index 0 ('') by default
 def input_button_commands():  # Open file block of code (non drag and drop)
     global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, detect_video_fps, \
         fps_entry, output_quoted, chapter_input
-    video_extensions = ('.avi', '.mp4', '.m1v', '.m2v', '.m4v', '.264', '.h264', '.hevc', '.h265')
+    video_extensions = ('.avi', '.mp4', '.m1v', '.m2v', '.m4v', '.264', '.h264', '.hevc', '.h265', '.avc')
     VideoInput = filedialog.askopenfilename(initialdir="/", title="Select A File",
                                             filetypes=[("Supported Formats", video_extensions)])
     if VideoInput:
