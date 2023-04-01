@@ -1322,7 +1322,7 @@ def check_audio_tracks_info():
 
 def audio_input_button_commands():  # Function for audio input button
     global audio_input, audio_input_quoted
-    audio_extensions = (".ac3", ".aac", ".mp4", ".m4a", ".mp2", ".mp3", ".opus", ".ogg")
+    audio_extensions = (".ac3", ".aac", ".mp4", ".m4a", ".mp2", ".mp3", ".opus", ".ogg", ".eac3")
     audio_input = filedialog.askopenfilename(
         initialdir="/",
         title="Select A File",
@@ -1370,7 +1370,7 @@ def update_audio_input(*args):  # Drag and drop function for audio input
     audio_input_entry.configure(state=NORMAL)
     audio_input_entry.delete(0, END)
     audio_input = str(audio_input_dnd.get()).replace("{", "").replace("}", "")
-    audio_extensions = (".ac3", ".aac", ".mp4", ".m4a", ".mp2", ".mp3", ".opus", ".ogg")
+    audio_extensions = (".ac3", ".aac", ".mp4", ".m4a", ".mp2", ".mp3", ".opus", ".ogg", ".eac3")
     if audio_input.endswith(audio_extensions):
         audio_input_quoted = '"' + str(pathlib.Path(audio_input)) + '"'
         audio_input_entry.insert(0, audio_input)
