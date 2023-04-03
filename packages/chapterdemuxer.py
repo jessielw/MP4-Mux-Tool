@@ -19,7 +19,6 @@ import subprocess, pathlib, webbrowser
 from pymediainfo import MediaInfo
 from configparser import ConfigParser
 from tkinterdnd2 import TkinterDnD, DND_FILES
-from ctypes import windll
 
 chapter_demuxer_version = "1.1"
 
@@ -84,13 +83,6 @@ class ChapterDemux:
 
         self.chap_extract_win.rowconfigure(3, weight=1)
         self.chap_extract_win.grid_columnconfigure(2, weight=1)
-
-        # Block of code to fix DPI awareness issues on Windows 7 or higher
-        try:
-            windll.shcore.SetProcessDpiAwareness(2)  # if your Windows version >= 8.1
-        except (Exception,):
-            windll.user32.SetProcessDPIAware()  # Windows 8.0 or less
-        # Block of code to fix DPI awareness issues on Windows 7 or higher
 
         self.chap_extract_win.rowconfigure(0, weight=1)
         self.chap_extract_win.grid_columnconfigure(0, weight=1)
