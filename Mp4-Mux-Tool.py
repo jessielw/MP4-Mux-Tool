@@ -64,7 +64,7 @@ def mp4_root_exit_function():  # Pop up window when you file + exit or press 'X'
 
 
 mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
-mp4_root.title("MP4-Mux-Tool v1.16")  # Sets the version of the program
+mp4_root.title("MP4-Mux-Tool v1.17")  # Sets the version of the program
 mp4_root.iconphoto(True, PhotoImage(data=icon_image))  # Sets icon for all windows
 mp4_root.configure(background="#434547")  # Sets gui background color
 window_height = 750  # Gui window height
@@ -98,7 +98,7 @@ my_menu_bar.add_cascade(label="File", menu=file_menu)
 
 def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or None
 
-    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, dolby_v_profile_combo, input_entry, detect_video_fps, audio_input, audio_title_cmd, audio_title_entrybox, audio_delay, audio_input_entry, subtitle_input, subtitle_input_entry, subtitle_language, subtitle_title_cmd_input, subtitle_title_entrybox, chapter_input, chapter_input_entry, chapter_title_cmd_input, output, output_entry
+    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, detect_video_fps, audio_input, audio_title_cmd, audio_title_entrybox, audio_delay, audio_input_entry, subtitle_input, subtitle_input_entry, subtitle_language, subtitle_title_cmd_input, subtitle_title_entrybox, chapter_input, chapter_input_entry, chapter_title_cmd_input, output, output_entry
     try:  # Video Reset
         video_title_cmd_input = ""
         video_title_entrybox.configure(state=NORMAL)
@@ -111,7 +111,6 @@ def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or No
         fps_entry.configure(state=NORMAL)
         fps_entry.delete(0, END)
         fps_entry.configure(state=DISABLED)
-        dolby_v_profile_combo.current(0)
         status_label.configure(
             text='Select "Open File" or drag and drop a video file to begin'
         )
@@ -907,7 +906,7 @@ input_entry.dnd_bind("<<Drop>>", video_drop_input)
 
 
 def clear_video_input():  # When user selects 'X' to clear input box
-    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, detect_video_fps, dolby_v_profile_combo
+    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, detect_video_fps
     try:
         video_title_cmd_input = ""
         video_title_entrybox.configure(state=NORMAL)
@@ -920,7 +919,6 @@ def clear_video_input():  # When user selects 'X' to clear input box
         fps_entry.configure(state=NORMAL)
         fps_entry.delete(0, END)
         fps_entry.configure(state=DISABLED)
-        dolby_v_profile_combo.current(0)
         del VideoInput
         del detect_video_fps
     except (Exception,):
@@ -1938,7 +1936,6 @@ def start_job():
             + ":lang="
             + iso_639_2_codes_dictionary[video_language.get()]
             + fps_input
-            + dolby_profiles[dolby_v_profile.get()]
             + ':ID=1"'
         )
         video_errors = (
@@ -2270,7 +2267,6 @@ def view_command():  # This function is to show the full command line output int
         + ":lang="
         + iso_639_2_codes_dictionary[video_language.get()]
         + fps_input
-        + dolby_profiles[dolby_v_profile.get()]
         + ':ID=1"'
     )
 
