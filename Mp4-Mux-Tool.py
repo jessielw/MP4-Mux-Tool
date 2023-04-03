@@ -67,8 +67,8 @@ mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
 mp4_root.title("MP4-Mux-Tool v1.16")  # Sets the version of the program
 mp4_root.iconphoto(True, PhotoImage(data=icon_image))  # Sets icon for all windows
 mp4_root.configure(background="#434547")  # Sets gui background color
-window_height = 800  # Gui window height
-window_width = 800  # Gui window width
+window_height = 750  # Gui window height
+window_width = 700  # Gui window width
 screen_width = mp4_root.winfo_screenwidth()  # down
 screen_height = mp4_root.winfo_screenheight()  # down
 x_coordinate = int((screen_width / 2) - (window_width / 2))  # down
@@ -79,6 +79,14 @@ mp4_root.geometry(
 mp4_root.protocol(
     "WM_DELETE_WINDOW", mp4_root_exit_function
 )  # Code to use exit function when selecting 'X'
+
+# mp4_root Row/Column Configure ---------------------------------------------------------------------------------------
+for n in range(3):
+    mp4_root.grid_columnconfigure(n, weight=1)
+for n in range(6):
+    mp4_root.grid_rowconfigure(n, weight=1)
+
+# --------------------------------------------------------------------------------------- mp4_root Row/Column Configure
 
 # Menu Items and Sub-Bars ---------------------------------------------------------------------------------------------
 my_menu_bar = Menu(mp4_root, tearoff=0)
@@ -404,7 +412,7 @@ class HoverButton(Button):
             )
         if self.cget("text") == "Audio":
             status_label.configure(
-                text="Audio inputs supported (.ac3, .aac, .mp4, .m4a, .mp2, .mp3, .opus, or .ogg)"
+                text="Audio inputs supported (.ac3, .aac, .mp4, .m4a, .mp2, .mp3, .opus, .ogg, or .eac3)"
             )
         if self.cget("text") == "Subtitle":
             status_label.configure(text="Subtitle inputs supported (.srt, .idx, .ttxt)")
@@ -423,14 +431,6 @@ class HoverButton(Button):
         self["background"] = self.defaultBackground
         status_label.configure(text="")
 
-
-# mp4_root Row/Column Configure ---------------------------------------------------------------------------------------
-for n in range(3):
-    mp4_root.grid_columnconfigure(n, weight=1)
-for n in range(6):
-    mp4_root.grid_rowconfigure(n, weight=1)
-
-# --------------------------------------------------------------------------------------- mp4_root Row/Column Configure
 
 # Bundled apps --------------------------------------------------------------------------------------------------------
 mp4box = config["mp4box_path"]["path"]
@@ -530,16 +530,12 @@ video_frame.grid_rowconfigure(0, weight=1)
 tabs = ttk.Notebook(video_frame, height=110)
 tabs.grid(row=0, column=0, columnspan=4, sticky=E + W + N + S, padx=10, pady=5)
 video_tab = Frame(tabs, background="#434547")
-video_tab2 = Frame(tabs, background="#434547")
 tabs.add(video_tab, text=" Input ")
-tabs.add(video_tab2, text=" Options ")
 
 for n in range(4):
     video_tab.grid_columnconfigure(n, weight=1)
 for n in range(3):
     video_tab.grid_rowconfigure(n, weight=1)
-
-
 # ------------------------------------------------------------------------------------------------ Video Notebook Frame
 
 
@@ -631,36 +627,6 @@ video_combo_language["state"] = "readonly"
 video_combo_language.current(0)  # Sets language to index 0 (UND) by default
 
 # ------------------------------------------------------------------------------------------------------ Video Language
-
-# Dolby Vision --------------------------------------------------------------------------------------------------------
-dolby_profiles = {
-    "None": "",
-    "Profile 5": ":dv-profile=5:hdr=none",
-    "Profile 8.1 (HDR10)": ":dv-profile=8.hdr10:hdr=none",
-    "Profile 8.2 (bt709)": ":dv-profile=8.bt709:hdr=none",
-}
-dolby_v_profile = StringVar()
-dolby_v_profile_menu_label = Label(
-    video_tab2, text="Dolby Vision:", background="#434547", foreground="white"
-)
-dolby_v_profile_menu_label.grid(
-    row=0, column=0, columnspan=1, padx=10, pady=(0, 0), sticky=W
-)
-dolby_v_profile_combo = ttk.Combobox(
-    video_tab2,
-    values=list(dolby_profiles.keys()),
-    justify="center",
-    textvariable=dolby_v_profile,
-    width=20,
-)
-dolby_v_profile_combo.grid(
-    row=1, column=0, columnspan=1, padx=10, pady=(0, 10), sticky=W + E + N + S
-)
-dolby_v_profile_combo["state"] = "readonly"
-dolby_v_profile_combo.current(0)  # Sets profile to index 0 ('') by default
-
-
-# -------------------------------------------------------------------------------------------------------- Dolby Vision
 
 
 def input_button_commands():  # Open file block of code (non drag and drop)
@@ -1322,7 +1288,17 @@ def check_audio_tracks_info():
 
 def audio_input_button_commands():  # Function for audio input button
     global audio_input, audio_input_quoted
-    audio_extensions = (".ac3", ".aac", ".mp4", ".m4a", ".mp2", ".mp3", ".opus", ".ogg", ".eac3")
+    audio_extensions = (
+        ".ac3",
+        ".aac",
+        ".mp4",
+        ".m4a",
+        ".mp2",
+        ".mp3",
+        ".opus",
+        ".ogg",
+        ".eac3",
+    )
     audio_input = filedialog.askopenfilename(
         initialdir="/",
         title="Select A File",
@@ -1370,7 +1346,17 @@ def update_audio_input(*args):  # Drag and drop function for audio input
     audio_input_entry.configure(state=NORMAL)
     audio_input_entry.delete(0, END)
     audio_input = str(audio_input_dnd.get()).replace("{", "").replace("}", "")
-    audio_extensions = (".ac3", ".aac", ".mp4", ".m4a", ".mp2", ".mp3", ".opus", ".ogg", ".eac3")
+    audio_extensions = (
+        ".ac3",
+        ".aac",
+        ".mp4",
+        ".m4a",
+        ".mp2",
+        ".mp3",
+        ".opus",
+        ".ogg",
+        ".eac3",
+    )
     if audio_input.endswith(audio_extensions):
         audio_input_quoted = '"' + str(pathlib.Path(audio_input)) + '"'
         audio_input_entry.insert(0, audio_input)
@@ -1680,6 +1666,7 @@ chapter_frame.configure(fg="white", bg="#434547", bd=4)
 
 chapter_frame.grid_columnconfigure(0, weight=1)
 chapter_frame.grid_rowconfigure(0, weight=1)
+chapter_frame.grid_rowconfigure(1, weight=1)
 
 
 def chapter_input_button_commands():
