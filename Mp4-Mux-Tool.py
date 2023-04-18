@@ -64,7 +64,7 @@ def mp4_root_exit_function():  # Pop up window when you file + exit or press 'X'
 
 
 mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
-mp4_root.title("MP4-Mux-Tool v1.17")  # Sets the version of the program
+mp4_root.title("MP4-Mux-Tool v1.18")  # Sets the version of the program
 mp4_root.iconphoto(True, PhotoImage(data=icon_image))  # Sets icon for all windows
 mp4_root.configure(background="#434547")  # Sets gui background color
 window_height = 750  # Gui window height
@@ -1296,6 +1296,7 @@ def audio_input_button_commands():  # Function for audio input button
         ".opus",
         ".ogg",
         ".eac3",
+        ".ec3"
     )
     audio_input = filedialog.askopenfilename(
         initialdir="/",
@@ -1338,12 +1339,18 @@ def audio_input_button_commands():  # Function for audio input button
             audio_title_entrybox.delete(0, END)
             del audio_input
 
-
-def update_audio_input(*args):  # Drag and drop function for audio input
+# Drag and drop function for audio input
+def update_audio_input(event):  
     global audio_input, audio_input_quoted
+    if not input_dnd.get():
+        messagebox.showinfo(
+                title="Missing Video",
+                message="You must open a video source first.",
+            )
+        return
+    audio_input = [x for x in mp4_root.splitlist(event.data)][0]
     audio_input_entry.configure(state=NORMAL)
     audio_input_entry.delete(0, END)
-    audio_input = str(audio_input_dnd.get()).replace("{", "").replace("}", "")
     audio_extensions = (
         ".ac3",
         ".aac",
@@ -1354,6 +1361,7 @@ def update_audio_input(*args):  # Drag and drop function for audio input
         ".opus",
         ".ogg",
         ".eac3",
+        ".ec3"
     )
     if audio_input.endswith(audio_extensions):
         audio_input_quoted = '"' + str(pathlib.Path(audio_input)) + '"'
@@ -1390,12 +1398,7 @@ def update_audio_input(*args):  # Drag and drop function for audio input
 
 
 # Buttons -------------------------------------------------------------------------------------------------------------
-def audio_drop_input(event):  # Drag and drop function for audio input
-    audio_input_dnd.set(event.data)
-
-
 audio_input_dnd = StringVar()
-audio_input_dnd.trace("w", update_audio_input)
 audio_input_button = HoverButton(
     audio_tab,
     text="Audio",
@@ -1410,7 +1413,7 @@ audio_input_button.grid(
     row=0, column=0, columnspan=1, padx=(10, 10), pady=(10, 5), sticky=W + E
 )
 audio_input_button.drop_target_register(DND_FILES)
-audio_input_button.dnd_bind("<<Drop>>", audio_drop_input)
+audio_input_button.dnd_bind("<<Drop>>", update_audio_input)
 
 audio_input_entry = Entry(
     audio_tab, width=39, borderwidth=4, background="#CACACA", state=DISABLED
@@ -1419,7 +1422,7 @@ audio_input_entry.grid(
     row=0, column=1, columnspan=3, padx=(0, 50), pady=(10, 5), sticky=W + E
 )
 audio_input_entry.drop_target_register(DND_FILES)
-audio_input_entry.dnd_bind("<<Drop>>", audio_drop_input)
+audio_input_entry.dnd_bind("<<Drop>>", update_audio_input)
 
 
 def clear_audio_input():  # Deletes all inputs and sets defaults for audio box #1
