@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QFrame,
     QSpacerItem,
     QSizePolicy,
+    QApplication,
 )
 from PySide6.QtGui import QCursor, QIcon
 
@@ -27,6 +28,10 @@ QToolButton:hover {
 QToolButton:checked {
     color: #3498db;
 	background-color: #434547;
+}
+#button-separator {
+    background-color: #434547;
+    border-width: 1px;
 }
 #close_button:hover {
     background-color: transparent;
@@ -58,6 +63,7 @@ class ButtonBox(QFrame):
         self.settings_button = self._build_nav_button("Settings", "settings.svg")
         self.close_button = self._build_nav_button("Close", "close.svg", False)
         self.close_button.setObjectName("close_button")
+        self.close_button.clicked.connect(QApplication.instance().quit)
 
         self._toggle_buttons = [
             self.video_button,
@@ -75,6 +81,12 @@ class ButtonBox(QFrame):
             20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding
         )
 
+        button_separator = QFrame()
+        button_separator.setObjectName("button-separator")
+        button_separator.setFrameShape(QFrame.HLine)
+        button_separator.setFrameShadow(QFrame.Sunken)
+        button_separator.setFixedHeight(1)
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
@@ -84,6 +96,7 @@ class ButtonBox(QFrame):
         layout.addWidget(self.chapter_button)
         layout.addWidget(self.output_button)
         layout.addItem(vertical_spacer)
+        layout.addWidget(button_separator)
         layout.addWidget(self.settings_button)
         layout.addWidget(self.close_button)
 
@@ -106,7 +119,7 @@ class ButtonBox(QFrame):
         elif sender == self.output_button:
             self.output_button_clicked.emit()
         elif sender == self.settings_button:
-            self.settings_button_clicked.emit()            
+            self.settings_button_clicked.emit()
 
     @staticmethod
     def _build_nav_button(
