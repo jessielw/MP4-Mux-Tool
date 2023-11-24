@@ -3,7 +3,7 @@ from PySide6.QtGui import QIcon
 
 from mp4muxtool.frontend.custom_widgets.buttons import IconToolButton
 from mp4muxtool.frontend.button_box import ButtonBox
-from mp4muxtool.frontend.content_box import ContentBox
+from mp4muxtool.frontend.content_box.content_box import ContentBox
 
 class Mp4MuxWindow(QWidget):
     def __init__(self):
@@ -11,7 +11,10 @@ class Mp4MuxWindow(QWidget):
         self.resize(800, 450)
         
         button_box = ButtonBox()
-        content_box = ContentBox()
+        content_box = ContentBox(button_box)
+        
+        # TODO: alternative solution to define signals AFTER widget creation
+        # content_box.setup_signals(button_box)
         
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)

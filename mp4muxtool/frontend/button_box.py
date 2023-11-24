@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Union
 
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, Signal
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QToolButton,
@@ -38,12 +38,17 @@ QToolButton:checked {
 
 
 class ButtonBox(QFrame):
+    video_button_clicked = Signal()
+    audio_button_clicked = Signal()
+    subtitle_button_clicked = Signal()
+    chapter_button_clicked = Signal()
+    output_button_clicked = Signal()
+    settings_button_clicked = Signal()
+
     def __init__(self):
         super().__init__()
-
         self.setStyleSheet(navigational_panel_stylesheet)
         self.setFrameShape(QFrame.Shape.NoFrame)
-        self.setContentsMargins(0, 0, 0, 0)
 
         self.video_button = self._build_nav_button("Video", "video.svg")
         self.audio_button = self._build_nav_button("Audio", "audio.svg")
@@ -82,11 +87,26 @@ class ButtonBox(QFrame):
         layout.addWidget(self.settings_button)
         layout.addWidget(self.close_button)
 
+        self.video_button.setChecked(True)
+
     def _handle_button_clicked(self):
         sender = self.sender()
         for button in self._toggle_buttons:
             if button is not sender:
                 button.setChecked(False)
+
+        if sender == self.video_button:
+            self.video_button_clicked.emit()
+        elif sender == self.audio_button:
+            self.audio_button_clicked.emit()
+        elif sender == self.subtitle_button:
+            self.subtitle_button_clicked.emit()
+        elif sender == self.chapter_button:
+            self.chapter_button_clicked.emit()
+        elif sender == self.output_button:
+            self.output_button_clicked.emit()
+        elif sender == self.settings_button:
+            self.settings_button_clicked.emit()            
 
     @staticmethod
     def _build_nav_button(
