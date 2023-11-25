@@ -126,7 +126,7 @@ class ButtonBox(QFrame):
         nav_panel_theme = theme.get("navigation_panel")
         format_style_sheet = navigational_panel_stylesheet.format(
             frame_bg_color=nav_panel_theme.get("base"),
-            button_color=nav_panel_theme.get("button").get("text-color"),
+            button_color=nav_panel_theme.get("button").get("text"),
             button_bg_hover_color=nav_panel_theme.get("button").get("background-hover"),
             button_toggled_bg_color=nav_panel_theme.get("button").get(
                 "background-toggle"
