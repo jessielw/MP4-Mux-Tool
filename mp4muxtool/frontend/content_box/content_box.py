@@ -32,7 +32,7 @@ class ContentBox(QFrame):
         self.setStyleSheet(content_box_stylesheet)
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(6, 6, 6, 6)
+        layout.setContentsMargins(2, 0, 0, 0)
 
         self.stacked_content = QStackedWidget(self)
 
