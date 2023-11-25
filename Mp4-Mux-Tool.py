@@ -4,7 +4,6 @@ from PySide6.QtGui import QFont, QFontDatabase
 
 from mp4muxtool.frontend.main_window import Mp4MuxWindow
 
-
 # TODO: We'll upgrade python to 10.5 or higher and remove union everywhere throughout
         
 if __name__ == "__main__":
