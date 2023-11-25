@@ -13,32 +13,32 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QCursor, QIcon
 
 navigational_panel_stylesheet = """
-QFrame {
-    background-color: #2a2a2a;
-}
-QToolButton {
-	color: #d3d3d3;
+QFrame {{
+    background-color: {frame_bg_color};
+}}
+QToolButton {{
+	color: {button_color};
 	border-radius: 0;
 	text-align: center;
-}
-QToolButton:hover {
-	background-color: #434547;
+}}
+QToolButton:hover {{
+	background-color: {button_bg_hover_color};
     color: #3498db;
-}
-QToolButton:checked {
+}}
+QToolButton:checked {{
     color: #3498db;
-	background-color: #434547;
-}
-#button-separator {
-    background-color: #434547;
+	background-color: {button_toggled_bg_color};
+}}
+#button-separator {{
+    background-color: {separator_color};
     border-width: 1px;
-}
-#close_button:hover {
+}}
+#close_button:hover {{
     background-color: transparent;
-}
-#close_button:pressed {
-    background-color: #303030;
-}
+}}
+#close_button:pressed {{
+    background-color: {close_bg_color};
+}}
 """
 
 
@@ -50,9 +50,10 @@ class ButtonBox(QFrame):
     output_button_clicked = Signal()
     settings_button_clicked = Signal()
 
-    def __init__(self):
+    def __init__(self, theme: dict):
         super().__init__()
-        self.setStyleSheet(navigational_panel_stylesheet)
+
+        self._set_theme(theme)
         self.setFrameShape(QFrame.Shape.NoFrame)
 
         self.video_button = self._build_nav_button("Video", "video.svg")
@@ -121,6 +122,20 @@ class ButtonBox(QFrame):
         elif sender == self.settings_button:
             self.settings_button_clicked.emit()
 
+    def _set_theme(self, theme: dict):
+        nav_panel_theme = theme.get("navigation_panel")
+        format_style_sheet = navigational_panel_stylesheet.format(
+            frame_bg_color=nav_panel_theme.get("base"),
+            button_color=nav_panel_theme.get("button").get("text-color"),
+            button_bg_hover_color=nav_panel_theme.get("button").get("background-hover"),
+            button_toggled_bg_color=nav_panel_theme.get("button").get(
+                "background-toggle"
+            ),
+            separator_color=nav_panel_theme.get("panel-separator"),
+            close_bg_color=nav_panel_theme.get("close-button-click"),
+        )
+        self.setStyleSheet(format_style_sheet)
+
     @staticmethod
     def _build_nav_button(
         name: Union[str, None] = None,
@@ -131,7 +146,7 @@ class ButtonBox(QFrame):
         if name and icon:
             nav_btn.setText(name)
             nav_btn.setIcon(QIcon(str(Path(f"mp4muxtool/frontend/svg/{icon}"))))
-            nav_btn.setIconSize(QSize(24, 24))
+            nav_btn.setIconSize(QSize(26, 26))
             nav_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
         nav_btn.setMinimumSize(0, 50)
         nav_btn.setMaximumSize(16777215, 16777215)
