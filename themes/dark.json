@@ -1,0 +1,15 @@
+{
+    "theme": {
+        "navigation_panel": {
+            "base": "#2a2a2a",
+            "button": {
+                "text-color": "#3498db",
+                "background-base": "#d3d3d3",
+                "background-hover": "#434547",
+                "background-toggle": "#434547"
+            },
+            "panel-separator": "#434547",
+            "close-button-click": "#303030"
+        }
+    }
+}
