@@ -4,6 +4,7 @@ build/
 dist/
 apps/
 __pycache__/
+scraps/
 config.ini
 Mp4-Mux-Tool.exe
 *.zip
