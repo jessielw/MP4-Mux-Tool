@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout, QToolButton, QFrame
 from PySide6.QtGui import QIcon
 
-from mp4muxtool.frontend.theme_loader import load_theme
+from mp4muxtool.frontend.theme_utils import load_theme
 from mp4muxtool.frontend.button_box import ButtonBox
 from mp4muxtool.frontend.content_box.content_box import ContentBox
 
@@ -10,10 +10,10 @@ class Mp4MuxWindow(QWidget):
         super().__init__()
         self.resize(600, 400)
         
-        theme = load_theme("themes/dark.json").get("theme")
+        theme = load_theme("themes/dark.json")
         
         button_box = ButtonBox(theme)
-        content_box = ContentBox(button_box)
+        content_box = ContentBox(theme, button_box)
         
         # TODO: alternative solution to define signals AFTER widget creation
         # content_box.setup_signals(button_box)
