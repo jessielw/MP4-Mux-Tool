@@ -17,26 +17,21 @@ from mp4muxtool.frontend.content_box.chapter_content import ChapterContent
 from mp4muxtool.frontend.content_box.output_content import OutputContent
 from mp4muxtool.frontend.content_box.settings_content import SettingsContent
 
-content_box_stylesheet = """
-QFrame {
-    background-color: #434547;
-}
-"""
-
 
 class ContentBox(QFrame):
-    def __init__(self, button_box: ButtonBox):
+    def __init__(self, theme: dict, button_box: ButtonBox):
         super().__init__()
 
         self.setFrameShape(QFrame.Shape.NoFrame)
-        self.setStyleSheet(content_box_stylesheet)
+        content_box_theme = theme.get('content-box').get("background")
+        self.setStyleSheet(f"QFrame {{background-color: {content_box_theme}}}")
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(2, 0, 0, 0)
 
         self.stacked_content = QStackedWidget(self)
 
-        self.video_content = VideoContent()
+        self.video_content = VideoContent(theme)
         self.audio_content = AudioContent()
         self.subtitle_content = SubtitleContent()
         self.chapter_content = ChapterContent()
@@ -79,6 +74,6 @@ class ContentBox(QFrame):
 
     def show_output_content(self):
         self.stacked_content.setCurrentWidget(self.output_content)
-        
+
     def show_settings_content(self):
-        self.stacked_content.setCurrentWidget(self.settings_content)        
+        self.stacked_content.setCurrentWidget(self.settings_content)
