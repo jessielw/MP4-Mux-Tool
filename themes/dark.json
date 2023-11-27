@@ -1,5 +1,5 @@
 {
-    "navigation_panel": {
+    "navigation-panel": {
         "base": "#2a2a2a",
         "button": {
             "text": "#3498db",
@@ -13,8 +13,29 @@
     "content-box": {
         "background": "#434547"
     },
+    "video-content": {
+        "base": "#353738",
+        "button": {
+            "text": "#d3d3d3",
+            "text-hover": "#3498db",
+            "background-base": "transparent",
+            "background-hover": "#434547",
+            "background-clicked": "#686a6b"
+        },
+        "entry-box": {
+            "border": "#686a6b",
+            "border-hover": "#d3d3d3",
+            "background": "#434547",
+            "text": "#d3d3d3"
+        },
+        "label": {
+            "background": "transparent",
+            "color": "#d3d3d3"
+        }
+    },
     "combo-box": {
         "text": "#454347",
         "background": "#d3d3d3"
-    }
+    },
+    "delete-color": "#e1401d"
 }
