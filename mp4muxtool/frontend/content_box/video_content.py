@@ -169,6 +169,7 @@ class VideoContent(QFrame):
     def _get_payload(self, file_input: Path):
         try:
             self.payload = VideoContentBackEnd(file_input).get_payload()
+            self._update_ui()
         except TrackError as e:
             QMessageBox.warning(
                 None,
@@ -183,6 +184,12 @@ class VideoContent(QFrame):
                 f"Input file '{file_input.name}':\n\nDoes not have a video track",
             )
             self._reset_panel()
+
+    def _update_ui(self):
+        # TODO: handle language as well
+        self.track_title_entry.setText(
+            self.payload.title.strip() if self.payload.title else ""
+        )
 
     def _build_icon_buttons(self, widget: QWidget, icon: str, object_name: str):
         button = widget()
