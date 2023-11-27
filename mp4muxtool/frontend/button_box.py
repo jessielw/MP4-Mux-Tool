@@ -53,7 +53,7 @@ class ButtonBox(QFrame):
     def __init__(self, theme: dict):
         super().__init__()
 
-        self._set_theme(theme)
+        self.theme = self._set_theme(theme)
         self.setFrameShape(QFrame.Shape.NoFrame)
 
         self.video_button = self._build_nav_button("Video", "video.svg")
@@ -123,18 +123,17 @@ class ButtonBox(QFrame):
             self.settings_button_clicked.emit()
 
     def _set_theme(self, theme: dict):
-        nav_panel_theme = theme.get("navigation_panel")
+        widget_theme = theme.get("navigation-panel")
         format_style_sheet = navigational_panel_stylesheet.format(
-            frame_bg_color=nav_panel_theme.get("base"),
-            button_color=nav_panel_theme.get("button").get("text"),
-            button_bg_hover_color=nav_panel_theme.get("button").get("background-hover"),
-            button_toggled_bg_color=nav_panel_theme.get("button").get(
-                "background-toggle"
-            ),
-            separator_color=nav_panel_theme.get("panel-separator"),
-            close_bg_color=nav_panel_theme.get("close-button-click"),
+            frame_bg_color=widget_theme.get("base"),
+            button_color=widget_theme.get("button").get("text"),
+            button_bg_hover_color=widget_theme.get("button").get("background-hover"),
+            button_toggled_bg_color=widget_theme.get("button").get("background-toggle"),
+            separator_color=widget_theme.get("panel-separator"),
+            close_bg_color=widget_theme.get("close-button-click"),
         )
         self.setStyleSheet(format_style_sheet)
+        return theme
 
     @staticmethod
     def _build_nav_button(
