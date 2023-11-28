@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Union
 
-from PySide6.QtCore import Qt, QSize, Signal
+from PySide6.QtCore import Qt, QSize, Signal, QObject
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QToolButton,
