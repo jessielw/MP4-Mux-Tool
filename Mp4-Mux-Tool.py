@@ -2,7 +2,7 @@ import sys
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QFont, QFontDatabase
 
-from mp4muxtool.frontend.main_window import Mp4MuxWindow
+from mp4muxtool.frontend.main_window.main_window import Mp4MuxWindow
 
 # TODO: We'll upgrade python to 10.5 or higher and remove union everywhere throughout
 # TODO: Since some methods will be the same between content tabs let's do a general class
