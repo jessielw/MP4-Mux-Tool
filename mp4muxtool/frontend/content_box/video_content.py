@@ -18,7 +18,10 @@ from PySide6.QtGui import QCursor, QIcon
 from mp4muxtool.exceptions import TrackError, VideoTrackError
 from mp4muxtool.frontend.custom_widgets.combo_box import CustomComboBox
 from mp4muxtool.frontend.custom_widgets.dnd_factory import DNDFactory
+from mp4muxtool.frontend.status_box.loading_bar import LoadingBarState
 from mp4muxtool.backend.video_content import VideoContentBackEnd
+from mp4muxtool.frontend.main_window.state import MainWindowState
+from mp4muxtool.frontend.utils.file_loader import ThreadedFileLoader
 
 
 video_panel_stylesheet = """
@@ -61,6 +64,9 @@ class VideoContent(QFrame):
 
         self.setObjectName("VideoFrame")
         self.theme = self._set_theme(theme)
+
+        self.main_ui_toggle = MainWindowState.get_instance()
+        self.loading_bar_toggle = LoadingBarState.get_instance()
 
         layout = QGridLayout(self)
 
@@ -167,9 +173,13 @@ class VideoContent(QFrame):
             self.input_entry.setText(str(Path(open_file)))
 
     def _get_payload(self, file_input: Path):
+        self.loading_bar_toggle.toggle_state.emit(True)
         try:
-            self.payload = VideoContentBackEnd(file_input).get_payload()
-            self._update_ui()
+            self.main_ui_toggle.toggle_state.emit(False)
+            file_loader = ThreadedFileLoader(file_input, VideoContentBackEnd, self)
+            file_loader.file_loaded.connect(self._receive_payload)
+            file_loader.finished.connect(file_loader.deleteLater)
+            file_loader.start()
         except TrackError as e:
             QMessageBox.warning(
                 None,
@@ -177,6 +187,7 @@ class VideoContent(QFrame):
                 f"There was an error opening '{file_input.name}':\n\n{e}",
             )
             self._reset_panel()
+            self.main_ui_toggle.toggle_state.emit(False)
         except VideoTrackError:
             QMessageBox.warning(
                 None,
@@ -184,6 +195,14 @@ class VideoContent(QFrame):
                 f"Input file '{file_input.name}':\n\nDoes not have a video track",
             )
             self._reset_panel()
+            self.main_ui_toggle.toggle_state.emit(False)
+
+    def _receive_payload(self, payload):
+        self.payload = payload
+        self._update_ui()
+        self.loading_bar_toggle.toggle_state.emit(True)
+        self.main_ui_toggle.toggle_state.emit(True)
+        self.loading_bar_toggle.toggle_state.emit(False)
 
     def _update_ui(self):
         # TODO: handle language as well
