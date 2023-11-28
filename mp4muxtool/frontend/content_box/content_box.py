@@ -1,13 +1,8 @@
 from PySide6.QtWidgets import (
-    QApplication,
-    QWidget,
     QVBoxLayout,
-    QToolButton,
     QFrame,
-    QSpacerItem,
     QStackedWidget,
 )
-from PySide6.QtGui import QIcon
 
 from mp4muxtool.frontend.button_box import ButtonBox
 from mp4muxtool.frontend.content_box.video_content import VideoContent
@@ -23,11 +18,11 @@ class ContentBox(QFrame):
         super().__init__()
 
         self.setFrameShape(QFrame.Shape.NoFrame)
-        content_box_theme = theme.get('content-box').get("background")
+        content_box_theme = theme.get("content-box").get("background")
         self.setStyleSheet(f"QFrame {{background-color: {content_box_theme}}}")
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(2, 0, 0, 0)
+        layout.setContentsMargins(0, 0, 0, 2)
 
         self.stacked_content = QStackedWidget(self)
 
