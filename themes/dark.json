@@ -1,4 +1,7 @@
 {
+    "main-window": {
+        "background": "#434547"
+    },
     "navigation-panel": {
         "base": "#2a2a2a",
         "button": {
@@ -33,9 +36,18 @@
             "color": "#d3d3d3"
         }
     },
+    "status-bar": {
+        "background": "#2a2a2a"
+    },
     "combo-box": {
         "text": "#454347",
         "background": "#d3d3d3"
+    },
+    "loading-bar": {
+        "border": "#686a6b",
+        "background": "#2a2a2a",
+        "color": "#d3d3d3",
+        "chunk-color": "#3498db"
     },
     "delete-color": "#e1401d"
 }
