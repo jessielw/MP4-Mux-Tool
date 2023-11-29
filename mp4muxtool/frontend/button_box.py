@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Union
 
-from PySide6.QtCore import Qt, QSize, Signal, QObject
+from PySide6.QtCore import Qt, QSize, Signal
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QToolButton,
@@ -31,7 +31,6 @@ QToolButton:checked {{
 }}
 #button-separator {{
     background-color: {separator_color};
-    border-width: 1px;
 }}
 #close_button:hover {{
     background-color: transparent;
@@ -84,9 +83,10 @@ class ButtonBox(QFrame):
 
         button_separator = QFrame()
         button_separator.setObjectName("button-separator")
-        button_separator.setFrameShape(QFrame.HLine)
-        button_separator.setFrameShadow(QFrame.Sunken)
-        button_separator.setFixedHeight(1)
+        button_separator.setFrameShape(QFrame.Shape.NoFrame)
+        button_separator.setFrameShadow(QFrame.Plain)
+        button_separator.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        button_separator.setFixedHeight(2)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
