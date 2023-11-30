@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QFileDialog,
     QMessageBox,
+    QSizePolicy,
 )
 from PySide6.QtGui import QCursor, QIcon
 
@@ -65,14 +66,15 @@ class VideoContent(QFrame):
         self.setObjectName("VideoFrame")
         self.theme = self._set_theme(theme)
 
+        self.backend = VideoContentBackEnd()
+
         self.main_ui_toggle = MainWindowState.get_instance()
         self.loading_bar_toggle = LoadingBarState.get_instance()
 
         layout = QGridLayout(self)
 
-        dnd_input_button = DNDFactory(QToolButton)
         self.input_button = self._build_icon_buttons(
-            dnd_input_button, "open.svg", "inputBtn"
+            DNDFactory(QToolButton), "open.svg", "inputBtn"
         )
         self.input_button.setToolTip("Click/drag and drop a file to add a video file")
         self.input_button.set_extensions(self._get_supported_extensions())
@@ -103,11 +105,13 @@ class VideoContent(QFrame):
         self.language_label = QLabel()
         self.language_label.setText("Language")
 
-        self.language_combo_box = CustomComboBox(theme)
+        self.language_combo_box = CustomComboBox(theme, True, 10)
         self.language_combo_box.setFixedHeight(22)
+        self.language_combo_box.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        self._update_languages()
 
         language_layout = QFormLayout()
-        language_layout.setContentsMargins(0, 20, 0, 0)
+        language_layout.setContentsMargins(0, 0, 0, 0)
         language_layout.addWidget(self.language_label)
         language_layout.addWidget(self.language_combo_box)
 
@@ -118,13 +122,17 @@ class VideoContent(QFrame):
         self.track_title_entry.setFixedHeight(22)
 
         title_layout = QFormLayout()
-        title_layout.setContentsMargins(0, 20, 0, 0)
+        title_layout.setContentsMargins(0, 0, 0, 0)
         title_layout.addWidget(self.track_title_label)
         title_layout.addWidget(self.track_title_entry)
 
+        row_2_layout = QHBoxLayout()
+        row_2_layout.setContentsMargins(0, 20, 0, 0)
+        row_2_layout.addLayout(language_layout, stretch=1)
+        row_2_layout.addLayout(title_layout, stretch=1)
+
         layout.addLayout(input_layout, 0, 0, 1, 4)
-        layout.addLayout(language_layout, 1, 0, 1, 2)
-        layout.addLayout(title_layout, 1, 2, 1, 2)
+        layout.addLayout(row_2_layout, 1, 0, 1, 4)
 
     def _clear_input(self):
         if self.input_entry.text():
@@ -210,6 +218,9 @@ class VideoContent(QFrame):
             self.payload.title.strip() if self.payload.title else ""
         )
 
+    def _update_languages(self):
+        self.language_combo_box.addItems(self.backend.get_language_list())
+
     def _build_icon_buttons(self, widget: QWidget, icon: str, object_name: str):
         button = widget()
         button.setObjectName(object_name)
@@ -252,4 +263,6 @@ class VideoContent(QFrame):
             ".hevc",
             ".h265",
             ".avc",
+            # TODO: remove this once we're done testing
+            ".mkv",
         )
