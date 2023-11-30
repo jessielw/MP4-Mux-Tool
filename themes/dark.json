@@ -40,8 +40,10 @@
         "background": "#2a2a2a"
     },
     "combo-box": {
-        "text": "#454347",
-        "background": "#d3d3d3"
+        "background": "#434547",
+        "text": "#d3d3d3",
+        "border": "#686a6b",
+        "border-hover": "#d3d3d3"
     },
     "loading-bar": {
         "border": "#686a6b",
