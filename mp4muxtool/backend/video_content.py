@@ -1,17 +1,23 @@
 from pathlib import Path
 from typing import Union
+
 from pymediainfo import MediaInfo
+from iso639 import iter_langs
 
 from mp4muxtool.exceptions import TrackError, VideoTrackError
 from mp4muxtool.payloads.video_content import VideoContentPayload
 
 
-class VideoContentBackEnd:
-    def __init__(self, file_input: Union[str, Path]):
-        self.file_input = Path(file_input)
-        self.parsed_file = MediaInfo.parse(file_input)
+# TODO: make a back end base class that handled shared stuff
 
-    def get_payload(self):
+
+class VideoContentBackEnd:
+    def __init__(self):
+        self.file_input = None
+        self.parsed_file = None
+
+    def get_payload(self, file_input: Union[str, Path]):
+        self.parsed_file = MediaInfo.parse(file_input)
         try:
             track = self.parsed_file.video_tracks[0]
             payload = VideoContentPayload(
@@ -46,3 +52,14 @@ class VideoContentBackEnd:
             )
         except Exception as e:
             raise TrackError(f"Error opening input file '{self.file_input.name}': {e}")
+
+    def get_language_object(self):
+        # TODO: make it to where this is only parsed once from the base class later
+        return [lg for lg in iter_langs() if lg.pt1 != ""]
+
+    def get_language_list(self):
+        languages = ["", "English", "French", "Japanese", "Spanish"]
+        for lang in self.get_language_object():
+            if lang.name not in languages:
+                languages.append(lang.name)
+        return languages
