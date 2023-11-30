@@ -22,5 +22,5 @@ class ThreadedFileLoader(QThread):
         self.payload_object = payload_object
 
     def run(self):
-        payload = self.payload_object(self.file_path).get_payload()
+        payload = self.payload_object().get_payload(self.file_path)
         self.file_loaded.emit(payload)
