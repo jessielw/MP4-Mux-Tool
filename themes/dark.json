@@ -51,5 +51,17 @@
         "color": "#d3d3d3",
         "chunk-color": "#3498db"
     },
+    "scroll-bar": {
+        "base": {
+            "border": "#4a4a4a",
+            "background": "#2a2a2a"
+        },
+        "button": {
+            "border": "#686a6b",
+            "border-hover": "#d3d3d3",
+            "background": "#3f3f3f",
+            "background-pressed": "#3498db"
+        }
+    },
     "delete-color": "#e1401d"
 }
