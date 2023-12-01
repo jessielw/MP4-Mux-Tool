@@ -1,10 +1,12 @@
 def generate_style_sheet(theme: dict):
     main_window = theme.get("main-window")
-    scroll_bar = theme.get("scroll-bar")
-    style_sheet = f"""
+    main_window = f"""
 Mp4MuxWindow {{
     background-color: {main_window.get('background')};
-    }}
+    }}    
+    """
+    scroll_bar = theme.get("scroll-bar")
+    scroll_bar = f"""
 QScrollBar:vertical {{
     border: 1px solid {scroll_bar.get("base").get("border")};
     background: {scroll_bar.get("base").get("background")};
@@ -115,4 +117,5 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {{
     background: none;
 }}
 """
+    style_sheet = main_window + scroll_bar
     return style_sheet
