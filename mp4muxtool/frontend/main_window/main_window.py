@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (
 )
 
 from mp4muxtool.frontend.main_window.state import MainWindowState
+from mp4muxtool.frontend.main_window.global_style_sheet import generate_style_sheet
 from mp4muxtool.frontend.theme_utils import load_theme
 from mp4muxtool.frontend.button_box import ButtonBox
 from mp4muxtool.frontend.content_box.content_box import ContentBox
@@ -20,11 +21,7 @@ class Mp4MuxWindow(QWidget):
         self.main_window_state.toggle_state.connect(self._toggle_state)
 
         theme = load_theme("themes/dark.json")
-
-        main_window_theme = theme.get("main-window")
-        self.setStyleSheet(
-            f"Mp4MuxWindow {{background-color: {main_window_theme.get('background')};}}"
-        )
+        self.setStyleSheet(generate_style_sheet(theme))
 
         button_box = ButtonBox(theme)
 
