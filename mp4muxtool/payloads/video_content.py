@@ -6,6 +6,8 @@ from typing import List, Union
 class VideoContentPayload:
     stream_identifier: int
     title: str
+    language: str
+    other_language: List[str]
     track_id: int
     track_format: str
     track_other_format: List[str]

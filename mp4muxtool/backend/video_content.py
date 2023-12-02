@@ -2,7 +2,8 @@ from pathlib import Path
 from typing import Union
 
 from pymediainfo import MediaInfo
-from iso639 import iter_langs
+from iso639 import iter_langs, Lang as ISOLang
+from iso639.exceptions import InvalidLanguageValue
 
 from mp4muxtool.exceptions import TrackError, VideoTrackError
 from mp4muxtool.payloads.video_content import VideoContentPayload
@@ -23,6 +24,8 @@ class VideoContentBackEnd:
             payload = VideoContentPayload(
                 stream_identifier=track.stream_identifier,
                 title=track.title,
+                language=track.language,
+                other_language=track.other_language,
                 track_id=track.track_id,
                 track_format=track.format,
                 track_other_format=track.other_format,
@@ -63,3 +66,9 @@ class VideoContentBackEnd:
             if lang.name not in languages:
                 languages.append(lang.name)
         return languages
+
+    def find_language(self, language: str):
+        try:
+            return ISOLang(language).name
+        except InvalidLanguageValue:
+            return ""

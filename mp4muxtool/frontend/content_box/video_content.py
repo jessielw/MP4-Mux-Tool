@@ -213,10 +213,11 @@ class VideoContent(QFrame):
         self.loading_bar_toggle.toggle_state.emit(False)
 
     def _update_ui(self):
-        # TODO: handle language as well
         self.track_title_entry.setText(
             self.payload.title.strip() if self.payload.title else ""
         )
+        language = self.backend.find_language(self.payload.language)
+        self.language_combo_box.setCurrentText(language)
 
     def _update_languages(self):
         self.language_combo_box.addItems(self.backend.get_language_list())
