@@ -3,38 +3,21 @@ from PySide6.QtCore import QTimer
 
 # from PySide6.QtGui import QPalette, QColor
 # from mp4muxtool.frontend.theme_utils import hex_to_rgb
+from mp4muxtool.frontend.styles.styles import StyleFactory
 
 
 class CustomComboBox(QComboBox):
-    def __init__(
-        self, theme: dict, completer: bool = False, max_items: int = 10, parent=None
-    ):
+    def __init__(self, completer: bool = False, max_items: int = 10, parent=None):
         super().__init__(parent)
 
         self.timer = None
 
-        self.theme = theme
-        self.combo_box_theme = self.theme.get("combo-box")
-        # text_color = hex_to_rgb(combo_box_theme.get("text"))
-        # background_color = hex_to_rgb(combo_box_theme.get("background"))
-
-        self.original_style = f"""
-            CustomComboBox {{
-                background-color: {self.combo_box_theme.get("background")};
-                color: {self.combo_box_theme.get("text")};
-                border: 1px solid {self.combo_box_theme.get("border")};
-                border-top-left-radius: 2px;
-                border-bottom-left-radius: 2px;
-            }}
-            CustomComboBox:hover {{
-                border-color: {self.combo_box_theme.get("border-hover")};
-            }}
-            CustomComboBox QAbstractItemView {{
-                color: {self.combo_box_theme.get("text")};  
-            }}           
-        """
-
+        (
+            self.original_style,
+            self.delete_color,
+        ) = StyleFactory.get_instance().get_custom_combo_box_theme()
         self.setStyleSheet(self.original_style)
+
         self.setEditable(True)
         self.setMaxVisibleItems(max_items)
         if not completer:
@@ -64,11 +47,7 @@ class CustomComboBox(QComboBox):
     def checkEnteredText(self):
         entered_text = self.currentText()
         if entered_text not in [self.itemText(i) for i in range(self.count())]:
-            modified_style = self.original_style.replace(
-                f"border: 1px solid {self.combo_box_theme.get('border')};",
-                f"border: 1px solid {self.theme.get('delete-color')};",
-            )
-            self.setStyleSheet(modified_style)
+            self.setStyleSheet(self.delete_color)
             if self.timer:
                 self.timer.stop()
             self.timer = QTimer(self)
