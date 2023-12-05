@@ -1,14 +1,15 @@
 def theme_audio_content(theme: dict):
     # TODO: make an audio content
     audio_panel_theme = theme.get("video-content")
-    audio_panel = f"""  
+    audio_panel = f"""    
 QToolButton{{
 	color: {audio_panel_theme.get("button").get("text")};
 	border-radius: 5px;
 }}
 QToolButton#inputBtn:pressed,
 QToolButton#clearBtn:pressed,
-QToolButton#addNewTab:pressed {{
+QToolButton#addNewTab:pressed,
+QToolButton#resetDelay:pressed {{
     background-color: {audio_panel_theme.get("button").get("background-clicked")};
 }}
 QToolButton:hover {{
