@@ -5,7 +5,7 @@
     "navigation-panel": {
         "base": "#2a2a2a",
         "button": {
-            "text": "#3498db",
+            "text": "#d3d3d3",
             "background-base": "#d3d3d3",
             "background-hover": "#434547",
             "background-toggle": "#434547"
