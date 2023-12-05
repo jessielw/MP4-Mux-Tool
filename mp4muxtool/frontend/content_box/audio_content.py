@@ -34,7 +34,7 @@ class AudioContentTabbed(QTabWidget):
         # audio_content.setObjectName("AudioLayout")
         # main_area = DummyAudioClass(self.count())
         # audio_content = AudioContent(self.theme)
-        audio_content = LayoutContent(VideoContentBackEnd, "audio", "AudioLayout", self._get_supported_extensions(), 10)
+        audio_content = LayoutContent(VideoContentBackEnd, "audio", "AudioLayout", self._get_supported_extensions(), 10, True)
         # self.tab_data.append(main_area)
         audio_content.setObjectName("tabArea")
         
