@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QMessageBox,
     QSizePolicy,
+    QSpinBox,
 )
 from PySide6.QtGui import QCursor, QIcon
 
@@ -26,7 +27,7 @@ from mp4muxtool.frontend.utils.file_loader import ThreadedFileLoader
 
 
 class LayoutContent(QFrame):
-    def __init__(self, backend: object, name: str, object_name: str, extensions: list, top_margin: int):
+    def __init__(self, backend: object, name: str, object_name: str, extensions: list, top_margin: int, enable_delay: bool):
         super().__init__()
 
         self.payload = None
@@ -40,6 +41,8 @@ class LayoutContent(QFrame):
         self.backend_instance = backend()
         self.name = name
         self.extensions = extensions
+        
+        self.delay_spinbox = None
 
         self.main_ui_toggle = MainWindowState.get_instance()
         self.loading_bar_toggle = LoadingBarState.get_instance()
@@ -72,11 +75,11 @@ class LayoutContent(QFrame):
         self.clear_button.setToolTip("Clear input (click twice to confirm)")
         self.clear_button.clicked.connect(self._clear_input)
 
-        input_layout = QHBoxLayout()
-        input_layout.addWidget(self.input_button, 1)
-        input_layout.addWidget(self.input_entry, 4)
-        input_layout.addWidget(self.clear_button, 1)
-        input_layout.setContentsMargins(0, top_margin, 0, 0)
+        row_1_layout = QHBoxLayout()
+        row_1_layout.addWidget(self.input_button, 1)
+        row_1_layout.addWidget(self.input_entry, 4)
+        row_1_layout.addWidget(self.clear_button, 1)
+        row_1_layout.setContentsMargins(0, top_margin, 0, 0)
 
         self.language_label = QLabel()
         self.language_label.setText("Language")
@@ -103,18 +106,26 @@ class LayoutContent(QFrame):
         title_layout.addWidget(self.track_title_entry)
 
         row_2_layout = QHBoxLayout()
-        row_2_layout.setContentsMargins(0, 20, 0, 0)
+        row_2_layout.setContentsMargins(0, 10, 0, 0)
         row_2_layout.addLayout(language_layout, stretch=1)
         row_2_layout.addLayout(title_layout, stretch=1)
-
-        layout.addLayout(input_layout, 0, 0, 1, 4)
+        
+        layout.addLayout(row_1_layout, 0, 0, 1, 4)
         layout.addLayout(row_2_layout, 1, 0, 1, 4)
+        
+        if enable_delay:
+            row_3_layout = self._build_delay_area()
+            row_3_layout.setContentsMargins(0, 10, 0, 0)
+            layout.addLayout(row_3_layout, 2, 0, 1, 2)     
+        
+        layout.setRowStretch(3, 8)           
 
     def _clear_input(self):
         if self.input_entry.text():
             self.clear_var += 1
             if self.clear_var == 1:
                 self.clear_timer.start(2000)
+                # TODO: restore this if needed
                 # self.clear_button.setStyleSheet(
                 #     f"QToolButton {{background-color: {self.theme.get('delete-color')}}};"
                 # )
@@ -200,6 +211,24 @@ class LayoutContent(QFrame):
 
     def _update_languages(self):
         self.language_combo_box.addItems(self.backend_instance.get_language_list())
+        
+    def _build_delay_area(self):
+        delay_label = QLabel("Delay")      
+        self.delay_spinbox = QSpinBox()
+        self.delay_spinbox.setRange(-999999, 999999)
+        self.delay_spinbox.setFixedHeight(25)
+        delay_reset = self._build_icon_buttons(QToolButton, "reset.svg", "resetDelay") 
+        delay_reset.clicked.connect(lambda: self.delay_spinbox.setValue(0))   
+        
+        delay_form = QFormLayout()
+        delay_form.addWidget(delay_label)
+        delay_form.addWidget(self.delay_spinbox)
+        
+        row_3_layout = QHBoxLayout()
+        row_3_layout.addLayout(delay_form)        
+        row_3_layout.addWidget(delay_reset, 0, Qt.AlignmentFlag.AlignBottom)    
+
+        return row_3_layout
 
     @staticmethod
     def _build_icon_buttons(widget: QWidget, icon: str, object_name: str):
