@@ -5,7 +5,7 @@ from pymediainfo import MediaInfo
 from iso639 import iter_langs, Lang as ISOLang
 from iso639.exceptions import InvalidLanguageValue
 
-from mp4muxtool.exceptions import TrackError, VideoTrackError
+from mp4muxtool.exceptions import TrackError, MissingTrackError
 from mp4muxtool.payloads.video_content import VideoContentPayload
 
 
@@ -50,7 +50,7 @@ class VideoContentBackEnd:
             )
             return payload
         except IndexError:
-            raise VideoTrackError(
+            raise MissingTrackError(
                 f"Input file '{self.file_input.name}' has no video track"
             )
         except Exception as e:
