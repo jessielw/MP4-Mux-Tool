@@ -1,6 +1,8 @@
 from PySide6.QtWidgets import QProgressBar
 from PySide6.QtCore import Signal, QObject
 
+from mp4muxtool.frontend.styles.styles import StyleFactory
+
 
 class LoadingBarState(QObject):
     """Singleton class to be used throughout the program to activate the loading bar"""
@@ -21,24 +23,10 @@ class LoadingBarState(QObject):
 
 
 class LoadingBar(QProgressBar):
-    def __init__(self, theme: dict, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
 
-        loading_theme = theme.get("loading-bar")
-        self.setStyleSheet(
-            f"""QProgressBar {{
-            border: 1px solid {loading_theme.get('border')};
-            border-radius: 5px;
-            text-align: center;
-            background-color: {loading_theme.get('background')};
-            color: {loading_theme.get('color')};
-        }}
-        QProgressBar::chunk {{
-            width: 4px;
-            margin: 3px;
-            background-color: {loading_theme.get('chunk-color')};
-        }}"""
-        )
+        self.setStyleSheet(StyleFactory.get_instance().get_loading_bar_theme())
 
         self.loading_bar_state = LoadingBarState.get_instance()
         self.loading_bar_state.toggle_state.connect(self._toggle_state)

@@ -1,22 +1,20 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFrame, QHBoxLayout
 
+from mp4muxtool.frontend.styles.styles import StyleFactory
 from mp4muxtool.frontend.status_box.loading_bar import LoadingBar
 
 
 class StatusBox(QFrame):
-    def __init__(self, theme: dict):
+    def __init__(self):
         super().__init__()
 
         self.setFrameShape(QFrame.Shape.NoFrame)
         self.setMaximumHeight(20)
 
-        status_box_theme = theme.get("status-bar")
-        self.setStyleSheet(
-            f"QFrame {{background-color: {status_box_theme.get('background')}}}"
-        )
+        self.setStyleSheet(StyleFactory.get_instance().get_status_box_theme())
 
-        loading_bar = LoadingBar(theme)
+        loading_bar = LoadingBar()
         loading_bar.setRange(0, 0)
         loading_bar.setFixedWidth(60)
         loading_bar.setFixedHeight(10)
