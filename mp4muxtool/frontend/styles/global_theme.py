@@ -162,7 +162,6 @@ QTabBar::tab:selected {{
     border-color: #9B9B9B;
     border-bottom-color: #2f3132; /* same as pane color */
 }}
-
 QTabBar::tab:selected {{
     margin-top: 2px; /* make non-selected tabs look smaller */
 }} 
@@ -177,4 +176,87 @@ QToolTip {{
     color: #d3d3d3;
 }}
 """
-    return main_window + scroll_bar + q_tab_widget + tool_tip
+# TODO properly pass svgs here 
+    spinbox_style_widgets = """
+QSpinBox, 
+QDoubleSpinBox,
+QDateTimeEdit {
+	background-color: #434547;
+	color: #d3d3d3;
+	border: 1px solid #686a6b;
+	border-radius: 3px;
+	padding : 2px;
+}
+
+QSpinBox::disabled, 
+QDoubleSpinBox::disabled,
+QDateTimeEdit::disabled {
+	background-color: #404040;
+	color: #d3d3d3;
+	border-color: #434547;
+}
+
+QSpinBox:hover, 
+QDoubleSpinBox::hover,
+QDateTimeEdit::hover {
+    background-color: #434547;
+    border: 1px solid #d3d3d3;
+    color:  #d3d3d3;
+    padding: 2px
+}
+
+QSpinBox::up-button, QSpinBox::down-button,
+QDoubleSpinBox::up-button, QDoubleSpinBox::down-button,
+QDateTimeEdit::up-button, QDateTimeEdit::down-button {
+    background-color: #363636;
+	border-radius: 2px;
+    height: 11px;
+}
+
+QSpinBox::disabled, 
+QDoubleSpinBox::disabled,
+QDateTimeEdit::disabled {
+	background-color: #404040;
+	color: #656565;
+	border-color: #686a6b;
+}
+
+QSpinBox::up-button:hover, QSpinBox::down-button:hover,
+QDoubleSpinBox::up-button:hover, QDoubleSpinBox::down-button:hover,
+QDateTimeEdit::up-button:hover, QDateTimeEdit::down-button:hover {
+    background-color: #3f3f3f;
+}
+
+QSpinBox::up-button:disabled, QSpinBox::down-button:disabled,
+QDoubleSpinBox::up-button:disabled, QDoubleSpinBox::down-button:disabled,
+QDateTimeEdit::up-button:disabled, QDateTimeEdit::down-button:disabled {
+	background-color: #404040;
+	color: #656565;
+	border-color: #686a6b;
+}
+
+QSpinBox::up-button:pressed, QSpinBox::down-button:pressed,
+QDoubleSpinBox::up-button:pressed, QDoubleSpinBox::down-button::pressed,
+QDateTimeEdit::up-button:pressed, QDateTimeEdit::down-button::pressed {
+    background-color: #3498db;
+    border: 1px solid #3498db;
+}
+
+QSpinBox::down-arrow,
+QDoubleSpinBox::down-arrow,
+QDateTimeEdit::down-arrow {
+    image: url(mp4muxtool/frontend/svg/arrow_drop_down.svg);
+    width: 20px;
+    height: 20px;
+}
+
+QSpinBox::up-arrow,
+QDoubleSpinBox::up-arrow,
+QDateTimeEdit::up-arrow {
+    image: url(mp4muxtool/frontend/svg/arrow_drop_up.svg);
+    width: 20px;
+    height: 20px;
+}
+"""
+
+    return main_window + scroll_bar + q_tab_widget + tool_tip + spinbox_style_widgets
