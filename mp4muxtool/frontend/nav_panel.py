@@ -12,36 +12,10 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QCursor, QIcon
 
-navigational_panel_stylesheet = """
-QFrame {{
-    background-color: {frame_bg_color};
-}}
-QToolButton {{
-	color: {button_color};
-	border-radius: 0;
-	text-align: center;
-}}
-QToolButton:hover {{
-	background-color: {button_bg_hover_color};
-    color: #3498db;
-}}
-QToolButton:checked {{
-    color: #3498db;
-	background-color: {button_toggled_bg_color};
-}}
-#button-separator {{
-    background-color: {separator_color};
-}}
-#close_button:hover {{
-    background-color: transparent;
-}}
-#close_button:pressed {{
-    background-color: {close_bg_color};
-}}
-"""
+from mp4muxtool.frontend.styles.styles import StyleFactory
 
 
-class ButtonBox(QFrame):
+class NavigationalPanel(QFrame):
     video_button_clicked = Signal()
     audio_button_clicked = Signal()
     subtitle_button_clicked = Signal()
@@ -49,11 +23,11 @@ class ButtonBox(QFrame):
     output_button_clicked = Signal()
     settings_button_clicked = Signal()
 
-    def __init__(self, theme: dict):
+    def __init__(self):
         super().__init__()
 
-        self.theme = self._set_theme(theme)
-        self.setFrameShape(QFrame.Shape.NoFrame)
+        self.setObjectName("navigationalPanel")
+        self.setStyleSheet(StyleFactory.get_instance().get_nav_theme())
 
         self.video_button = self._build_nav_button("Video", "video.svg")
         self.audio_button = self._build_nav_button("Audio", "audio.svg")
@@ -62,7 +36,7 @@ class ButtonBox(QFrame):
         self.output_button = self._build_nav_button("Output", "output.svg")
         self.settings_button = self._build_nav_button("Settings", "settings.svg")
         self.close_button = self._build_nav_button("Close", "close.svg", False)
-        self.close_button.setObjectName("close_button")
+        self.close_button.setObjectName("closeButton")
         self.close_button.clicked.connect(QApplication.instance().quit)
 
         self._toggle_buttons = [
@@ -82,7 +56,7 @@ class ButtonBox(QFrame):
         )
 
         button_separator = QFrame()
-        button_separator.setObjectName("button-separator")
+        button_separator.setObjectName("buttonSeparator")
         button_separator.setFrameShape(QFrame.Shape.NoFrame)
         button_separator.setFrameShadow(QFrame.Plain)
         button_separator.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -121,19 +95,6 @@ class ButtonBox(QFrame):
             self.output_button_clicked.emit()
         elif sender == self.settings_button:
             self.settings_button_clicked.emit()
-
-    def _set_theme(self, theme: dict):
-        widget_theme = theme.get("navigation-panel")
-        format_style_sheet = navigational_panel_stylesheet.format(
-            frame_bg_color=widget_theme.get("base"),
-            button_color=widget_theme.get("button").get("text"),
-            button_bg_hover_color=widget_theme.get("button").get("background-hover"),
-            button_toggled_bg_color=widget_theme.get("button").get("background-toggle"),
-            separator_color=widget_theme.get("panel-separator"),
-            close_bg_color=widget_theme.get("close-button-click"),
-        )
-        self.setStyleSheet(format_style_sheet)
-        return theme
 
     @staticmethod
     def _build_nav_button(
