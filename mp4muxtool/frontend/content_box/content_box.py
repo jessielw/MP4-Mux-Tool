@@ -4,9 +4,10 @@ from PySide6.QtWidgets import (
     QStackedWidget,
 )
 
-from mp4muxtool.frontend.button_box import ButtonBox
+from mp4muxtool.frontend.styles.styles import StyleFactory
+from mp4muxtool.frontend.nav_panel import NavigationalPanel
 from mp4muxtool.frontend.content_box.video_content import VideoContent
-from mp4muxtool.frontend.content_box.audio_content import AudioContent
+from mp4muxtool.frontend.content_box.audio_content import AudioContentTabbed
 from mp4muxtool.frontend.content_box.subtitle_content import SubtitleContent
 from mp4muxtool.frontend.content_box.chapter_content import ChapterContent
 from mp4muxtool.frontend.content_box.output_content import OutputContent
@@ -14,20 +15,18 @@ from mp4muxtool.frontend.content_box.settings_content import SettingsContent
 
 
 class ContentBox(QFrame):
-    def __init__(self, theme: dict, button_box: ButtonBox):
+    def __init__(self, nav_panel: NavigationalPanel):
         super().__init__()
 
-        self.setFrameShape(QFrame.Shape.NoFrame)
-        content_box_theme = theme.get("content-box").get("background")
-        self.setStyleSheet(f"QFrame {{background-color: {content_box_theme}}}")
+        self.setStyleSheet(StyleFactory.get_instance().get_content_box_theme())
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 2)
 
         self.stacked_content = QStackedWidget(self)
 
-        self.video_content = VideoContent(theme)
-        self.audio_content = AudioContent()
+        self.video_content = VideoContent()
+        self.audio_content = AudioContentTabbed()
         self.subtitle_content = SubtitleContent()
         self.chapter_content = ChapterContent()
         self.output_content = OutputContent()
@@ -43,12 +42,12 @@ class ContentBox(QFrame):
         layout.addWidget(self.stacked_content)
 
         # Connect signals from ButtonBox to slots in ContentBox
-        button_box.video_button_clicked.connect(self.show_video_content)
-        button_box.audio_button_clicked.connect(self.show_audio_content)
-        button_box.chapter_button_clicked.connect(self.show_subtile_content)
-        button_box.subtitle_button_clicked.connect(self.show_chapter_content)
-        button_box.output_button_clicked.connect(self.show_output_content)
-        button_box.settings_button_clicked.connect(self.show_settings_content)
+        nav_panel.video_button_clicked.connect(self.show_video_content)
+        nav_panel.audio_button_clicked.connect(self.show_audio_content)
+        nav_panel.chapter_button_clicked.connect(self.show_subtile_content)
+        nav_panel.subtitle_button_clicked.connect(self.show_chapter_content)
+        nav_panel.output_button_clicked.connect(self.show_output_content)
+        nav_panel.settings_button_clicked.connect(self.show_settings_content)
 
     # TODO: alternative solution to define signals AFTER widget creation
     # def setup_signals(self, button_box):
