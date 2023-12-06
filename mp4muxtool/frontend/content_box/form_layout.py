@@ -33,9 +33,8 @@ class LayoutContent(QFrame):
         self.payload = None
 
         self.setObjectName(object_name)
-        # TODO: restore functionality
-        # self.theme = self._set_theme(theme)
-        self.setStyleSheet(StyleFactory.get_instance().get_audio_content_theme())
+        self.original_stylesheet, self.delete_theme = StyleFactory.get_instance().get_layout_theme()
+        self.setStyleSheet(self.original_stylesheet)
 
         self.backend = backend
         self.backend_instance = backend()
@@ -125,22 +124,13 @@ class LayoutContent(QFrame):
             self.clear_var += 1
             if self.clear_var == 1:
                 self.clear_timer.start(2000)
-                # TODO: restore this if needed
-                # self.clear_button.setStyleSheet(
-                #     f"QToolButton {{background-color: {self.theme.get('delete-color')}}};"
-                # )
+                self.clear_button.setStyleSheet(self.delete_theme)
             elif self.clear_var >= 2:
                 self._reset_clear()
 
     def _reset_clear(self):
         self.clear_timer.stop()
-        # TODO restore timer function
-        # original_button_bg = (
-        #     self.theme.get("video-content").get("button").get("background-base")
-        # )
-        # self.clear_button.setStyleSheet(
-        #     f"QToolButton {{background-color: {original_button_bg}}}"
-        # )
+        self.clear_button.setStyleSheet(self.original_stylesheet)
         if self.clear_var >= 2:
             self._reset_panel()
         self.clear_var = 0
@@ -149,6 +139,8 @@ class LayoutContent(QFrame):
         self.language_combo_box.setCurrentIndex(0)
         self.input_entry.clear()
         self.track_title_entry.clear()
+        if self.delay_spinbox:
+            self.delay_spinbox.setValue(0)
 
     def _handle_dnd(self, event):
         self._reset_panel()
