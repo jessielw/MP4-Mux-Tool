@@ -21,7 +21,7 @@ class VideoContent(QFrame):
             "VideoLayout",
             self._get_supported_extensions(),
             0,
-            False
+            False,
         )
         layout.addWidget(video_input)
 
