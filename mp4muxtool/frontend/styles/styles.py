@@ -1,6 +1,7 @@
 from mp4muxtool.frontend.styles.global_theme import theme_global
 from mp4muxtool.frontend.styles.nav_panel import theme_nav_panel
 from mp4muxtool.frontend.styles.content_box import theme_content_box
+from mp4muxtool.frontend.styles.layout_content import theme_layout_content
 from mp4muxtool.frontend.styles.video_content import theme_video_content
 from mp4muxtool.frontend.styles.audio_content import theme_audio_content
 from mp4muxtool.frontend.styles.status_box import theme_status_box
@@ -34,6 +35,9 @@ class StyleFactory():
          
     def get_nav_theme(cls):
         return theme_nav_panel(cls.theme)
+    
+    def get_layout_theme(cls):
+        return theme_layout_content(cls.theme)
     
     def get_video_content_theme(cls):
         return theme_video_content(cls.theme)
