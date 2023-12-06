@@ -1,6 +1,5 @@
 from mp4muxtool.frontend.styles.global_theme import theme_global
 from mp4muxtool.frontend.styles.nav_panel import theme_nav_panel
-from mp4muxtool.frontend.styles.content_box import theme_content_box
 from mp4muxtool.frontend.styles.layout_content import theme_layout_content
 from mp4muxtool.frontend.styles.video_content import theme_video_content
 from mp4muxtool.frontend.styles.audio_content import theme_audio_content
@@ -29,9 +28,6 @@ class StyleFactory():
         
     def get_global_theme(cls):
         return theme_global(cls.theme)
-        
-    def get_content_box_theme(cls):
-        return theme_content_box(cls.theme)
          
     def get_nav_theme(cls):
         return theme_nav_panel(cls.theme)
@@ -53,12 +49,3 @@ class StyleFactory():
     
     def get_custom_combo_box_theme(cls):
         return theme_custom_combo_box(cls.theme)
-    
-    
-
-# test1 = StyleFactory.get_instance()
-# # test1.update_theme("hi")
-# print(test1.theme)
-
-# test2 = StyleFactory.get_instance()
-# print(test2.theme)
