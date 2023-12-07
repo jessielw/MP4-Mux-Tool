@@ -200,12 +200,15 @@ class LayoutContent(QFrame):
         )
         language = self.backend_instance.find_language(self.payload.language)
         self.language_combo_box.setCurrentText(language)
+        if self.delay_spinbox:
+            if self.payload.delay:
+                self.delay_spinbox.setValue(self.payload.delay)
 
     def _update_languages(self):
         self.language_combo_box.addItems(self.backend_instance.get_language_list())
         
     def _build_delay_area(self):
-        delay_label = QLabel("Delay")      
+        delay_label = QLabel("Delay (ms)")      
         self.delay_spinbox = QSpinBox()
         self.delay_spinbox.setRange(-999999, 999999)
         self.delay_spinbox.setFixedHeight(25)
