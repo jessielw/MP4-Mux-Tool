@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
 from mp4muxtool.frontend.content_box.form_tabbed import ContentTabbed
-from mp4muxtool.backend.video_content import VideoContentBackEnd
+from mp4muxtool.backend.audio_content import AudioContentBackEnd
 
+# TODO: maybe handle files with multiple track input?
 
 class AudioContentTabbed(QWidget):
     def __init__(self):
@@ -15,7 +16,7 @@ class AudioContentTabbed(QWidget):
         
         # TODO: create a back end for audio
         self.tabbed_widget = ContentTabbed(object_name="AudioContentTabbed", 
-                                           backend=VideoContentBackEnd, 
+                                           backend=AudioContentBackEnd, 
                                            name="audio", 
                                            layout_object_name=object_name + "Layout",
                                            extensions=self._get_supported_extensions(),
