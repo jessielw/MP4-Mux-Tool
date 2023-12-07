@@ -4,7 +4,6 @@ from PySide6.QtWidgets import (
     QStackedWidget,
 )
 
-from mp4muxtool.frontend.styles.styles import StyleFactory
 from mp4muxtool.frontend.nav_panel import NavigationalPanel
 from mp4muxtool.frontend.content_box.video_content import VideoContent
 from mp4muxtool.frontend.content_box.audio_content import AudioContentTabbed
@@ -17,8 +16,6 @@ from mp4muxtool.frontend.content_box.settings_content import SettingsContent
 class ContentBox(QFrame):
     def __init__(self, nav_panel: NavigationalPanel):
         super().__init__()
-
-        self.setStyleSheet(StyleFactory.get_instance().get_content_box_theme())
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 2)
