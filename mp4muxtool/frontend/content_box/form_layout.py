@@ -27,20 +27,31 @@ from mp4muxtool.frontend.utils.file_loader import ThreadedFileLoader
 
 
 class LayoutContent(QFrame):
-    def __init__(self, backend: object, name: str, object_name: str, extensions: list, top_margin: int, enable_delay: bool):
+    def __init__(
+        self,
+        backend: object,
+        name: str,
+        object_name: str,
+        extensions: list,
+        top_margin: int,
+        enable_delay: bool,
+    ):
         super().__init__()
 
         self.payload = None
 
         self.setObjectName(object_name)
-        self.original_stylesheet, self.delete_theme = StyleFactory.get_instance().get_layout_theme()
+        (
+            self.original_stylesheet,
+            self.delete_theme,
+        ) = StyleFactory.get_instance().get_layout_theme()
         self.setStyleSheet(self.original_stylesheet)
 
         self.backend = backend
         self.backend_instance = backend()
         self.name = name
         self.extensions = extensions
-        
+
         self.delay_spinbox = None
 
         self.main_ui_toggle = MainWindowState.get_instance()
@@ -108,16 +119,16 @@ class LayoutContent(QFrame):
         row_2_layout.setContentsMargins(0, 10, 0, 0)
         row_2_layout.addLayout(language_layout, stretch=1)
         row_2_layout.addLayout(title_layout, stretch=1)
-        
+
         layout.addLayout(row_1_layout, 0, 0, 1, 4)
         layout.addLayout(row_2_layout, 1, 0, 1, 4)
-        
+
         if enable_delay:
             row_3_layout = self._build_delay_area()
             row_3_layout.setContentsMargins(0, 10, 0, 0)
-            layout.addLayout(row_3_layout, 2, 0, 1, 2)     
-        
-        layout.setRowStretch(3, 8)           
+            layout.addLayout(row_3_layout, 2, 0, 1, 2)
+
+        layout.setRowStretch(3, 8)
 
     def _clear_input(self):
         if self.input_entry.text():
@@ -206,22 +217,22 @@ class LayoutContent(QFrame):
 
     def _update_languages(self):
         self.language_combo_box.addItems(self.backend_instance.get_language_list())
-        
+
     def _build_delay_area(self):
-        delay_label = QLabel("Delay (ms)")      
+        delay_label = QLabel("Delay (ms)")
         self.delay_spinbox = QSpinBox()
         self.delay_spinbox.setRange(-999999, 999999)
         self.delay_spinbox.setFixedHeight(25)
-        delay_reset = self._build_icon_buttons(QToolButton, "reset.svg", "resetDelay") 
-        delay_reset.clicked.connect(lambda: self.delay_spinbox.setValue(0))   
-        
+        delay_reset = self._build_icon_buttons(QToolButton, "reset.svg", "resetDelay")
+        delay_reset.clicked.connect(lambda: self.delay_spinbox.setValue(0))
+
         delay_form = QFormLayout()
         delay_form.addWidget(delay_label)
         delay_form.addWidget(self.delay_spinbox)
-        
+
         row_3_layout = QHBoxLayout()
-        row_3_layout.addLayout(delay_form)        
-        row_3_layout.addWidget(delay_reset, 0, Qt.AlignmentFlag.AlignBottom)    
+        row_3_layout.addLayout(delay_form)
+        row_3_layout.addWidget(delay_reset, 0, Qt.AlignmentFlag.AlignBottom)
 
         return row_3_layout
 
