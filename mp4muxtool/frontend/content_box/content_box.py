@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
 from mp4muxtool.frontend.nav_panel import NavigationalPanel
 from mp4muxtool.frontend.content_box.video_content import VideoContent
 from mp4muxtool.frontend.content_box.audio_content import AudioContentTabbed
-from mp4muxtool.frontend.content_box.subtitle_content import SubtitleContent
+from mp4muxtool.frontend.content_box.subtitle_content import SubtitleContentTabbed
 from mp4muxtool.frontend.content_box.chapter_content import ChapterContent
 from mp4muxtool.frontend.content_box.output_content import OutputContent
 from mp4muxtool.frontend.content_box.settings_content import SettingsContent
@@ -24,7 +24,7 @@ class ContentBox(QFrame):
 
         self.video_content = VideoContent()
         self.audio_content = AudioContentTabbed()
-        self.subtitle_content = SubtitleContent()
+        self.subtitle_content = SubtitleContentTabbed()
         self.chapter_content = ChapterContent()
         self.output_content = OutputContent()
         self.settings_content = SettingsContent()
@@ -41,8 +41,8 @@ class ContentBox(QFrame):
         # Connect signals from ButtonBox to slots in ContentBox
         nav_panel.video_button_clicked.connect(self.show_video_content)
         nav_panel.audio_button_clicked.connect(self.show_audio_content)
-        nav_panel.chapter_button_clicked.connect(self.show_subtile_content)
-        nav_panel.subtitle_button_clicked.connect(self.show_chapter_content)
+        nav_panel.subtitle_button_clicked.connect(self.show_subtile_content)        
+        nav_panel.chapter_button_clicked.connect(self.show_chapter_content)
         nav_panel.output_button_clicked.connect(self.show_output_content)
         nav_panel.settings_button_clicked.connect(self.show_settings_content)
 
