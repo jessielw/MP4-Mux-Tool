@@ -51,13 +51,3 @@ class AudioContentBackEnd(BackendBase):
             )
         except Exception as e:
             raise TrackError(f"Error opening input file '{self.file_input.name}': {e}")
-
-    @staticmethod
-    def _parse_delay(track):
-        # TODO: parse file name for delay
-        if track.delay:
-            return int(track.delay)
-        elif track.source_delay:
-            return int(track.source_delay)
-        else:
-            return None
