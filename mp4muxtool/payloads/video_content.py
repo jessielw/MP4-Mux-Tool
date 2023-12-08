@@ -15,6 +15,8 @@ class VideoContentPayload:
     commercial_name: str
     format_profile: str
     duration: int
+    delay: int
+    other_delay: List[str]
     other_duration: List[str]
     bit_rate: int
     other_bit_rate: List[str]

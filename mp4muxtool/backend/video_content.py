@@ -28,6 +28,8 @@ class VideoContentBackEnd(BackendBase):
                 commercial_name=track.commercial_name,
                 format_profile=track.format_profile,
                 duration=track.duration,
+                delay=self._parse_delay(track),
+                other_delay=track.other_delay,
                 other_duration=track.other_duration,
                 bit_rate=track.bit_rate,
                 other_bit_rate=track.other_bit_rate,
