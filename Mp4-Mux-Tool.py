@@ -66,7 +66,7 @@ def mp4_root_exit_function():  # Pop up window when you file + exit or press 'X'
 
 
 mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
-mp4_root.title("MP4-Mux-Tool v1.19")  # Sets the version of the program
+mp4_root.title("MP4-Mux-Tool v1.20")  # Sets the version of the program
 mp4_root.iconphoto(True, PhotoImage(data=icon_image))  # Sets icon for all windows
 mp4_root.configure(background="#434547")  # Sets gui background color
 window_height = 750  # Gui window height
@@ -2271,8 +2271,10 @@ start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(15, 2), st
 def view_command():  # This function is to show the full command line output into a window, the code is the same as
     # the command code above with a few minor changes
     global cmd_line_window, encode_window_progress, output, output_quoted
-    if detect_video_fps != "":
+    if detect_video_fps:
         fps_input = ":fps=" + detect_video_fps
+    else:
+        fps_input = ""
 
     video_options = (
         ' -add "'
