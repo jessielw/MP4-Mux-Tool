@@ -1,4 +1,5 @@
 import pathlib
+import platform
 import pyperclip
 import subprocess
 import threading
@@ -40,6 +41,7 @@ from packages.about import openaboutwindow
 from packages.chapterdemuxer import ChapterDemux
 from packages.base64images import icon_image
 from packages.configparams import *
+from packages.dpi_scaling import enable_dpi_scaling
 
 
 # Main Gui & Windows --------------------------------------------------------------------------------------------------
@@ -64,7 +66,7 @@ def mp4_root_exit_function():  # Pop up window when you file + exit or press 'X'
 
 
 mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
-mp4_root.title("MP4-Mux-Tool v1.18")  # Sets the version of the program
+mp4_root.title("MP4-Mux-Tool v1.19")  # Sets the version of the program
 mp4_root.iconphoto(True, PhotoImage(data=icon_image))  # Sets icon for all windows
 mp4_root.configure(background="#434547")  # Sets gui background color
 window_height = 750  # Gui window height
@@ -79,6 +81,9 @@ mp4_root.geometry(
 mp4_root.protocol(
     "WM_DELETE_WINDOW", mp4_root_exit_function
 )  # Code to use exit function when selecting 'X'
+
+if platform.system() == "Windows":
+    enable_dpi_scaling()
 
 # mp4_root Row/Column Configure ---------------------------------------------------------------------------------------
 for n in range(3):
@@ -97,7 +102,6 @@ my_menu_bar.add_cascade(label="File", menu=file_menu)
 
 
 def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or None
-
     global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, detect_video_fps, audio_input, audio_title_cmd, audio_title_entrybox, audio_delay, audio_input_entry, subtitle_input, subtitle_input_entry, subtitle_language, subtitle_title_cmd_input, subtitle_title_entrybox, chapter_input, chapter_input_entry, chapter_title_cmd_input, output, output_entry
     try:  # Video Reset
         video_title_cmd_input = ""
@@ -756,6 +760,7 @@ def input_button_commands():  # Open file block of code (non drag and drop)
 
 # ---------------------------------------------------------------------------------------------- Input Functions Button
 
+
 # Drag and Drop Functions ---------------------------------------------------------------------------------------------
 def video_drop_input(event):  # Drag and drop function
     input_dnd.set(event.data)
@@ -813,10 +818,11 @@ def update_file_input(*args):  # Drag and drop block of code
         for track in media_info.tracks:
             if track.track_type == "Video":
                 detect_video_fps = track.frame_rate
-                fps_entry.configure(state=NORMAL)
-                fps_entry.delete(0, END)
-                fps_entry.insert(0, detect_video_fps)
-                fps_entry.configure(state=DISABLED)
+                if detect_video_fps:
+                    fps_entry.configure(state=NORMAL)
+                    fps_entry.delete(0, END)
+                    fps_entry.insert(0, detect_video_fps)
+                    fps_entry.configure(state=DISABLED)
                 try:
                     detect_index = [len(i) for i in track.other_language].index(3)
                     language_index = list(iso_639_2_codes_dictionary.values()).index(
@@ -962,6 +968,7 @@ for n in range(3):
 
 
 # ------------------------------------------------------------------------------------------------ Audio Notebook Frame
+
 
 # Entry Box for Audio Title -------------------------------------------------------------------------------------------
 def audio_title(*args):
@@ -1296,7 +1303,7 @@ def audio_input_button_commands():  # Function for audio input button
         ".opus",
         ".ogg",
         ".eac3",
-        ".ec3"
+        ".ec3",
     )
     audio_input = filedialog.askopenfilename(
         initialdir="/",
@@ -1339,14 +1346,15 @@ def audio_input_button_commands():  # Function for audio input button
             audio_title_entrybox.delete(0, END)
             del audio_input
 
+
 # Drag and drop function for audio input
-def update_audio_input(event):  
+def update_audio_input(event):
     global audio_input, audio_input_quoted
     if not input_dnd.get():
         messagebox.showinfo(
-                title="Missing Video",
-                message="You must open a video source first.",
-            )
+            title="Missing Video",
+            message="You must open a video source first.",
+        )
         return
     audio_input = [x for x in mp4_root.splitlist(event.data)][0]
     audio_input_entry.configure(state=NORMAL)
@@ -1361,7 +1369,7 @@ def update_audio_input(event):
         ".opus",
         ".ogg",
         ".eac3",
-        ".ec3"
+        ".ec3",
     )
     if audio_input.endswith(audio_extensions):
         audio_input_quoted = '"' + str(pathlib.Path(audio_input)) + '"'
@@ -1479,6 +1487,7 @@ for n in range(3):
 
 
 # --------------------------------------------------------------------------------------------- Subtitle Notebook Frame
+
 
 # Entry Box for Subtitle Title ----------------------------------------------------------------------------------------
 def subtitle_title(*args):
@@ -1924,11 +1933,13 @@ def start_job():
     try:  # Video is differently checked because it HAS to exist for the program to work, the other
         # variables audio, subs, etc. check for globals to see if they exist at all
         if (
-            detect_video_fps != ""
+            detect_video_fps
         ):  # If video fps equals anything other than '' (empty string/nothing)
             fps_input = (
                 ":fps=" + detect_video_fps
             )  # Set fps_input to string + detect_video_fps
+        else:
+            fps_input = ""
 
         # Build video_options for the final command line with all the variables
         video_options = (
@@ -2213,6 +2224,7 @@ def start_job():
 
 
 # ------------------------------------------------------------------------------------------------------------- Command
+
 
 # Check to see if output file already exists and asks the user if they want to over-write it --------------------------
 def check_for_existing_output():
