@@ -1,5 +1,5 @@
 # Mp4-Mux-Tool # 
-![v1 21](https://github.com/jlw4049/MP4-Mux-Tool/assets/48299282/ecff3abf-fa83-465b-a624-7db0f3d4597b)
+[![v1_21.png](https://thumbs2.imgbox.com/f7/c7/HoqzbyR2_t.png)](https://images2.imgbox.com/f7/c7/HoqzbyR2_o.png)
 
 ## New version of the app is being developed slowly as time allows ##
 I'm working on a new version in a modern framework for the UI. This will support all of the same features as this one plus some. 
