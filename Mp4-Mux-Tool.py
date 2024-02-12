@@ -66,7 +66,7 @@ def mp4_root_exit_function():  # Pop up window when you file + exit or press 'X'
 
 
 mp4_root = TkinterDnD.Tk()  # Main loop with DnD.Tk() module (for drag and drop)
-mp4_root.title("MP4-Mux-Tool v1.20")  # Sets the version of the program
+mp4_root.title("MP4-Mux-Tool v1.21")  # Sets the version of the program
 mp4_root.iconphoto(True, PhotoImage(data=icon_image))  # Sets icon for all windows
 mp4_root.configure(background="#434547")  # Sets gui background color
 window_height = 750  # Gui window height
@@ -102,7 +102,7 @@ my_menu_bar.add_cascade(label="File", menu=file_menu)
 
 
 def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or None
-    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, detect_video_fps, audio_input, audio_title_cmd, audio_title_entrybox, audio_delay, audio_input_entry, subtitle_input, subtitle_input_entry, subtitle_language, subtitle_title_cmd_input, subtitle_title_entrybox, chapter_input, chapter_input_entry, chapter_title_cmd_input, output, output_entry
+    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, audio_input, audio_title_cmd, audio_title_entrybox, audio_delay, audio_input_entry, subtitle_input, subtitle_input_entry, subtitle_language, subtitle_title_cmd_input, subtitle_title_entrybox, chapter_input, chapter_input_entry, chapter_title_cmd_input, output, output_entry
     try:  # Video Reset
         video_title_cmd_input = ""
         video_title_entrybox.configure(state=NORMAL)
@@ -112,16 +112,12 @@ def clear_inputs():  # Clears/Resets the entire GUI/variables to "default" or No
         input_entry.configure(state=NORMAL)
         input_entry.delete(0, END)
         input_entry.configure(state=DISABLED)
-        fps_entry.configure(state=NORMAL)
-        fps_entry.delete(0, END)
-        fps_entry.configure(state=DISABLED)
         status_label.configure(
             text='Select "Open File" or drag and drop a video file to begin'
         )
         show_command.configure(state=DISABLED)
         start_button.configure(state=DISABLED)
         del VideoInput
-        del detect_video_fps
     except NameError as v:
         v_error = str(v)
 
@@ -537,6 +533,8 @@ tabs.add(video_tab, text=" Input ")
 
 for n in range(4):
     video_tab.grid_columnconfigure(n, weight=1)
+video_tab.grid_columnconfigure(0, weight=1, minsize=120)
+video_tab.grid_columnconfigure(1, weight=100)
 for n in range(3):
     video_tab.grid_rowconfigure(n, weight=1)
 # ------------------------------------------------------------------------------------------------ Video Notebook Frame
@@ -568,45 +566,11 @@ video_title_entrybox = Entry(
     state=DISABLED,
 )
 video_title_entrybox.grid(
-    row=2, column=1, columnspan=1, padx=(5, 15), pady=(0, 15), sticky=W + E
+    row=2, column=1, columnspan=3, padx=(5, 15), pady=(0, 15), sticky=W + E
 )
 video_title_cmd.trace("w", video_title)
 video_title_cmd.set("")
 # ---------------------------------------------------------------------------------------------------- Video Title Line
-
-# # Video FPS Selection -----------------------------------------------------------------------------------------------
-# video_fps = StringVar()
-# video_fps_choices = {'Automatic': '',
-#                      '23.976': '-fps 23.976',
-#                      '24': '-fps 24',
-#                      '25': '-fps 25',
-#                      '29.97': '-fps 29.97',
-#                      '30': '-fps 30',
-#                      '50': '-fps 50',
-#                      '59.94': '-fps 59.94',
-#                      '60': '-fps 60'}
-# video_fps_menu_label = Label(video_tab, text='Framerate (FPS):', background="#434547", foreground="white")
-# video_fps_menu_label.grid(row=1, column=3, columnspan=1, padx=10, pady=(0, 0), sticky=W)
-# combo_fps = ttk.Combobox(video_tab, values=list(video_fps_choices.keys()), justify="center",
-#                          textvariable=video_fps, width=10)
-# combo_fps.grid(row=2, column=3, columnspan=1, padx=10, pady=(0, 10), sticky=N + S + W + E)
-# combo_fps['state'] = 'readonly'
-# combo_fps.current(0)
-
-# Video FPS Label is only for viewing purposes, you need input FPS for program to know what fps to output
-video_fps_menu_label = Label(
-    video_tab, text="Framerate (FPS):", background="#434547", foreground="white"
-)
-video_fps_menu_label.grid(
-    row=1, column=2, columnspan=1, padx=(3, 0), pady=(0, 0), sticky=W
-)
-fps_entry = Entry(
-    video_tab, borderwidth=4, background="#CACACA", state=DISABLED, width=10
-)
-fps_entry.grid(row=2, column=2, columnspan=2, padx=(5, 10), pady=(0, 15), sticky=W + E)
-
-#
-# # --------------------------------------------------------------------------------------------------------- Video FPS
 
 # Video Language Selection --------------------------------------------------------------------------------------------
 video_language = StringVar()
@@ -633,7 +597,7 @@ video_combo_language.current(0)  # Sets language to index 0 (UND) by default
 
 
 def input_button_commands():  # Open file block of code (non drag and drop)
-    global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, detect_video_fps, fps_entry, output_quoted, chapter_input
+    global VideoInput, autosavefilename, autofilesave_dir_path, VideoInputQuoted, output, output_quoted, chapter_input
     video_extensions = (
         ".avi",
         ".mp4",
@@ -693,11 +657,6 @@ def input_button_commands():  # Open file block of code (non drag and drop)
                 media_info.tracks
             ):  # Use mediainfo module to parse video section to collect frame rate
                 if track.track_type == "Video":
-                    detect_video_fps = track.frame_rate
-                    fps_entry.configure(state=NORMAL)
-                    fps_entry.delete(0, END)
-                    fps_entry.insert(0, detect_video_fps)
-                    fps_entry.configure(state=DISABLED)
                     try:  # Code to detect the position of the language code, for 3 digit, and set it to a variable
                         detect_index = [len(i) for i in track.other_language].index(3)
                         language_index = list(
@@ -751,10 +710,6 @@ def input_button_commands():  # Open file block of code (non drag and drop)
             )
             video_combo_language.current(0)
             video_title_entrybox.delete(0, END)
-            fps_entry.configure(state=NORMAL)
-            fps_entry.delete(0, END)
-            fps_entry.configure(state=DISABLED)
-            del detect_video_fps
             del VideoInput
 
 
@@ -767,7 +722,7 @@ def video_drop_input(event):  # Drag and drop function
 
 
 def update_file_input(*args):  # Drag and drop block of code
-    global VideoInput, autofilesave_dir_path, VideoInputQuoted, output, autosavefilename, detect_video_fps, fps_entry, output_quoted, chapter_input
+    global VideoInput, autofilesave_dir_path, VideoInputQuoted, output, autosavefilename, output_quoted, chapter_input
     input_entry.configure(state=NORMAL)
     input_entry.delete(0, END)
     VideoInput = str(input_dnd.get()).replace("{", "").replace("}", "")
@@ -817,12 +772,6 @@ def update_file_input(*args):  # Drag and drop block of code
         media_info = MediaInfo.parse(filename)
         for track in media_info.tracks:
             if track.track_type == "Video":
-                detect_video_fps = track.frame_rate
-                if detect_video_fps:
-                    fps_entry.configure(state=NORMAL)
-                    fps_entry.delete(0, END)
-                    fps_entry.insert(0, detect_video_fps)
-                    fps_entry.configure(state=DISABLED)
                 try:
                     detect_index = [len(i) for i in track.other_language].index(3)
                     language_index = list(iso_639_2_codes_dictionary.values()).index(
@@ -876,10 +825,6 @@ def update_file_input(*args):  # Drag and drop block of code
         )
         video_combo_language.current(0)
         video_title_entrybox.delete(0, END)
-        fps_entry.configure(state=NORMAL)
-        fps_entry.delete(0, END)
-        fps_entry.configure(state=DISABLED)
-        del detect_video_fps
         del VideoInput
 
 
@@ -904,7 +849,7 @@ input_button.drop_target_register(DND_FILES)
 input_button.dnd_bind("<<Drop>>", video_drop_input)
 
 input_entry = Entry(
-    video_tab, borderwidth=4, background="#CACACA", state=DISABLED, width=40
+    video_tab, borderwidth=4, background="#CACACA", state=DISABLED
 )
 input_entry.grid(row=0, column=1, columnspan=2, padx=(5, 0), pady=5, sticky=W + E)
 input_entry.drop_target_register(DND_FILES)
@@ -912,7 +857,7 @@ input_entry.dnd_bind("<<Drop>>", video_drop_input)
 
 
 def clear_video_input():  # When user selects 'X' to clear input box
-    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry, detect_video_fps
+    global VideoInput, video_title_cmd_input, video_title_entrybox, video_combo_language, input_entry
     try:
         video_title_cmd_input = ""
         video_title_entrybox.configure(state=NORMAL)
@@ -922,11 +867,7 @@ def clear_video_input():  # When user selects 'X' to clear input box
         input_entry.configure(state=NORMAL)
         input_entry.delete(0, END)
         input_entry.configure(state=DISABLED)
-        fps_entry.configure(state=NORMAL)
-        fps_entry.delete(0, END)
-        fps_entry.configure(state=DISABLED)
         del VideoInput
-        del detect_video_fps
     except (Exception,):
         pass
 
@@ -963,6 +904,8 @@ tabs.add(audio_tab, text=" Track #1 ")
 
 for n in range(4):
     audio_tab.grid_columnconfigure(n, weight=1)
+audio_tab.grid_columnconfigure(0, weight=1, minsize=120)
+audio_tab.grid_columnconfigure(1, weight=100)
 for n in range(3):
     audio_tab.grid_rowconfigure(n, weight=1)
 
@@ -994,7 +937,7 @@ audio_title_entrybox = Entry(
     state=DISABLED,
 )
 audio_title_entrybox.grid(
-    row=2, column=1, columnspan=1, padx=10, pady=(0, 15), sticky=W + E
+    row=2, column=1, columnspan=2, padx=10, pady=(0, 15), sticky=W + E
 )
 audio_title_cmd.trace("w", audio_title)
 audio_title_cmd.set("")
@@ -1482,6 +1425,8 @@ tabs.add(subtitle_tab, text=" Track #1 ")
 
 for n in range(4):
     subtitle_tab.grid_columnconfigure(n, weight=1)
+subtitle_tab.grid_columnconfigure(0, weight=1, minsize=120)
+subtitle_tab.grid_columnconfigure(1, weight=100)    
 for n in range(3):
     subtitle_tab.grid_rowconfigure(n, weight=1)
 
@@ -1674,7 +1619,9 @@ chapter_frame = LabelFrame(mp4_root, text=" Chapter ")
 chapter_frame.grid(row=3, columnspan=4, sticky=E + W + N + S, padx=20, pady=(5, 5))
 chapter_frame.configure(fg="white", bg="#434547", bd=4)
 
-chapter_frame.grid_columnconfigure(0, weight=1)
+for n in range(3):
+    chapter_frame.grid_columnconfigure(n, weight=1)
+chapter_frame.grid_columnconfigure(1, weight=100)
 chapter_frame.grid_rowconfigure(0, weight=1)
 chapter_frame.grid_rowconfigure(1, weight=1)
 
@@ -1741,6 +1688,7 @@ chapter_input_button = HoverButton(
     borderwidth="3",
     activebackground="grey",
     state=DISABLED,
+    width=15,
 )
 chapter_input_button.grid(
     row=0, column=0, columnspan=1, padx=(10, 10), pady=(10, 0), sticky=W + E
@@ -1830,7 +1778,9 @@ output_frame = LabelFrame(mp4_root, text=" Output ")
 output_frame.grid(row=4, columnspan=4, sticky=E + W + N + S, padx=20, pady=(5, 5))
 output_frame.configure(fg="white", bg="#434547", bd=4)
 
-output_frame.grid_columnconfigure(0, weight=1)
+for n in range(3):
+    output_frame.grid_columnconfigure(0, weight=1)
+output_frame.grid_columnconfigure(1, weight=100)
 output_frame.grid_rowconfigure(0, weight=1)
 
 
@@ -1862,6 +1812,7 @@ output_button = HoverButton(
     borderwidth="3",
     activebackground="grey",
     state=DISABLED,
+    width=15,
 )
 output_button.grid(
     row=0, column=0, columnspan=1, padx=(10, 10), pady=(10, 5), sticky=W + E
@@ -1932,15 +1883,6 @@ def start_job():
 
     try:  # Video is differently checked because it HAS to exist for the program to work, the other
         # variables audio, subs, etc. check for globals to see if they exist at all
-        if (
-            detect_video_fps
-        ):  # If video fps equals anything other than '' (empty string/nothing)
-            fps_input = (
-                ":fps=" + detect_video_fps
-            )  # Set fps_input to string + detect_video_fps
-        else:
-            fps_input = ""
-
         # Build video_options for the final command line with all the variables
         video_options = (
             ' -add "'
@@ -1949,7 +1891,6 @@ def start_job():
             + video_title_cmd_input
             + ":lang="
             + iso_639_2_codes_dictionary[video_language.get()]
-            + fps_input
             + ':ID=1"'
         )
         video_errors = (
@@ -2015,7 +1956,7 @@ def start_job():
             "chapter_input" in globals()
         ):  # If the variable 'chapter_input' does exist in globals
             # Build subtitle_options for the final command line with all the variables
-            chapter_options = ' -add "' + chapter_input + fps_input + '"'
+            chapter_options = ' -add "' + chapter_input + '"'
         elif (
             "chapter_input" not in globals()
         ):  # If the variable 'chapter_input' doesn't exist in globals
@@ -2256,6 +2197,7 @@ start_button = HoverButton(
     borderwidth="3",
     activebackground="grey",
     state=DISABLED,
+    width=10,
 )
 start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(15, 2), sticky=E)
 
@@ -2271,10 +2213,6 @@ start_button.grid(row=5, column=2, columnspan=1, padx=(10, 20), pady=(15, 2), st
 def view_command():  # This function is to show the full command line output into a window, the code is the same as
     # the command code above with a few minor changes
     global cmd_line_window, encode_window_progress, output, output_quoted
-    if detect_video_fps:
-        fps_input = ":fps=" + detect_video_fps
-    else:
-        fps_input = ""
 
     video_options = (
         ' -add "'
@@ -2283,7 +2221,6 @@ def view_command():  # This function is to show the full command line output int
         + video_title_cmd_input
         + ":lang="
         + iso_639_2_codes_dictionary[video_language.get()]
-        + fps_input
         + ':ID=1"'
     )
 
@@ -2316,7 +2253,7 @@ def view_command():  # This function is to show the full command line output int
         subtitle_options = ""
 
     if "chapter_input" in globals():
-        chapter_options = ' -add "' + chapter_input + fps_input + '"'
+        chapter_options = ' -add "' + chapter_input + '"'
     elif "chapter_input" not in globals():
         chapter_options = ""
 
