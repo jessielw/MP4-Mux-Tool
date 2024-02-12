@@ -848,9 +848,7 @@ input_button.grid(row=0, column=0, columnspan=1, padx=5, pady=5, sticky=W + E)
 input_button.drop_target_register(DND_FILES)
 input_button.dnd_bind("<<Drop>>", video_drop_input)
 
-input_entry = Entry(
-    video_tab, borderwidth=4, background="#CACACA", state=DISABLED
-)
+input_entry = Entry(video_tab, borderwidth=4, background="#CACACA", state=DISABLED)
 input_entry.grid(row=0, column=1, columnspan=2, padx=(5, 0), pady=5, sticky=W + E)
 input_entry.drop_target_register(DND_FILES)
 input_entry.dnd_bind("<<Drop>>", video_drop_input)
@@ -1426,7 +1424,7 @@ tabs.add(subtitle_tab, text=" Track #1 ")
 for n in range(4):
     subtitle_tab.grid_columnconfigure(n, weight=1)
 subtitle_tab.grid_columnconfigure(0, weight=1, minsize=120)
-subtitle_tab.grid_columnconfigure(1, weight=100)    
+subtitle_tab.grid_columnconfigure(1, weight=100)
 for n in range(3):
     subtitle_tab.grid_rowconfigure(n, weight=1)
 
