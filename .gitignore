@@ -8,3 +8,4 @@ config.ini
 Mp4-Mux-Tool.exe
 *.zip
 custom-pyinstaller/
+.vscode/
