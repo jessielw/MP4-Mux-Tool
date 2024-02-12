@@ -10,6 +10,8 @@ this [branch](https://github.com/jlw4049/MP4-Mux-Tool/tree/qt-re-work).
 ## Supported Operating Systems ##
 Windows 8 - Windows 11
 
+*Technically it could work on linux/mac, but these builds would not include mp4box/mkvextract, for the new version I'm working on this will have that support*
+
 # How to use #
 ## Main Gui ##
 1. Extract program from archive to a folder of your choice or Run program from the archive (if you run from archive the 
