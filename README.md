@@ -8,7 +8,7 @@ reliable in the mean time. I'll fix bugs as they are reported though. If you're 
 this [branch](https://github.com/jlw4049/MP4-Mux-Tool/tree/qt-re-work).
 
 ## Supported Operating Systems ##
-Windows 8 **(x64)**, Windows 10**(x64)**, and Windows 11 **(x64)**
+Windows 8 **(x64)**, Windows 10 **(x64)**, and Windows 11 **(x64)**
 
 # How to use #
 ## Main Gui ##
